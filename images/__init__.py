@@ -1,3 +1,3 @@
 '''
-Data Anonymization for Images
+Images Anonymization
 '''
