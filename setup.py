@@ -1,5 +1,8 @@
 from setuptools import setup, find_packages
 
+with open('README.md') as readme_file:
+    readme = readme_file.read()
+
 setup(
   author="ArtLabss",
   description="A Data Anonymization package for tabular, text, image and sound data",
@@ -18,6 +21,11 @@ setup(
     'Programming Language :: Python :: 3.7',
     'Programming Language :: Python :: 3.8',
     ],
+  license="BSD license",
+  long_description=readme,
+  long_description_content_type='text/markdown',
+  keywords='anonympy',    
+  zip_safe=False,
 )
 
 # pip install -e .
