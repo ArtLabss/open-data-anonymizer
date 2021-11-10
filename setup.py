@@ -9,7 +9,7 @@ setup(
   name="anonympy",
   version="0.1.0",
   packages=find_packages(include=["anonympy", "anonympy.*"]),
-  install_requires=['pandas>=1.0', 'scipy=1.1', 'matplotlib>=2.2.1,<3'],
+  install_requires=['pandas', 'faker', 'cape-python', 'numpy'],
   python_requires='>=3.6.*',
   classifiers=[
     'Development Status :: 2 - Pre-Alpha',
