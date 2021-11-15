@@ -16,6 +16,7 @@ df = pd.DataFrame({
 class dfAnonymizer(object):
     """
     Initializes a pd.DataFrame as a dfAnonymize object.
+    Set ``seed`` to an integer for reproducible results 
 
     Parameters:
     ----------
@@ -41,7 +42,8 @@ class dfAnonymizer(object):
                  numeric_columns: List[str] = None,
                  categorical_columns: List[str] = None,
                  datetime_columns: List[str] = None,
-                 inplace: bool = False):    
+                 inplace: bool = False,
+                 ):    
         if df.__class__.__name__ != "DataFrame":
             raise Exception(f"{df} is not a pandas DataFrame.")
 
@@ -95,8 +97,11 @@ List of columns with datetime values
             pass
         
 
-
-
+    def fake_data_manual(self, ser:pd.Series, method: str, locale: List[str] = ['en_US']) -> pd.Series:
+        fake = Faker(locale=locale)
+        method = getattr(fake, method)
+        faked = ser.apply(lambda x: method())
+        return faked
 
 
 
