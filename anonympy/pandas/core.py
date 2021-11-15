@@ -44,7 +44,7 @@ class dfAnonymizer(object):
         if df.__class__.__name__ != "DataFrame":
             raise Exception(f"{df} is not a pandas DataFrame.")
 
-        self._df = df
+        self._df = df.copy()
         if numeric_columns == None:
             self._numeric_columns = self._df.select_dtypes(exclude=['object', 'datetime', 'category']).columns.tolist()
         if categorical_columns == None:
@@ -53,6 +53,7 @@ class dfAnonymizer(object):
             self._datetime_columns = self._df.select_dtypes(include=['datetime']).columns.tolist()
         self.anonymized_columns = []
         self.unanonymized_columns = self._df.columns.to_list()
+        self.methods_applied = {}
 
 
     def get_numeric_columns(self) -> List:
@@ -95,15 +96,16 @@ class dfAnonymizer(object):
             pass
         
 
-    def fake_data_manual(self, ser:pd.Series, method: str, locale: Union[str, List[str]] = ['en_US']) -> pd.Series:
+    def fake_data_manual(self, column: str, method: str, locale: Union[str, List[str]] = ['en_US'], inplace = False) -> pd.Series:
         '''
         Anonymize pandas Series object using synthetic data generator 
 
         Parameters
         ----------
-            ser : pandas Series
+            column : str
             method : str
             locale : List[str], default ['en_US']
+            inplace : bool
 
         Returns
         ----------
@@ -113,8 +115,14 @@ class dfAnonymizer(object):
         
         fake = Faker(locale=locale)
         method = getattr(fake, method)
-        faked = ser.apply(lambda x: method())
-        return faked
+        faked = self._df[column].apply(lambda x: method())
+        self.methods_applied[column] = 'Synthetic Data'
+        if inplace:
+            self._df[column] = faked
+            self.anonymized_columns.append(column)
+            self.unanonymized_columns.remove(column)
+        else:
+            return faked
     
 
     def to_DataFrame(self):
@@ -122,15 +130,18 @@ class dfAnonymizer(object):
 
 
     def info(self):
+        header = f'Total number of columns: {self._df.shape[1]}'
+        print(header)
+        print('-'*50)
+
+        print('Anonymized Columns -> Method: ')
+        for column in self.anonymized_columns:
+            print(column + ' -> ' + self.methods_applied.get(column))
+        print('-'*50)
+
+        print('Unanonymized Columns: ')
+        for column in self.unanonymized_columns:
+            print(column)
         
-        
-
-
-
-
-
-
-
-
         
         
