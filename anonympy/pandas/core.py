@@ -45,14 +45,26 @@ class dfAnonymizer(object):
         if df.__class__.__name__ != "DataFrame":
             raise Exception(f"{df} is not a pandas DataFrame.")
 
+        # Private Attributes 
         self._df = df.copy()
         self._methods_applied = {}
+        self._synthetic_data = 'Synthetic Data (fake)'
+        self._numeric_perturbation = 'Numeric Perturbation (noise)'
+        self._datetime_perturbation = 'Datetime Perturbation (noise)'
+        self._round = 'Generalization - Rounding'
+        self._bin = 'Generalization - Binning '
+        self._sample = 'Resampling'
+        self._PCA = 'Masking - PCA'
+        self._drop = 'Suppression (drop)'
         if numeric_columns == None:
             self._numeric_columns = self._df.select_dtypes(exclude=['object', 'datetime', 'category']).columns.tolist()
         if categorical_columns == None:
             self._categorical_columns = self._df.select_dtypes(include=['object', 'category']).columns.tolist()
         if datetime_columns == None:
             self._datetime_columns = self._df.select_dtypes(include=['datetime']).columns.tolist()
+
+        # Public Attributes
+        self.columns = self._df.columns.tolist()
         self.anonymized_columns = []
         self.unanonymized_columns = self._df.columns.to_list()
 
@@ -86,18 +98,19 @@ class dfAnonymizer(object):
         Returns
         ----------
             List of columns with datetime values 
-'''
+        '''
         return self._datetime_columns
 
 
     def anonymize(self,
-                  methods: Dict[str, str] = None):
+                  methods: Dict[str, str] = None,
+                  inplace: bool = False):
 
         if methods == None:
             pass
         
 
-    def fake_data_manual(self, column: str, method: str, locale: Union[str, List[str]] = ['en_US'], inplace = False) -> pd.Series:
+    def fake_data(self, column: str, method: str, locale: Union[str, List[str]] = ['en_US'], inplace = False) -> pd.Series:
         '''
         Anonymize pandas Series object using synthetic data generator.
 
@@ -117,19 +130,28 @@ class dfAnonymizer(object):
         fake = Faker(locale=locale)
         method = getattr(fake, method)
         faked = self._df[column].apply(lambda x: method())
-        self._methods_applied[column] = 'Synthetic Data'
         if inplace:
             self._df[column] = faked
             self.anonymized_columns.append(column)
             self.unanonymized_columns.remove(column)
+            self._methods_applied[column] = self._synthetic_data
         else:
             return faked
 
-    def fake_data_auto(self):
-        pass
-    
+    def __fake_data(self, locale: Union[str, List[str]] = ['en_US']):
+        fake = Faker(locale=locale)
 
-    def to_DataFrame(self):
+        for column in self.columns:
+            func_name = column.strip().lower()
+            if func in fake_methods:
+                func = getattr(fake, func_name)
+                
+            
+        
+        
+
+
+    def to_df(self):
         ''' 
         Convert dfAnonymizer object back to pandas DataFrame
 
