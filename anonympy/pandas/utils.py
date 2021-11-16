@@ -23,3 +23,14 @@ fake_methods = ['aba', 'add_provider', 'address', 'administrative_unit', 'am_pm'
                 'suffix', 'suffix_female', 'suffix_male', 'suffix_nonbinary', 'swift', 'swift11', 'swift8', 'tar', 'text', 'texts', 'time', 'time_delta', 'time_object', 'time_series', 'timezone', 'tld', 'tsv',
                 'unique', 'unix_device', 'unix_partition', 'unix_time', 'upc_a', 'upc_e', 'uri', 'uri_extension', 'uri_page', 'uri_path', 'url', 'user_agent', 'user_name', 'uuid4', 'vehicle_category',
                 'weights', 'windows_platform_token', 'word', 'words', 'year', 'zip']
+##
+##name_fake_methods = ['city_name',  'color_name',  'cryptocurrency_name',  'currency_name',
+##                     'domain_name',  'file_name',  'first_name',  'first_name_female',  'first_name_male',
+##                     'first_name_nonbinary',  'hostname',  'language_name',  'last_name',  'last_name_female',
+##                     'last_name_male',  'last_name_nonbinary',  'middle_name',  'middle_name_female',
+##                     'middle_name_male',  'month_name',  'name',  'name_female',  'name_male',  'name_nonbinary',
+##                     'safe_color_name',  'safe_domain_name',  'street_name',  'user_name']
+##
+##for method in fake_methods:
+##      if 'country' in method:
+##            print("'"+ method + "'" + ', ', end=' ')
