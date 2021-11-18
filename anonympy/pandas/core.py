@@ -1,9 +1,16 @@
-import cape_privacy as cp
-from faker import Faker
 import pandas as pd
 from typing import List, Dict, Union
+
 from texttable import Texttable
+
+import cape_privacy as cp
+from cape_privacy.pandas import dtypes
+from cape_privacy.pandas.transformations import NumericPerturbation
+from cape_privacy.pandas.transformations import DatePerturbation
+
+from faker import Faker
 from utils import fake_methods
+
 
 df = pd.DataFrame({
         "name": ["alice", "bob"],
@@ -24,7 +31,6 @@ class dfAnonymizer(object):
         numeric_columns : list, default None
         categorical_columns : list, default None
         datetime_columns : list, default None
-        inplace: bool, default False
          
     Returns:
     ----------
@@ -41,8 +47,8 @@ class dfAnonymizer(object):
                  df: pd.DataFrame,
                  numeric_columns: List[str] = None,
                  categorical_columns: List[str] = None,
-                 datetime_columns: List[str] = None,
-                 inplace: bool = False):    
+                 datetime_columns: List[str] = None):
+        
         if df.__class__.__name__ != "DataFrame":
             raise Exception(f"{df} is not a pandas DataFrame.")
 
@@ -79,6 +85,7 @@ class dfAnonymizer(object):
         ----------
             List of columns with numeric values 
         '''
+        
         return self._numeric_columns
 
 
@@ -90,6 +97,7 @@ class dfAnonymizer(object):
         ----------
             List of columns with categorical values 
         '''
+        
         return self._categorical_columns
 
 
@@ -101,22 +109,44 @@ class dfAnonymizer(object):
         ----------
             List of columns with datetime values 
         '''
+        
         return self._datetime_columns
 
 
     def anonymize(self,
                   methods: Dict[str, str] = None,
-                  inplace: bool = False):
+                  inplace: bool = True):
+        '''
 
+        '''
+        
         if methods == None:
             pass
+
+    
+    def _dtype_(self,
+                    column: str):
+        '''
+        Returns the dtype of the column
+
+        Parameters
+        ----------
+            column: str
+
+        Returns
+        ----------
+            dtype: numpy dtype 
+        '''
+        
+
+        
         
 
     def fake_data(self,
                   column: str,
                   method: str,
                   locale: Union[str, List[str]] = ['en_US'],
-                  inplace = False) -> pd.Series:
+                  inplace = True):
         '''
         Anonymize pandas Series object using synthetic data generator.
 
@@ -129,7 +159,7 @@ class dfAnonymizer(object):
 
         Returns
         ----------
-            faked : pandas Series
+            faked : None if inplace = True, else pandas Series
 
         '''
         
@@ -146,29 +176,57 @@ class dfAnonymizer(object):
 
 
     def _fake_data_auto(self,
-                       locale: Union[str, List[str]] = ['en_US']):
+                       locale: Union[str, List[str]] = ['en_US'],
+                        inplace = True):
         '''
-        Anonymize a column which name is similar to faker's method 
+        Compare a column's name to faker's method from utils.fake_method.
+        Anonymize if column name is similar to the method. 
 
         Parameters
         ----------
             locale : str or List[str], default ['en_US']
+            inplace : bool, default True
+
+        Returns
+        ----------
+            None 
+        '''
+        
+        temp = pd.DataFrame()
+        
+        for column in self.unanonymized_columns:
+            func = column.strip().lower()
+            if func in fake_methods:
+                if inplace:
+                    self.fake_data(column, func, inplace = True)
+                else:
+                    temp[column] = self.fake_data(column, func, inplace = False)
+        if not inplace:
+            return temp
+
+
+    def info(self):
+        '''
+        Print a summary of the a DataFrame, which columns have been anonymized and which haven't.
 
         Returns
         ----------
             None
         '''
+        t = Texttable(max_width=150)
+        header = f'Total number of columns: {self._df.shape[1]}'
 
-        fake = Faker(locale=locale)
-        for column in self.columns:
-            func = column.strip().lower()
-            if func in fake_methods:
-                method = getattr(fake, func)
-                faked = self._df[column].apply(lambda x: method())
-                self.anonymized_columns.append(column)
-                self.unanonymized_columns.remove(column)
-                self._methods_applied[column] = self._synthetic_data
-            
+        row1 = 'Anonymized Column -> Method: '
+        for column in self.anonymized_columns:
+            row1 += '\n- ' + column + ' -> ' + self._methods_applied.get(column)
+
+        row2 = 'Unanonymized Columns: \n'
+        row2 +='\n'.join([f'- {i}' for i in self.unanonymized_columns])
+
+        t.add_rows([[header], [row1], [row2]])
+
+        print(t.draw())
+
         
     def to_df(self):
         ''' 
@@ -180,29 +238,6 @@ class dfAnonymizer(object):
         '''
         
         return self._df
-
-
-    def info(self):
-        '''
-        Print a summary of the a DataFrame, which columns have been anonymized and which haven't.
-
-        Returns
-        ----------
-            None
-        '''
-        t = Texttable()
-        header = f'Total number of columns: {self._df.shape[1]}'
-
-        row1 = 'Anonymized Column -> Method: \n'
-        for column in self.anonymized_columns:
-            row1 += '\n- ' + column + ' -> ' + self._methods_applied.get(column)
-
-        row2 = 'Unanonymized Columns: \n\n'
-        row2 +='\n'.join([f'- {i}' for i in self.unanonymized_columns])
-
-        t.add_rows([[header], [row1], [row2]])
-
-        print(t.draw())
-        
+    
         
         
