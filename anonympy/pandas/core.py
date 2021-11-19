@@ -1,10 +1,16 @@
 import pandas as pd
-from typing import List, Dict, Union
+import numpy as np
+
+from typing import List
+from typing import Dict
+from typing import Union
+from typing import Optional
+from typing import Tuple
 
 from texttable import Texttable
 
 import cape_privacy as cp
-from cape_privacy.pandas import dtypes
+from cape_privacy.pandas import dtypes 
 from cape_privacy.pandas.transformations import NumericPerturbation
 from cape_privacy.pandas.transformations import DatePerturbation
 
@@ -45,9 +51,9 @@ class dfAnonymizer(object):
 
     def __init__(self,
                  df: pd.DataFrame,
-                 numeric_columns: List[str] = None,
-                 categorical_columns: List[str] = None,
-                 datetime_columns: List[str] = None):
+                 numeric_columns: Optional[List[str]] = None,
+                 categorical_columns: Optional[List[str]] = None,
+                 datetime_columns: Optional[List[str]] = None):
         
         if df.__class__.__name__ != "DataFrame":
             raise Exception(f"{df} is not a pandas DataFrame.")
@@ -113,18 +119,7 @@ class dfAnonymizer(object):
         return self._datetime_columns
 
 
-    def anonymize(self,
-                  methods: Dict[str, str] = None,
-                  inplace: bool = True):
-        '''
-
-        '''
-        
-        if methods == None:
-            pass
-
-    
-    def _dtype_(self,
+    def _dtype_checker(self,
                     column: str):
         '''
         Returns the dtype of the column
@@ -137,16 +132,42 @@ class dfAnonymizer(object):
         ----------
             dtype: numpy dtype 
         '''
+        dtype = self._df[column].dtype
+
+        if dtype == np.float32:
+            return dtypes.Float
+        elif dtype == np.float64:
+            return dtypes.Double
+        elif dtype == np.byte:
+            return dtypes.Byte
+        elif dtype == np.short:
+            return dtypes.Short
+        elif dtype == np.int32:
+            return dtypes.Integer
+        elif dtype == np.int64:
+            return dtypes.Long
+        else:
+            return None
         
 
+
+    def anonymize(self,
+                  methods: Optional[Dict[str, str]] = None,
+                  inplace: Optional[bool] = True):
+        '''
+
+        '''
         
-        
+        if methods == None:
+            pass
+
+
 
     def fake_data(self,
                   column: str,
                   method: str,
-                  locale: Union[str, List[str]] = ['en_US'],
-                  inplace = True):
+                  locale: Optional[Union[str, List[str]]] = ['en_US'],
+                  inplace: Optional[bool] = True):
         '''
         Anonymize pandas Series object using synthetic data generator.
 
@@ -155,7 +176,7 @@ class dfAnonymizer(object):
             column : str
             method : str
             locale : str or List[str], default ['en_US']
-            inplace : bool
+            inplace : bool, defaulty True
 
         Returns
         ----------
@@ -176,8 +197,8 @@ class dfAnonymizer(object):
 
 
     def _fake_data_auto(self,
-                       locale: Union[str, List[str]] = ['en_US'],
-                        inplace = True):
+                       locale: Optional[Union[str, List[str]]] = ['en_US'],
+                        inplace: Optional[bool]= True):
         '''
         Compare a column's name to faker's method from utils.fake_method.
         Anonymize if column name is similar to the method. 
@@ -189,7 +210,8 @@ class dfAnonymizer(object):
 
         Returns
         ----------
-            None 
+            None if inplace = True, else an anonymized pandas Series or
+            pandas DataFrame depending on the number of columns.
         '''
         
         temp = pd.DataFrame()
@@ -202,8 +224,84 @@ class dfAnonymizer(object):
                 else:
                     temp[column] = self.fake_data(column, func, inplace = False)
         if not inplace:
-            return temp
+            if len(temp.columns) > 1:
+                return temp
+            else:
+                return pd.Series(temp[temp.columns[0]])
 
+
+    def numeric_noise(self,
+                      column: Union[str, List[str]],
+                      MIN: Union[int, float] = -10,
+                      MAX: Union[int, float] = 10,
+                      seed: Optional[int] = None,
+                      inplace: Optional[bool] = True):
+        '''
+        Add uniform random noise to a numeric Pandas series.
+        Based on cape-privacy's pandas.NumericPerturbation 
+
+        Parameters
+        ----------
+            column : Union[str, List[str]]
+            min : (int, float), default -10
+            max : (int, float), default 10 
+            seed : int, default None
+            inplace : bool, default True
+
+        Returns
+        ----------
+            ser: pandas Series with uniform random noise added
+        '''
+        
+        dtype = self._dtype_checker(column)
+        noise = NumericPerturbation(dtype = dtype, min = MIN, max = MAX)
+        ser = noise(self._df[column])
+        
+        if inplace:
+            self._df[column] = ser
+            self.anonymized_columns.append(column)
+            self.unanonymized_columns.remove(column)
+            self._methods_applied[column] = self._numeric_perturbation
+        else:
+            return ser
+
+
+    def datetime_noise(self,
+                       column: Union[str, List[str]],
+                       frequency: Union[str, Tuple[str, ...]]  = ("YEAR", "MONTH", "DAY"),
+                       MIN:  Union[int, Tuple[int, ...]] = (-10, -5, -5),
+                       MAX:  Union[int, Tuple[int, ...]] = (10, 5, 5),
+                       seed: Optional[int] = None,
+                       inplace: Optional[bool] = True):
+        '''
+        Add uniform random noise to a Pandas series of timestamps
+        Based on cape-privacy's pandas.DatePerturbation 
+
+        Parameters
+        ----------
+            column : Union[str, List[str]]
+            frequency : Union[str, Tuple[str, ...]] , default  ("YEAR", "MONTH", "DAY")
+            min : Union[int, Tuple[int, ...]], default (-10, -5, -5)
+            max : Union[int, Tuple[int, ...]], default (10, 5, 5)
+            seed : int, default None
+            inplace : bool, default True
+
+        Returns
+        ----------
+            ser: pandas Series with uniform random noise added
+        '''
+
+        noise = DatePerturbation(frequency = frequency, min = MIN, max = MAX)
+        ser = noise(self._df[column])
+
+        if inplace:
+            self._df[column] = ser
+            self.anonymized_columns.append(column)
+            self.unanonymized_columns.remove(column)
+            self._methods_applied[column] = self._datetime_perturbation
+        else:
+            return ser
+        
 
     def info(self):
         '''
@@ -237,7 +335,7 @@ class dfAnonymizer(object):
         DataFrame object
         '''
         
-        return self._df
+        return self._df.copy()
     
         
         
