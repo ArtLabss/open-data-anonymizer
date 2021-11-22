@@ -9,10 +9,11 @@ from typing import Tuple
 
 from texttable import Texttable
 
-import cape_privacy as cp
 from cape_privacy.pandas import dtypes 
 from cape_privacy.pandas.transformations import NumericPerturbation
 from cape_privacy.pandas.transformations import DatePerturbation
+from cape_privacy.pandas.transformations import NumericRounding
+from cape_privacy.pandas.transformations import Tokenizer
 
 from faker import Faker
 from utils import fake_methods
@@ -62,6 +63,7 @@ class dfAnonymizer(object):
         self._df = df.copy()
         self._methods_applied = {}
         self._synthetic_data = 'Synthetic Data'
+        self._tokenization = 'Tokenization'
         self._numeric_perturbation = 'Numeric Perturbation'
         self._datetime_perturbation = 'Datetime Perturbation'
         self._round = 'Generalization - Rounding'
@@ -293,7 +295,7 @@ class dfAnonymizer(object):
         if isinstance(columns, str):
             dtype = self._dtype_checker(columns)
             noise = NumericPerturbation(dtype = dtype, min = MIN, max = MAX)
-            ser = noise(self._df[columns])
+            ser = noise(self._df[columns].copy()).astype(dtype)
 
             if inplace:
                 if columns in self.anonymized_columns:
@@ -304,14 +306,15 @@ class dfAnonymizer(object):
                     self.unanonymized_columns.remove(columns)
                     self._methods_applied[columns] = self._numeric_perturbation
             else:
-                return ser
+                return ser.astype(dtype)
         # if a list of columns is passed
         else:
             temp = pd.DataFrame()
             for column in columns:
+                
                 dtype = self._dtype_checker(column)
                 noise = NumericPerturbation(dtype = dtype, min = MIN, max = MAX)
-                ser = noise(self._df[column])
+                ser = noise(self._df[column].copy()).astype(dtype)
 
                 if inplace:
                     if column in self.anonymized_columns:
@@ -349,11 +352,12 @@ class dfAnonymizer(object):
 
         Returns
         ----------
-            ser: pandas Series or pandas DataFrame with uniform random noise added
+            ser: pandas Series or pandas DataFrame
         '''
+        # if a single column is passed
         if isinstance(columns, str):
             noise = DatePerturbation(frequency = frequency, min = MIN, max = MAX)
-            ser = noise(self._df[columns])
+            ser = noise(self._df[columns].copy())
 
             if inplace:
                 if columns in self.anonymized_columns:
@@ -368,9 +372,10 @@ class dfAnonymizer(object):
         # if a list of columns is passed
         else:
             temp = pd.DataFrame()
+            
             for column in columns:
                 noise = DatePerturbation(frequency = frequency, min = MIN, max = MAX)
-                ser = noise(self._df[column])
+                ser = noise(self._df[column].copy())
 
                 if inplace:
                         if column in self.anonymized_columns:
@@ -386,8 +391,120 @@ class dfAnonymizer(object):
             return temp
 
 
-    def numeric_rounding(self, columns
+    def numeric_rounding(self,
+                         columns: Union[str, List[str]],
+                         precision: int = None,
+                         inplace: bool = True):
+        '''
+        Round each value in the Pandas Series to the given number
+        Based on cape-privacy's pandas.NumericRounding
 
+        Parameters
+        ----------
+        columns : Union[str, List[str]]
+        precision : int, default None
+        inplace : bool, default True
+
+        Returns
+        ----------
+            ser: pandas Series or pandas DataFrame
+        '''
+        # if a single column is passed
+        if isinstance(columns, str):
+            dtype = self._dtype_checker(columns)
+            precision = len(str(int(self._df[columns].mean()))) - 1
+            rounding = NumericRounding(dtype = dtype, precision = -precision)
+            ser = rounding(self._df[columns].copy()).astype(dtype)
+
+            if inplace:
+                if columns in self.anonymized_columns:
+                    print('Column Already Anonymized!')
+                else:
+                    self._df[columns] =  ser
+                    self.anonymized_columns.append(columns)
+                    self.unanonymized_columns.remove(columns)
+                    self._methods_applied[columns] = self._round
+            else:
+                return ser
+        # if a list of columns is passed
+        else:
+            temp = pd.DataFrame()
+            
+            for column in columns:
+                dtype = self._dtype_checker(column)
+                precision = len(str(int(self._df[column].mean()))) - 1
+                rounding = NumericRounding(dtype = dtype, precision = -precision)
+                ser = rounding(self._df[column].copy())
+
+                if inplace:
+                    if column in self.anonymized_columns:
+                        print('Column Already Anonymized!')
+                    else:
+                        self._df[column] = ser
+                        self.anonymized_columns.append(column)
+                        self.unanonymized_columns.remove(column)
+                        self._methods_applied[columns] = self._round
+                else:
+                    temp[column] = ser.astype(dtype)
+            if not inplace:
+                return temp
+
+
+    def tokenizer(self,
+                  columns: Union[str, List[str]],
+                  max_token_len: int = 10,
+                  key: str = b"my secret",
+                  inplace: bool = True):
+        '''
+        Maps a string to a token (hexadecimal string) to obfuscate it.
+
+        Parameters
+            ----------
+            columns : Union[str, List[str]]
+            max_token_len : int, default 10
+            key : str, default b"my secret"
+            inplace : bool, default True
+
+            Returns
+            ----------
+                ser: pandas Series or pandas DataFrame
+        '''
+        # if a single column is passed
+        if isinstance(columns, str):
+            tokenize = Tokenizer(max_token_len = max_token_len, key = b"my secret")
+            ser = tokenize(self._df[columns])
+
+            if inplace:
+                if columns in self.anonymized_columns:
+                    print('Column Already Anonymized!')
+                else:
+                    self._df[columns] = ser
+                    self.anonymized_columns.append(columns)
+                    self.unanonymized_columns.remove(columns)
+                    self._methods_applied[columns] = self._tokenization
+            else:
+                return ser
+        # if a list of columns is passed
+        else:
+            temp = pd.DataFrame()
+            
+            for column in columns:
+                tokenize = Tokenizer(max_token_len = max_token_len, key = b"my secret")
+                ser = tokenize(self._df[columns])
+
+                if inplace:
+                    if columns in self.anonymized_columns:
+                        print('Column Already Anonymized!')
+                    else:
+                        self._df[columns] = ser
+                        self.anonymized_columns.append(columns)
+                        self.unanonymized_columns.remove(columns)
+                        self._methods_applied[columns] = self._tokenization
+                else:
+                    temp[column] = ser
+            if not inplace:
+                return temp
+                
 
     def info(self):
         '''
@@ -411,6 +528,35 @@ class dfAnonymizer(object):
 
         print(t.draw())
 
+
+    def info2(self):
+        '''
+        Print a summary of the a DataFrame.
+        `status = 1 ` - anonymized
+        `status = 0 ` - unanonymized
+
+        Returns
+        ----------
+            None
+        '''
+        t  = Texttable(150)
+        t.header(['Column', 'Status', 'Method'])
+
+        for i in range(len(self.columns)):
+            column = self.columns[i]
+            
+            if column in self.anonymized_columns:
+                status = 1
+                method = self._methods_applied[column]
+            else:
+                status = 0
+                method = ''
+
+            row = [column, status, method]
+            t.add_row(row)
+
+        print(t.draw())
+
         
     def to_df(self):
         ''' 
@@ -420,7 +566,6 @@ class dfAnonymizer(object):
         ----------
         DataFrame object
         '''
-        
         return self._df.copy()
     
         
