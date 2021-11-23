@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import datetime
 
 from typing import List
 from typing import Dict
@@ -442,7 +443,7 @@ class dfAnonymizer(object):
                         self._df[column] = ser
                         self.anonymized_columns.append(column)
                         self.unanonymized_columns.remove(column)
-                        self._methods_applied[columns] = self._round
+                        self._methods_applied[column] = self._round
                 else:
                     temp[column] = ser.astype(dtype)
             if not inplace:
@@ -491,16 +492,16 @@ class dfAnonymizer(object):
             
             for column in columns:
                 tokenize = Tokenizer(max_token_len = max_token_len, key = b"my secret")
-                ser = tokenize(self._df[columns])
+                ser = tokenize(self._df[column])
 
                 if inplace:
-                    if columns in self.anonymized_columns:
+                    if column in self.anonymized_columns:
                         print('Column Already Anonymized!')
                     else:
-                        self._df[columns] = ser
-                        self.anonymized_columns.append(columns)
-                        self.unanonymized_columns.remove(columns)
-                        self._methods_applied[columns] = self._tokenization
+                        self._df[column] = ser
+                        self.anonymized_columns.append(column)
+                        self.unanonymized_columns.remove(column)
+                        self._methods_applied[column] = self._tokenization
                 else:
                     temp[column] = ser
             if not inplace:
@@ -510,7 +511,9 @@ class dfAnonymizer(object):
     def fake_date(self,
                   columns: Union[str, List[str]],
                   pattern: str = '%Y-%m-%d',
-                  end_datetime: Union[datetime.date, datetime.datetime, datetime.timedelta, str, int, NoneType] = None):
+                  end_datetime: Union[datetime.date, datetime.datetime, datetime.timedelta, str, int, None] = None,
+                  locale: Optional[Union[str, List[str]]] = ['en_US'],
+                  inplace: Optional[bool] = True):
         '''
         Replace Column's values with synthetic dates between January 1, 1970 and now.
         Based on faker `date()` method
@@ -519,7 +522,9 @@ class dfAnonymizer(object):
         ----------
             columns : Union[str, List[str]]
             pattern : str, default  '%Y-%m-%d'
-            end_datetime : Union[datetime.date, datetime.datetime, datetime.timedelta, str, int, NoneType], default None
+            end_datetime : Union[datetime.date, datetime.datetime, datetime.timedelta, str, int, None], default None
+            locale : str or List[str], default ['en_US']
+            inplace : bool, default True
 
         Returns
         ----------
@@ -547,16 +552,16 @@ class dfAnonymizer(object):
             temp = pd.DataFrame()
             
             for column in columns:
-                ser = self._df[columns].apply(lambda x: pd.to_datetime(fake.date(pattern=pattern, end_datetime=end_datetime)))
+                ser = self._df[column].apply(lambda x: pd.to_datetime(fake.date(pattern=pattern, end_datetime=end_datetime)))
 
                 if inplace:
-                    if columns in self.anonymized_columns:
+                    if column in self.anonymized_columns:
                         print('Column Already Anonymized!')
                     else:
-                        self._df[columns] = ser
-                        self.anonymized_columns.append(columns)
-                        self.unanonymized_columns.remove(columns)
-                        self._methods_applied[columns] = self._synthetic_data
+                        self._df[column] = ser
+                        self.anonymized_columns.append(column)
+                        self.unanonymized_columns.remove(column)
+                        self._methods_applied[column] = self._synthetic_data
                 else:
                     temp[column] = ser
             if not inplace:
