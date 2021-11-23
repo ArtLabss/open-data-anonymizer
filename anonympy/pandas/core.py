@@ -201,7 +201,7 @@ class dfAnonymizer(object):
 
 
     def fake_data(self,
-                  methods: Union[str, Dict[str, str]],
+                  methods: Dict[str, str],
                   locale: Optional[Union[str, List[str]]] = ['en_US'],
                   inplace: Optional[bool] = True):
         '''
@@ -209,7 +209,7 @@ class dfAnonymizer(object):
 
         Parameters
         ----------
-            methods : Dict[str, str]
+            methods : Dict[str, str], column name passed as a key and method name as a value
             locale : str or List[str], default ['en_US']
             inplace : bool, default True
 
@@ -217,24 +217,17 @@ class dfAnonymizer(object):
         ----------
             faked : None if inplace = True, else pandas Series or pandas DataFrame 
         '''
-        if isinstance(methods, str):
-            if inplace:
+        if inplace:
+            for column, method in methods.items():
                 self._fake_column(column, method, inplace = True, locale = locale)
-            else:
-                faked = self._fake_column(column, method, inplace = False, locale = locale)
-                return faked
         else:
-            if inplace:
-                for column, method in methods.items():
-                    self._fake_column(column, method, inplace = True, locale = locale)
-            else:
-                temp = pd.DataFrame()
-                for column, method in methods.items():
-                    faked = self._fake_column(column, method, inplace = False, locale = locale)
-                    temp[column] = faked
-                return temp
+            temp = pd.DataFrame()
+            for column, method in methods.items():
+                faked = self._fake_column(column, method, inplace = False, locale = locale)
+                temp[column] = faked
+            return temp
+
                 
-        
     def _fake_data_auto(self,
                         locale: Optional[Union[str, List[str]]] = ['en_US'],
                         inplace: Optional[bool]= True):
@@ -292,7 +285,9 @@ class dfAnonymizer(object):
             ser: pandas Series or pandas DataFrame with uniform random noise added
         '''
         # If a single column is passed
-        if isinstance(columns, str):
+        if isinstance(columns, str) or (len(columns) == 1 and isinstance(columns, list)):
+            if isinstance(columns, list):
+                columns = columns[0]
             dtype = self._dtype_checker(columns)
             noise = NumericPerturbation(dtype = dtype, min = MIN, max = MAX)
             ser = noise(self._df[columns].copy()).astype(dtype)
@@ -355,7 +350,9 @@ class dfAnonymizer(object):
             ser: pandas Series or pandas DataFrame
         '''
         # if a single column is passed
-        if isinstance(columns, str):
+        if isinstance(columns, str) or (len(columns) == 1 and isinstance(columns, list)):
+            if isinstance(columns, list):
+                columns = columns[0]
             noise = DatePerturbation(frequency = frequency, min = MIN, max = MAX)
             ser = noise(self._df[columns].copy())
 
@@ -401,16 +398,18 @@ class dfAnonymizer(object):
 
         Parameters
         ----------
-        columns : Union[str, List[str]]
-        precision : int, default None
-        inplace : bool, default True
+            columns : Union[str, List[str]]
+            precision : int, default None
+            inplace : bool, default True
 
         Returns
         ----------
             ser: pandas Series or pandas DataFrame
         '''
         # if a single column is passed
-        if isinstance(columns, str):
+        if isinstance(columns, str) or (len(columns) == 1 and isinstance(columns, list)):
+            if isinstance(columns, list):
+                columns = columns[0]
             dtype = self._dtype_checker(columns)
             precision = len(str(int(self._df[columns].mean()))) - 1
             rounding = NumericRounding(dtype = dtype, precision = -precision)
@@ -459,18 +458,20 @@ class dfAnonymizer(object):
         Maps a string to a token (hexadecimal string) to obfuscate it.
 
         Parameters
-            ----------
+        ----------
             columns : Union[str, List[str]]
             max_token_len : int, default 10
             key : str, default b"my secret"
             inplace : bool, default True
 
-            Returns
-            ----------
-                ser: pandas Series or pandas DataFrame
+        Returns
+        ----------
+                ser : pandas Series or pandas DataFrame
         '''
         # if a single column is passed
-        if isinstance(columns, str):
+        if isinstance(columns, str) or (len(columns) == 1 and isinstance(columns, list)):
+            if isinstance(columns, list):
+                columns = columns[0]
             tokenize = Tokenizer(max_token_len = max_token_len, key = b"my secret")
             ser = tokenize(self._df[columns])
 
@@ -504,8 +505,64 @@ class dfAnonymizer(object):
                     temp[column] = ser
             if not inplace:
                 return temp
-                
 
+
+    def fake_date(self,
+                  columns: Union[str, List[str]],
+                  pattern: str = '%Y-%m-%d',
+                  end_datetime: Union[datetime.date, datetime.datetime, datetime.timedelta, str, int, NoneType] = None):
+        '''
+        Replace Column's values with synthetic dates between January 1, 1970 and now.
+        Based on faker `date()` method
+
+        Parameters
+        ----------
+            columns : Union[str, List[str]]
+            pattern : str, default  '%Y-%m-%d'
+            end_datetime : Union[datetime.date, datetime.datetime, datetime.timedelta, str, int, NoneType], default None
+
+        Returns
+        ----------
+            ser : pandas Series or pandas DataFrame
+        '''
+        fake = Faker(locale=locale)
+
+        # if a single column is passed 
+        if isinstance(columns, str) or (len(columns) == 1 and isinstance(columns, list)):
+            if isinstance(columns, list):
+                columns = columns[0]
+            ser = self._df[columns].apply(lambda x: pd.to_datetime(fake.date(pattern=pattern, end_datetime=end_datetime)))
+            if inplace:
+                if columns in self.anonymized_columns:
+                    print('Column Already Anonymized!')
+                else:
+                    self._df[columns] = ser
+                    self.anonymized_columns.append(columns)
+                    self.unanonymized_columns.remove(columns)
+                    self._methods_applied[columns] = self._synthetic_data
+            else:
+                return ser
+        # if a list of columns is passed 
+        else:
+            temp = pd.DataFrame()
+            
+            for column in columns:
+                ser = self._df[columns].apply(lambda x: pd.to_datetime(fake.date(pattern=pattern, end_datetime=end_datetime)))
+
+                if inplace:
+                    if columns in self.anonymized_columns:
+                        print('Column Already Anonymized!')
+                    else:
+                        self._df[columns] = ser
+                        self.anonymized_columns.append(columns)
+                        self.unanonymized_columns.remove(columns)
+                        self._methods_applied[columns] = self._synthetic_data
+                else:
+                    temp[column] = ser
+            if not inplace:
+                return temp
+        
+        
     def info(self):
         '''
         Print a summary of the a DataFrame, which columns have been anonymized and which haven't.
