@@ -85,6 +85,11 @@ class dfAnonymizer(object):
         self.anonymized_columns = []
         self.unanonymized_columns = self._df.columns.to_list()
 
+    def __str__(self):
+        return self._info().draw()
+
+    def __repr__(self):
+        return self._info().draw()
 
     def get_numeric_columns(self) -> List:
         '''
@@ -571,7 +576,7 @@ class dfAnonymizer(object):
                 return temp
         
         
-    def info(self):
+    def _info(self):
         '''
         Print a summary of the a DataFrame, which columns have been anonymized and which haven't.
 
@@ -591,10 +596,10 @@ class dfAnonymizer(object):
 
         t.add_rows([[header], [row1], [row2]])
 
-        print(t.draw())
+        return t
 
 
-    def info2(self):
+    def info(self):
         '''
         Print a summary of the a DataFrame.
         `status = 1 ` - anonymized
