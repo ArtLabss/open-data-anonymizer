@@ -201,7 +201,7 @@ class dfAnonymizer(object):
             return faked
 
 
-    def fake_data(self,
+    def categorical_fake(self,
                   methods: Dict[str, str],
                   locale: Optional[Union[str, List[str]]] = ['en_US'],
                   inplace: Optional[bool] = True):
@@ -249,11 +249,14 @@ class dfAnonymizer(object):
         
         temp = pd.DataFrame()
         
-        for column in self.unanonymized_columns:
+        for column in self.columns:
             func = column.strip().lower()
             if func in fake_methods:
                 if inplace:
-                    self._fake_column(column, func, inplace = True, locale = locale)
+                    if column in self.anonymized_columns:
+                        print(f'{column} column already anonymized!')
+                    else:
+                        self._fake_column(column, func, inplace = True, locale = locale)
                 else:
                     temp[column] = self._fake_column(column, func, inplace = False, locale = locale)
         if not inplace:
@@ -450,7 +453,7 @@ class dfAnonymizer(object):
                 return temp
 
 
-    def tokenizer(self,
+    def categorical_tokenizer(self,
                   columns: Union[str, List[str]],
                   max_token_len: int = 10,
                   key: str = b"my secret",
@@ -508,7 +511,7 @@ class dfAnonymizer(object):
                 return temp
 
 
-    def fake_date(self,
+    def datetime_fake(self,
                   columns: Union[str, List[str]],
                   pattern: str = '%Y-%m-%d',
                   end_datetime: Union[datetime.date, datetime.datetime, datetime.timedelta, str, int, None] = None,
