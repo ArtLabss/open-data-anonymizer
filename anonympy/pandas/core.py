@@ -196,7 +196,7 @@ class dfAnonymizer(object):
         faked = self._df[column].apply(lambda x: method())
         if inplace:
             if column in self.anonymized_columns:
-                print('Column Already Anonymized!')
+                print(f'`{column}` column already anonymized!')
             else:
                 self._df[column] = faked
                 self.unanonymized_columns.remove(column)
@@ -259,7 +259,7 @@ class dfAnonymizer(object):
             if func in fake_methods:
                 if inplace:
                     if column in self.anonymized_columns:
-                        print(f'{column} column already anonymized!')
+                        print(f'`{column}` column already anonymized!')
                     else:
                         self._fake_column(column, func, inplace = True, locale = locale)
                 else:
@@ -303,7 +303,7 @@ class dfAnonymizer(object):
 
             if inplace:
                 if columns in self.anonymized_columns:
-                     print('Column Already Anonymized!')
+                    print(f'`{columns}` column already anonymized!')
                 else:
                     self._df[columns] = ser
                     self.anonymized_columns.append(columns)
@@ -322,7 +322,7 @@ class dfAnonymizer(object):
 
                 if inplace:
                     if column in self.anonymized_columns:
-                         print('Column Already Anonymized!')
+                         print(f'`{column}` column already anonymized!')
                     else:
                         self._df[column] = ser
                         self.anonymized_columns.append(column)
@@ -367,7 +367,7 @@ class dfAnonymizer(object):
 
             if inplace:
                 if columns in self.anonymized_columns:
-                    print('Column Already Anonymized!')
+                    print(f'`{columns}` column already anonymized!')
                 else:
                     self._df[columns] = ser
                     self.anonymized_columns.append(columns)
@@ -385,7 +385,7 @@ class dfAnonymizer(object):
 
                 if inplace:
                         if column in self.anonymized_columns:
-                            print('Column Already Anonymized!')
+                            print(f'`{column}` column already anonymized!')
                         else:
                             self._df[column] = ser
                             self.anonymized_columns.append(column)
@@ -426,7 +426,7 @@ class dfAnonymizer(object):
 
             if inplace:
                 if columns in self.anonymized_columns:
-                    print('Column Already Anonymized!')
+                    print(f'`{columns}` column already anonymized!')
                 else:
                     self._df[columns] =  ser
                     self.anonymized_columns.append(columns)
@@ -446,7 +446,7 @@ class dfAnonymizer(object):
 
                 if inplace:
                     if column in self.anonymized_columns:
-                        print('Column Already Anonymized!')
+                        print(f'`{column}` column already anonymized!')
                     else:
                         self._df[column] = ser
                         self.anonymized_columns.append(column)
@@ -486,7 +486,7 @@ class dfAnonymizer(object):
 
             if inplace:
                 if columns in self.anonymized_columns:
-                    print('Column Already Anonymized!')
+                    print(f'`{columns}` column already anonymized!')
                 else:
                     self._df[columns] = ser
                     self.anonymized_columns.append(columns)
@@ -504,7 +504,7 @@ class dfAnonymizer(object):
 
                 if inplace:
                     if column in self.anonymized_columns:
-                        print('Column Already Anonymized!')
+                        print(f'`{column}` column already anonymized!')
                     else:
                         self._df[column] = ser
                         self.anonymized_columns.append(column)
@@ -547,7 +547,7 @@ class dfAnonymizer(object):
             ser = self._df[columns].apply(lambda x: pd.to_datetime(fake.date(pattern=pattern, end_datetime=end_datetime)))
             if inplace:
                 if columns in self.anonymized_columns:
-                    print('Column Already Anonymized!')
+                    print(f'`{columns}` column already anonymized!')
                 else:
                     self._df[columns] = ser
                     self.anonymized_columns.append(columns)
@@ -564,7 +564,7 @@ class dfAnonymizer(object):
 
                 if inplace:
                     if column in self.anonymized_columns:
-                        print('Column Already Anonymized!')
+                        print(f'`{column}` column already anonymized!')
                     else:
                         self._df[column] = ser
                         self.anonymized_columns.append(column)
@@ -574,7 +574,54 @@ class dfAnonymizer(object):
                     temp[column] = ser
             if not inplace:
                 return temp
-        
+
+
+    def column_suppresion(self,
+                          columns: Union[str, List[str]],
+                          inplace: bool = True):
+        '''
+        Redact a column (drop)
+        Based on pandas drop method 
+
+        Parameters
+        ----------
+            columns : Union[str, List[str]]
+            inplace : bool, default True
+
+        Returns
+        ----------
+            ser : None if inplace = True, else pandas Series 
+        '''
+        # if single column is passed
+        if isinstance(columns, str) or (len(columns) == 1 and isinstance(columns, list)):
+            if isinstance(columns, list):
+                columns = columns[0]
+
+            if inplace:
+                if columns in self.anonymized_columns:
+                    print(f'`{columns}` column already anonymized!')
+                else:
+                    self._df.drop(columns, axis = 1, inplace = True)
+                    self.anonymized_columns.append(columns)
+                    self.unanonymized_columns.remove(columns)
+                    self._methods_applied[columns] = self._drop
+            else:
+                return self._df.drop(columns, axis = 1, inplace = False)
+
+        # if a list of columns is passed
+        else:
+            if inplace:
+                for column in columns:
+                    if column in self.anonymized_columns:
+                        print(f'`{column}` column already anonymized!')
+                    else:
+                        self._df.drop(column, axis = 1, inplace = True)
+                        self.anonymized_columns.append(column)
+                        self.unanonymized_columns.remove(column)
+                        self._methods_applied[column] = self._drop
+            else:
+                return self._df.drop(columns, axis = 1, inplace = False)
+                
         
     def _info(self):
         '''
@@ -637,6 +684,3 @@ class dfAnonymizer(object):
         DataFrame object
         '''
         return self._df.copy()
-    
-        
-        
