@@ -27,7 +27,7 @@ print(df.head())
 
 # Define the transformations
 tokenize = Tokenizer(max_token_len=10, key=b"my secret")
-perturb_numric = NumericPerturbation(dtype=dtypes.Integer, min=-10, max=10)
+perturb_numric = NumericPerturbation(dtype=dtypes.Integer, min=-100, max=100)
 perturb_date = DatePerturbation(frequency=("YEAR", "MONTH", "DAY"), min=(-10, -5, -5), max=(10, 5, 5))
 round_numeric = NumericRounding(dtype=dtypes.Float, precision=-3)
 redact_column = ColumnRedact(columns="ssn")
