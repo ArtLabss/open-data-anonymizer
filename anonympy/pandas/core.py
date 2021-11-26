@@ -580,7 +580,7 @@ class dfAnonymizer(object):
                 return temp
 
 
-    def column_suppresion(self,
+    def column_suppression(self,
                           columns: Union[str, List[str]],
                           inplace: bool = True):
         '''
@@ -626,35 +626,63 @@ class dfAnonymizer(object):
             else:
                 return self._df.drop(columns, axis = 1, inplace = False)
 
+
     def numeric_binning(self,
-                       column: str,
-                       bins: int = 4,
-                       inplace: bool = True):
+                        columns: Union[str, List[str]],
+                        bins: int = 4,
+                        inplace: bool = True):
         '''
         Bin values into discrete intervals.
         Based on pandas `cut` method 
 
         Parameters
         ----------
-            column : str
+            columns : Union[str, List[str]]
             bins : int, default 4 
             inplace : bool, default True
 
         Returns
         ----------
-            ser : None if inplace = True, else pandas Series 
+            ser : None if inplace = True, else pandas Series or pandas DataFrame
         '''
-        if inplace:
-            if column in self.anonymized_columns:
-                print(f'`{column}` column already anonymized!')
-            else:
-                self._df[column] = pd.cut(self._df[column], bins=bins)
-                self.anonymized_columns.append(column)
-                self.unanonymized_columns.remove(column)
-                self._methods_applied[column] = self._bin
-        else:
-            return pd.cut(self._df[column], bins=bins)
+        # if a single column is passed 
+        if isinstance(columns, str) or (len(columns) == 1 and isinstance(columns, list)):
+            if isinstance(columns, list):
+                columns = columns[0]
 
+            ser = pd.cut(self._df[columns], bins=bins, precision=0)
+    
+            if inplace:
+                if columns in self.anonymized_columns:
+                    print(f'`{columns}` column already anonymized!')
+                else:
+                    self._df[columns] = ser
+                    self.anonymized_columns.append(columns)
+                    self.unanonymized_columns.remove(columns)
+                    self._methods_applied[columns] = self._bin
+            else:
+                return ser
+            
+        # if a list of columns is passed 
+        else:
+            temp = pd.DataFrame()
+
+            for column in columns:
+                ser = pd.cut(self._df[column], bins=bins, precision=0)
+
+                if inplace:
+                    if column in self.anonymized_columns:
+                        print(f'`{column}` column already anonymized!')
+                    else:
+                        self._df[column] = ser
+                        self.anonymized_columns.append(column)
+                        self.unanonymized_columns.remove(column)
+                        self._methods_applied[column] = self._bin
+                else:
+                    temp[column] = ser
+
+            if not inplace:
+                return temp
 
 
     def categorical_resampling(self,
@@ -672,10 +700,47 @@ class dfAnonymizer(object):
         ----------
             ser : None if inplace = True, else pandas Series or pandas DataFrame
         '''
-        
-        
+        # if a single column is passed 
+        if isinstance(columns, str) or (len(columns) == 1 and isinstance(columns, list)):
+            if isinstance(columns, list):
+                columns = columns[0]
+
+            counts = self._df[columns].value_counts(normalize = True)
+
+            if inplace:
+                if columns in self.anonymized_columns:
+                    print(f'`{columns}` column already anonymized!')
+                else:
+                    self._df[columns] = np.random.choice(counts.index, p = counts.values, size = len(self._df))
+                    self.anonymized_columns.append(columns)
+                    self.unanonymized_columns.remove(columns)
+                    self._methods_applied[columns] = self._sample
+            else:
+                return pd.Series(np.random.choice(counts.index, p = counts.values, size = len(self._df)))
+
+        # if a list of columns is passed
+        else:
+            temp = pd.DataFrame()
+
+            for column in columns:
+                counts = self._df[column].value_counts(normalize = True)
+
+                if inplace:
+                    if column in self.anonymized_columns:
+                        print(f'`{column}` column already anonymized!')
+                    else:
+                        self._df[column] = np.random.choice(counts.index, p = counts.values, size = len(self._df))
+                        self.anonymized_columns.append(column)
+                        self.unanonymized_columns.remove(column)
+                        self._methods_applied[column] = self._sample
+                else:
+                    temp[column] = np.random.choice(counts.index, p = counts.values, size = len(self._df))
+            if not inplace:
+                return temp
+
+
+            
                 
-        
     def _info(self):
         '''
         Print a summary of the a DataFrame, which columns have been anonymized and which haven't.
