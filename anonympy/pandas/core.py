@@ -68,28 +68,32 @@ class dfAnonymizer(object):
         self._numeric_perturbation = 'Numeric Perturbation'
         self._datetime_perturbation = 'Datetime Perturbation'
         self._round = 'Generalization - Rounding'
-        self._bin = 'Generalization - Binning '
+        self._bin = 'Generalization - Binning'
+        self._drop = 'Suppression (drop)'
         self._sample = 'Resampling'
         self._PCA = 'Masking - PCA'
-        self._drop = 'Suppression (drop)'
+        
         
         if numeric_columns == None:
-            self._numeric_columns = self._df.select_dtypes(exclude=['object', 'datetime', 'category']).columns.tolist()
+            self._numeric_columns = self.get_numeric_columns()
         if categorical_columns == None:
-            self._categorical_columns = self._df.select_dtypes(include=['object', 'category']).columns.tolist()
+            self._categorical_columns = self.get_categorical_columns()
         if datetime_columns == None:
-            self._datetime_columns = self._df.select_dtypes(include=['datetime']).columns.tolist()
+            self._datetime_columns = self.get_datetime_columns()
             
         # Public Attributes
         self.columns = self._df.columns.tolist()
         self.anonymized_columns = []
         self.unanonymized_columns = self._df.columns.to_list()
 
+
     def __str__(self):
         return self._info().draw()
 
+
     def __repr__(self):
         return self._info().draw()
+
 
     def get_numeric_columns(self) -> List:
         '''
@@ -100,7 +104,7 @@ class dfAnonymizer(object):
             List of columns with numeric values 
         '''
         
-        return self._numeric_columns
+        return self._df.select_dtypes('number').columns.tolist()
 
 
     def get_categorical_columns(self) -> List:
@@ -112,7 +116,7 @@ class dfAnonymizer(object):
             List of columns with categorical values 
         '''
         
-        return self._categorical_columns
+        return self._df.select_dtypes(include=['object', 'category']).columns.tolist()
 
 
     def get_datetime_columns(self) -> List:
@@ -124,7 +128,7 @@ class dfAnonymizer(object):
             List of columns with datetime values 
         '''
         
-        return self._datetime_columns
+        return self._df.select_dtypes(include=['datetime']).columns.tolist()
 
 
     def _dtype_checker(self,
@@ -581,7 +585,7 @@ class dfAnonymizer(object):
                           inplace: bool = True):
         '''
         Redact a column (drop)
-        Based on pandas drop method 
+        Based on pandas `drop` method 
 
         Parameters
         ----------
@@ -590,7 +594,7 @@ class dfAnonymizer(object):
 
         Returns
         ----------
-            ser : None if inplace = True, else pandas Series 
+            ser : None if inplace = True, else pandas Series or pandas DataFrame
         '''
         # if single column is passed
         if isinstance(columns, str) or (len(columns) == 1 and isinstance(columns, list)):
@@ -621,6 +625,55 @@ class dfAnonymizer(object):
                         self._methods_applied[column] = self._drop
             else:
                 return self._df.drop(columns, axis = 1, inplace = False)
+
+    def numeric_binning(self,
+                       column: str,
+                       bins: int = 4,
+                       inplace: bool = True):
+        '''
+        Bin values into discrete intervals.
+        Based on pandas `cut` method 
+
+        Parameters
+        ----------
+            column : str
+            bins : int, default 4 
+            inplace : bool, default True
+
+        Returns
+        ----------
+            ser : None if inplace = True, else pandas Series 
+        '''
+        if inplace:
+            if column in self.anonymized_columns:
+                print(f'`{column}` column already anonymized!')
+            else:
+                self._df[column] = pd.cut(self._df[column], bins=bins)
+                self.anonymized_columns.append(column)
+                self.unanonymized_columns.remove(column)
+                self._methods_applied[column] = self._bin
+        else:
+            return pd.cut(self._df[column], bins=bins)
+
+
+
+    def categorical_resampling(self,
+                               columns: Union[str, List[str]],
+                               inplace: Optional[bool] = True):
+        '''
+        Sampling from the same distribution
+
+        Parameters
+        ----------
+            columns : Union[str, List[str]]
+            inplace : bool, default True
+
+        Returns
+        ----------
+            ser : None if inplace = True, else pandas Series or pandas DataFrame
+        '''
+        
+        
                 
         
     def _info(self):
