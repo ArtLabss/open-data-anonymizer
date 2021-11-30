@@ -169,7 +169,7 @@ class dfAnonymizer(object):
                   inplace: Optional[bool] = True):
         '''
         Anonymize all possible columns using methods:
-            - Numeric Columns => Pertrubation and Noise
+            - Numeric Columns => Rounding 
             - Categorical Columns => Synthetic data, Resampling & Tokenazation
             - Datetime columsn => Synthetic dates & Noise
 
@@ -186,14 +186,17 @@ class dfAnonymizer(object):
         '''
         
         if methods == None:
-            # anonymize using fake data if any column's name is similar to Faker's method (print(fake_methods) for all available methods)
             if inplace:
-                self._fake_data_auto(locale = locale, inplace = inplace)
-
+                self._fake_data_auto(locale = locale, inplace = inplace)   # anonymize using fake data if any column's name is similar to Faker's method (print(fake_methods) for all available methods)
+            
                 for column in self.unanonymized_columns:
-                    if column in self._numeric_columns:
-                        # if column is int32 or float32 then thiss otherwise this 
 
+                    if column in self._numeric_columns:
+                        try:
+                            self.numeric_rounding(column)
+                        except:
+                            pass
+                                            
                     if column in self._categorical_columns:
                         ...
                         
@@ -386,8 +389,8 @@ class dfAnonymizer(object):
         ----------
             columns : Union[str, List[str]]
             frequency : Union[str, Tuple[str, ...]] , default  ("YEAR", "MONTH", "DAY")
-            min : Union[int, Tuple[int, ...]], default (-10, -5, -5)
-            max : Union[int, Tuple[int, ...]], default (10, 5, 5)
+            MIN : Union[int, Tuple[int, ...]], default (-10, -5, -5)
+            MAX : Union[int, Tuple[int, ...]], default (10, 5, 5)
             seed : int, default None
             inplace : bool, default True
 
