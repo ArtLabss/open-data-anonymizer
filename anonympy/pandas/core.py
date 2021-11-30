@@ -165,14 +165,47 @@ class dfAnonymizer(object):
 
     def anonymize(self,
                   methods: Optional[Dict[str, str]] = None,
+                  locale: Optional[Union[str, List[str]]] = ['en_US'],
                   inplace: Optional[bool] = True):
         '''
+        Anonymize all possible columns using methods:
+            - Numeric Columns => Pertrubation and Noise
+            - Categorical Columns => Synthetic data, Resampling & Tokenazation
+            - Datetime columsn => Synthetic dates & Noise
 
+        Parameters
+        ----------
+        methods : Optional[Dict[str, str]], default None
+        locale : str or List[str], default ['en_US']
+        inplace : Optional[bool], default True
+
+        Returns
+        ----------
+            ser : if inplace = False, anonymized pandas Series or pandas DataFrame will be returned,
+                  otherwise None
         '''
         
         if methods == None:
-            pass
+            # anonymize using fake data if any column's name is similar to Faker's method (print(fake_methods) for all available methods)
+            if inplace:
+                self._fake_data_auto(locale = locale, inplace = inplace)
 
+                for column in self.unanonymized_columns:
+                    if column in self._numeric_columns:
+                        # if column is int32 or float32 then thiss otherwise this 
+
+                    if column in self._categorical_columns:
+                        ...
+                        
+                    if column in self._datetime_columns:
+                        
+                    
+
+            else:
+                temp = self._fake_data_auto(locale = locale, inplace = inplace)
+
+            
+            
 
 
     def _fake_column(self,
