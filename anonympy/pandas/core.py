@@ -19,6 +19,7 @@ from cape_privacy.pandas.transformations import Tokenizer
 from faker import Faker
 from utils import fake_methods
 
+from sklearn.decomposition import PCA
 
 df = pd.DataFrame({
         "name": ["alice", "bob"],
@@ -69,9 +70,9 @@ class dfAnonymizer(object):
         self._datetime_perturbation = 'Datetime Perturbation'
         self._round = 'Generalization - Rounding'
         self._bin = 'Generalization - Binning'
-        self._drop = 'Suppression (drop)'
+        self._drop = 'Column Suppression'
         self._sample = 'Resampling'
-        self._PCA = 'Masking - PCA'
+        self._PCA = 'PCA Masking'
         
         
         if numeric_columns == None:
@@ -163,16 +164,52 @@ class dfAnonymizer(object):
         
 
 
-    def anonymize(self,
-                  methods: Optional[Dict[str, str]] = None,
-                  inplace: Optional[bool] = True):
-        '''
-
-        '''
-        
-        if methods == None:
-            pass
-
+##    def anonymize(self,
+##                  methods: Optional[Dict[str, str]] = None,
+##                  locale: Optional[Union[str, List[str]]] = ['en_US'],
+##                  inplace: Optional[bool] = True):
+##        '''
+##        Anonymize all possible columns using methods:
+##            - Numeric Columns => Rounding 
+##            - Categorical Columns => Synthetic data, Resampling & Tokenazation
+##            - Datetime columsn => Synthetic dates & Noise
+##
+##        Parameters
+##        ----------
+##        methods : Optional[Dict[str, str]], default None
+##        locale : str or List[str], default ['en_US']
+##        inplace : Optional[bool], default True
+##
+##        Returns
+##        ----------
+##            ser : if inplace = False, anonymized pandas Series or pandas DataFrame will be returned,
+##                  otherwise None
+##        '''
+##        
+##        if methods == None:
+##            if inplace:
+##                self._fake_data_auto(locale = locale, inplace = inplace)   # anonymize using fake data if any column's name is similar to Faker's method (print(fake_methods) for all available methods)
+##            
+##                for column in self.unanonymized_columns:
+##
+##                    if column in self._numeric_columns:
+##                        try:
+##                            self.numeric_rounding(column)
+##                        except:
+##                            pass
+##                                            
+##                    if column in self._categorical_columns:
+##                        ...
+##                        
+##                    if column in self._datetime_columns:
+##                        
+##                    
+##
+##            else:
+##                temp = self._fake_data_auto(locale = locale, inplace = inplace)
+##
+##            
+            
 
 
     def _fake_column(self,
@@ -283,7 +320,7 @@ class dfAnonymizer(object):
                       inplace: Optional[bool] = True):
         '''
         Add uniform random noise to a numeric Pandas series.
-        Based on cape-privacy's pandas.NumericPerturbation 
+        Based on cape-privacy's NumericPerturbation function
 
         Parameters
         ----------
@@ -340,21 +377,21 @@ class dfAnonymizer(object):
 
     def datetime_noise(self,
                        columns: Union[str, List[str]],
-                       frequency: Union[str, Tuple[str, ...]]  = ("YEAR", "MONTH", "DAY"),
+                       frequency: Union[str, Tuple[str, ...]]  = ("MONTH", "DAY"),
                        MIN:  Union[int, Tuple[int, ...]] = (-10, -5, -5),
                        MAX:  Union[int, Tuple[int, ...]] = (10, 5, 5),
                        seed: Optional[int] = None,
                        inplace: Optional[bool] = True):
         '''
         Add uniform random noise to a Pandas series of timestamps
-        Based on cape-privacy's pandas.DatePerturbation 
+        Based on cape-privacy's DatePerturbation function
 
         Parameters
         ----------
             columns : Union[str, List[str]]
-            frequency : Union[str, Tuple[str, ...]] , default  ("YEAR", "MONTH", "DAY")
-            min : Union[int, Tuple[int, ...]], default (-10, -5, -5)
-            max : Union[int, Tuple[int, ...]], default (10, 5, 5)
+            frequency : Union[str, Tuple[str, ...]] , default ("MONTH", "DAY")
+            MIN : Union[int, Tuple[int, ...]], default (-10, -5, -5)
+            MAX : Union[int, Tuple[int, ...]], default (10, 5, 5)
             seed : int, default None
             inplace : bool, default True
 
@@ -407,7 +444,7 @@ class dfAnonymizer(object):
                          inplace: bool = True):
         '''
         Round each value in the Pandas Series to the given number
-        Based on cape-privacy's pandas.NumericRounding
+        Based on cape-privacy's NumericRounding
 
         Parameters
         ----------
@@ -461,6 +498,59 @@ class dfAnonymizer(object):
             if not inplace:
                 return temp
 
+    
+    def numeric_masking(self,
+                        columns: Union[str, List[str]],
+                        inplace: bool = True):
+        '''
+        Apply PCA masking to a column/columns
+        Based on sklearn's PCA function
+
+        Parameters
+        ----------
+            columns : Union[str, List[str]]
+            inplace : bool, default True
+
+      Returns
+      ----------
+            ser : pandas Series or pandas DataFrame
+        '''
+        # if a single column is passed
+        if isinstance(columns, str) or (len(columns) == 1 and isinstance(columns, list)):
+            if isinstance(columns, list):
+                columns = columns[0]
+            pca = PCA(n_components=1)
+            ser = pd.Series(pca.fit_transform(self._df[columns]))
+
+            if inplace:
+                if columns in self.anonymized_columns:
+                    print(f'`{columns}` column already anonymized!')
+                else:
+                    self._df[columns] = ser
+                    self.anonymized_columns.append(columns)
+                    self.unanonymized_columns.remove(columns)
+                    self._methods_applied[columns] = self._PCA
+            else:
+                return ser
+        # if a list of columns is passed
+        else:
+            if not inplace:
+                 pca = PCA(n_components=len(columns))
+                 return pd.DataFrame(pca.fit_transform(self._df[columns]), columns=columns)
+
+            else:
+                for column in columns:
+                    if column in self.anonymized_columns:
+                        print(f'`{column}` column already anonymized!')
+                        columns.remove(column)
+                    else:
+                        self.anonymized_columns.append(column)
+                        self.unanonymized_columns.remove(column)
+                        self._methods_applied[column] = self._PCA
+                        
+                pca = PCA(n_components=len(columns))
+                self._df[columns] = pca.fit_transform(self._df[columns])
+
 
     def categorical_tokenizer(self,
                   columns: Union[str, List[str]],
@@ -479,7 +569,7 @@ class dfAnonymizer(object):
 
         Returns
         ----------
-                ser : pandas Series or pandas DataFrame
+            ser : pandas Series or pandas DataFrame
         '''
         # if a single column is passed
         if isinstance(columns, str) or (len(columns) == 1 and isinstance(columns, list)):
