@@ -325,8 +325,8 @@ class dfAnonymizer(object):
         Parameters
         ----------
             columns : Union[str, List[str]]
-            min : (int, float), default -10
-            max : (int, float), default 10 
+            MIN : (int, float), default -10
+            MAX : (int, float), default 10 
             seed : int, default None
             inplace : bool, default True
 
