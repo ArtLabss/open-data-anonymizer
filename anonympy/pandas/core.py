@@ -163,53 +163,44 @@ class dfAnonymizer(object):
             return None
         
 
+    def anonymize(self,
+                  methods: Optional[Dict[str, str]] = None,
+                  locale: Optional[Union[str, List[str]]] = ['en_US'],
+                  inplace: Optional[bool] = True):
+        '''
+        Anonymize all possible columns using methods:
+            - Numeric Columns => Rounding 
+            - Categorical Columns => Synthetic data & Tokenazation
+            - Datetime columsn => Synthetic dates & Noise
 
-##    def anonymize(self,
-##                  methods: Optional[Dict[str, str]] = None,
-##                  locale: Optional[Union[str, List[str]]] = ['en_US'],
-##                  inplace: Optional[bool] = True):
-##        '''
-##        Anonymize all possible columns using methods:
-##            - Numeric Columns => Rounding 
-##            - Categorical Columns => Synthetic data, Resampling & Tokenazation
-##            - Datetime columsn => Synthetic dates & Noise
-##
-##        Parameters
-##        ----------
-##        methods : Optional[Dict[str, str]], default None
-##        locale : str or List[str], default ['en_US']
-##        inplace : Optional[bool], default True
-##
-##        Returns
-##        ----------
-##            ser : if inplace = False, anonymized pandas Series or pandas DataFrame will be returned,
-##                  otherwise None
-##        '''
-##        
-##        if methods == None:
-##            if inplace:
-##                self._fake_data_auto(locale = locale, inplace = inplace)   # anonymize using fake data if any column's name is similar to Faker's method (print(fake_methods) for all available methods)
-##            
-##                for column in self.unanonymized_columns:
-##
-##                    if column in self._numeric_columns:
-##                        try:
-##                            self.numeric_rounding(column)
-##                        except:
-##                            pass
-##                                            
-##                    if column in self._categorical_columns:
-##                        ...
-##                        
-##                    if column in self._datetime_columns:
-##                        
-##                    
-##
-##            else:
-##                temp = self._fake_data_auto(locale = locale, inplace = inplace)
-##
-##            
-            
+        Parameters
+        ----------
+        methods : Optional[Dict[str, str]], default None
+        locale : str or List[str], default ['en_US']
+
+        Returns
+        ----------
+            ser : anonymized pandas Series or pandas DataFrame will be returned
+        '''
+        
+        if methods == None:
+            # try synthetic data 
+            self._fake_data_auto(locale = locale)   # anonymize using fake data if any column's name is similar to Faker's method (print(fake_methods) for all available methods)
+            # if there are still columns left unanonymized 
+            if self.unanonymized_columns:
+                for column in self.unanonymized_columns.copy():
+                    
+                    if column in self._numeric_columns:
+                        self.numeric_rounding(column)
+                        
+                    elif column in self._categorical_columns:
+                        self.categorical_tokenizer(column)
+                    
+                    elif column in self._datetime_columns:
+                        self.datetime_noise(column)
+        else:
+            pass
+                    
 
 
     def _fake_column(self,
@@ -289,8 +280,7 @@ class dfAnonymizer(object):
 
         Returns
         ----------
-            None if inplace = True, else an anonymized pandas Series or
-            pandas DataFrame depending on the number of columns.
+            None if inplace = True, else an anonymized pandas Series or pandas DataFrame
         '''
         
         temp = pd.DataFrame()
@@ -308,8 +298,10 @@ class dfAnonymizer(object):
         if not inplace:
             if len(temp.columns) > 1:
                 return temp
-            else:
+            elif len(temp.columns) == 1:
                 return pd.Series(temp[temp.columns[0]])
+            else:
+                return None
 
 
     def numeric_noise(self,
