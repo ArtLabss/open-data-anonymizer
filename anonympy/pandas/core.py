@@ -176,30 +176,61 @@ class dfAnonymizer(object):
         Parameters
         ----------
         methods : Optional[Dict[str, str]], default None
+            {column_name: faker_method}.
         locale : str or List[str], default ['en_US']
+        inplace : bool, default True
 
         Returns
         ----------
-            ser : anonymized pandas Series or pandas DataFrame will be returned
+            ser : None if inplace = True, else pandas Series or pandas DataFrame
         '''
-        
-        if methods == None:
+        if not methods:
+            if inplace:
             # try synthetic data 
-            self._fake_data_auto(locale = locale)   # anonymize using fake data if any column's name is similar to Faker's method (print(fake_methods) for all available methods)
-            # if there are still columns left unanonymized 
-            if self.unanonymized_columns:
-                for column in self.unanonymized_columns.copy():
-                    
-                    if column in self._numeric_columns:
-                        self.numeric_rounding(column)
+                self._fake_data_auto(locale = locale)   # anonymize using fake data if any column's name is similar to Faker's method (print(fake_methods) for all available methods)
+                # if there are still columns left unanonymized 
+                if self.unanonymized_columns:
+                    for column in self.unanonymized_columns.copy():
                         
-                    elif column in self._categorical_columns:
-                        self.categorical_tokenizer(column)
+                        if column in self._numeric_columns:
+                            self.numeric_rounding(column)
+                            
+                        elif column in self._categorical_columns:
+                            self.categorical_tokenizer(column)
+                        
+                        elif column in self._datetime_columns:
+                            self.datetime_noise(column)
+            else:
+                # try synthetic data
+                temp = self._fake_data_auto(locale = locale, inplace = False)
+                unanonymized = self.unanonymized_columns.copy()
+                
+                if isinstance(temp, pd.DataFrame):
+                    unanonymized = [column for column in unanonymized if column not in temp.columns.to_list()]
+                elif isinstance(temp, pd.Series):
+                    unanonymized.remove(temp.name)
+                    temp = pd.DataFrame(temp)
+                else: # if temp is a already  a dataframe
+                    temp = pd.DataFrame()
                     
-                    elif column in self._datetime_columns:
-                        self.datetime_noise(column)
-        else:
-            pass
+
+                if unanonymized:
+                    for column in unanonymized:
+                        if column in self._numeric_columns:
+                            temp[column] = self.numeric_rounding(column, inplace = False)
+                            
+                        elif column in self._categorical_columns:
+                            temp[column] = self.categorical_tokenizer(column, inplace = False)
+                        
+                        elif column in self._datetime_columns:
+                            temp[column] = self.datetime_noise(column, inplace = False)
+                return temp 
+
+##    
+##        else:
+##            for key, value in methods.items():
+##                
+                
                     
 
 
@@ -222,7 +253,6 @@ class dfAnonymizer(object):
         ----------
             faked : None if inplace = True, else pandas Series
         '''
-        
         fake = Faker(locale=locale)
         method = getattr(fake, method)
         faked = self._df[column].apply(lambda x: method())
