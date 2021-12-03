@@ -86,6 +86,25 @@ class dfAnonymizer(object):
         self.columns = self._df.columns.tolist()
         self.anonymized_columns = []
         self.unanonymized_columns = self._df.columns.to_list()
+        self.available_methods = f'''
+Numeric Anonymization:
+        * Perturbation - "numeric_noise"
+        * Binning - "numeric_binning"
+        * PCA Masking - "numeric_masking"
+        * Rounding - "numeric_rounding"
+
+Categorical Anonymization:
+        * Synthetic Data - "categorical_fake"
+        * Resampling from same Distribution - "categorical_resampling"
+        * Tokenazation - "categorical_tokenize"
+
+Datetime Anonymization:
+        * Synthetic Date - "datetime_fake"
+        * Perturbation - "datetime_noise"
+
+General:
+        * Drop Column - "column_suppression"
+        '''
 
 
     def __str__(self):
@@ -213,7 +232,6 @@ class dfAnonymizer(object):
                 else: # if temp is a already  a dataframe
                     temp = pd.DataFrame()
                     
-
                 if unanonymized:
                     for column in unanonymized:
                         if column in self._numeric_columns:
@@ -225,11 +243,68 @@ class dfAnonymizer(object):
                         elif column in self._datetime_columns:
                             temp[column] = self.datetime_noise(column, inplace = False)
                 return temp 
+        # if dictionary with methods was passed
+        else:
+            if inplace: 
+                for key, value in methods.items():
+                    # numeric
+                    if value == "numeric_noise":
+                        self.numeric_noise(key)
+                    elif value == "numeric_binning":
+                        self.numeric_binning(key)
+                    elif value == "numeric_masking":
+                        self.numeric_masking(key)
+                    elif value == "numeric_rounding":
+                        self.numeric_rounding(key)
+                    # categorical
+                    elif value == "categorical_fake":
+                        self.categorical_fake(key)
+                    elif value == "categorical_resampling":
+                        self.categorical_resampling(key)
+                    elif value == "categorical_tokenize":
+                        self.categorical_tokenize(key)
+                    # datetime
+                    elif value == "datetime_fake":
+                        self.datetime_fake(key)
+                    elif value == "datetime_noise":
+                        self.datetime_noise(key)
+                    # drop 
+                    elif value == "column_suppression":
+                        self.column_suppression(key)           
+            else:
+                temp = pd.DataFrame()
+                for key, value in methods.items():
+                    # numeric
+                    if value == "numeric_noise":
+                        temp[key] = self.numeric_noise(key, inplace = False)
+                    elif value == "numeric_binning":
+                        temp[key] = self.numeric_binning(key, inplace = False)
+                    elif value == "numeric_masking":
+                        temp[key] = self.numeric_masking(key, inplace = False)
+                    elif value == "numeric_rounding":
+                        temp[key] = self.numeric_rounding(key, inplace = False)
+                    # categorical
+                    elif value == "categorical_fake":
+                        temp[key] = self.categorical_fake(key, inplace = False)
+                    elif value == "categorical_resampling":
+                        temp[key] = self.categorical_resampling(key, inplace = False)
+                    elif value == "categorical_tokenize":
+                        temp[key] = self.categorical_tokenize(key, inplace = False)
+                    # datetime
+                    elif value == "datetime_fake":
+                        temp[key] = self.datetime_fake(key, inplace = False)
+                    elif value == "datetime_noise":
+                        temp[key] = self.datetime_noise(key, inplace = False)
+                    # drop 
+                    elif value == "column_suppression":
+                        temp[key] = self.column_suppression(key, inplace = False)
 
-##    
-##        else:
-##            for key, value in methods.items():
-##                
+                if len(temp.columns) > 1:
+                    return temp
+                elif len(temp.columns) == 1:
+                    return pd.Series(temp[temp.columns[0]])
+                    
+                
                 
                     
 
@@ -574,7 +649,7 @@ class dfAnonymizer(object):
                 self._df[columns] = pca.fit_transform(self._df[columns])
 
 
-    def categorical_tokenizer(self,
+    def categorical_tokenize(self,
                   columns: Union[str, List[str]],
                   max_token_len: int = 10,
                   key: str = b"my secret",
