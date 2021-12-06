@@ -246,7 +246,8 @@ class dfAnonymizer(object):
                   inplace: Optional[bool] = True):
         '''
         Anonymize pandas Series object using synthetic data generator.
-
+        Based on faker's genarator object
+        
         Parameters
         ----------
             column : str
@@ -274,15 +275,19 @@ class dfAnonymizer(object):
 
     @timer_func
     def categorical_fake(self,
-                  methods: Dict[str, str],
+                  columns: Union[str, List[str], Dict[str, str]],
                   locale: Optional[Union[str, List[str]]] = ['en_US'],
                   inplace: Optional[bool] = True):
         '''
         Anonymize pandas Series or pandas DataFrame using synthetic data generator
+        Based on faker's genarator object 
 
         Parameters
         ----------
-            methods : Dict[str, str], column name passed as a key and method name as a value
+            methods : Union[str, List[str], Dict[str, str]]
+                * if a single column is passed, faker's method which is the same as the column name will be applied
+                * same method will be applied to a list of columns' names
+                * dictionary with column as a key and method name as value should be used if column name doesn't correspond to any faker's methods.
             locale : str or List[str], default ['en_US']
             inplace : bool, default True
 
@@ -291,15 +296,39 @@ class dfAnonymizer(object):
             faked : None if inplace = True, else pandas Series or pandas DataFrame 
         '''
         
-        if inplace:
-            for column, method in methods.items():
-                self._fake_column(column, method, inplace = True, locale = locale)
-        else:
+        # if a single column is passed (str)
+        if isinstance(columns, str) or (len(columns) == 1 and isinstance(columns, list)):
+            if isinstance(columns, list):
+                columns = columns[0]
+            if inplace:
+                self._fake_column(columns, columns, inplace = True, locale = locale)
+            else:
+                return self._fake_column(columns, columns, inplace = False, locale = locale)
+        
+        # if a list of columns is passed
+        elif isinstance(columns, list):
             temp = pd.DataFrame()
-            for column, method in methods.items():
-                faked = self._fake_column(column, method, inplace = False, locale = locale)
-                temp[column] = faked
-            return temp
+            if inplace:
+                for column in columns:
+                    self._fake_column(column, column, inplace = True, locale = locale)
+            else:
+                for column in columns:
+                    faked = self._fake_column(column, column, inplace = False, locale = locale)
+                    temp[column] = faked
+                return temp
+            
+        # if a dictionary with column name and method name is passed 
+        elif isinstance(columns, dict):
+            temp = pd.DataFrame()
+            if inplace:
+                for column, method in columns.items():
+                    self._fake_column(column, method, inplace = True, locale = locale)
+            else:
+                for column, method in methods.items():
+                    faked = self._fake_column(column, method, inplace = False, locale = locale)
+                    temp[column] = faked
+                return temp
+
 
     @timer_func            
     def _fake_data_auto(self,
