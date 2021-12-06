@@ -17,7 +17,7 @@ from cape_privacy.pandas.transformations import NumericRounding
 from cape_privacy.pandas.transformations import Tokenizer
 
 from faker import Faker
-from utils import fake_methods
+from utils import * 
 
 from sklearn.decomposition import PCA
 
@@ -37,9 +37,6 @@ class dfAnonymizer(object):
     Parameters:
     ----------
         df: pandas DataFrame
-        numeric_columns : list, default None
-        categorical_columns : list, default None
-        datetime_columns : list, default None
          
     Returns:
     ----------
@@ -51,12 +48,8 @@ class dfAnonymizer(object):
             * If ``df`` is not a  DataFrame
     """
 
-
     def __init__(self,
-                 df: pd.DataFrame,
-                 numeric_columns: Optional[List[str]] = None,
-                 categorical_columns: Optional[List[str]] = None,
-                 datetime_columns: Optional[List[str]] = None):
+                 df: pd.DataFrame):
         
         if df.__class__.__name__ != "DataFrame":
             raise Exception(f"{df} is not a pandas DataFrame.")
@@ -73,38 +66,15 @@ class dfAnonymizer(object):
         self._drop = 'Column Suppression'
         self._sample = 'Resampling'
         self._PCA = 'PCA Masking'
-        
-        
-        if numeric_columns == None:
-            self._numeric_columns = self.get_numeric_columns()
-        if categorical_columns == None:
-            self._categorical_columns = self.get_categorical_columns()
-        if datetime_columns == None:
-            self._datetime_columns = self.get_datetime_columns()
             
         # Public Attributes
-        self.columns = self._df.columns.tolist()
         self.anonymized_columns = []
-        self.unanonymized_columns = self._df.columns.to_list()
-        self.available_methods = f'''
-Numeric Anonymization:
-        * Perturbation - "numeric_noise"
-        * Binning - "numeric_binning"
-        * PCA Masking - "numeric_masking"
-        * Rounding - "numeric_rounding"
-
-Categorical Anonymization:
-        * Synthetic Data - "categorical_fake"
-        * Resampling from same Distribution - "categorical_resampling"
-        * Tokenazation - "categorical_tokenize"
-
-Datetime Anonymization:
-        * Synthetic Date - "datetime_fake"
-        * Perturbation - "datetime_noise"
-
-General:
-        * Drop Column - "column_suppression"
-        '''
+        self.columns = self._df.columns.tolist()
+        self.unanonymized_columns = self.columns.copy()
+        
+        self.numeric_columns = get_numeric_columns(self._df)
+        self.categorical_columns = get_categorical_columns(self._df)
+        self.datetime_columns = get_datetime_columns(self._df)
 
 
     def __str__(self):
@@ -113,42 +83,6 @@ General:
 
     def __repr__(self):
         return self._info().draw()
-
-
-    def get_numeric_columns(self) -> List:
-        '''
-        Return a subset of the DataFrame's columns which are numeric.
-
-        Returns
-        ----------
-            List of columns with numeric values 
-        '''
-        
-        return self._df.select_dtypes('number').columns.tolist()
-
-
-    def get_categorical_columns(self) -> List:
-        '''
-        Return a subset of the DataFrame's columns which are categorical.
-
-        Returns
-        ----------
-            List of columns with categorical values 
-        '''
-        
-        return self._df.select_dtypes(include=['object', 'category']).columns.tolist()
-
-
-    def get_datetime_columns(self) -> List:
-        '''
-        Return a subset of the DataFrame's columns which are datetime. 
-
-        Returns
-        ----------
-            List of columns with datetime values 
-        '''
-        
-        return self._df.select_dtypes(include=['datetime']).columns.tolist()
 
 
     def _dtype_checker(self,
@@ -164,6 +98,7 @@ General:
         ----------
             dtype: numpy dtype 
         '''
+        
         dtype = self._df[column].dtype
 
         if dtype == np.float32:
@@ -195,14 +130,16 @@ General:
         Parameters
         ----------
         methods : Optional[Dict[str, str]], default None
-            {column_name: faker_method}.
+            {column_name: anonympy_methods}. Print `available_methods` to see the list of methods.
         locale : str or List[str], default ['en_US']
+            See https://faker.readthedocs.io/en/master/locales.html - for all faker's locales 
         inplace : bool, default True
 
         Returns
         ----------
             ser : None if inplace = True, else pandas Series or pandas DataFrame
         '''
+        
         if not methods:
             if inplace:
             # try synthetic data 
@@ -211,13 +148,13 @@ General:
                 if self.unanonymized_columns:
                     for column in self.unanonymized_columns.copy():
                         
-                        if column in self._numeric_columns:
+                        if column in self.numeric_columns:
                             self.numeric_rounding(column)
                             
-                        elif column in self._categorical_columns:
-                            self.categorical_tokenizer(column)
+                        elif column in self.categorical_columns:
+                            self.categorical_tokenization(column)
                         
-                        elif column in self._datetime_columns:
+                        elif column in self.datetime_columns:
                             self.datetime_noise(column)
             else:
                 # try synthetic data
@@ -234,13 +171,13 @@ General:
                     
                 if unanonymized:
                     for column in unanonymized:
-                        if column in self._numeric_columns:
+                        if column in self.numeric_columns:
                             temp[column] = self.numeric_rounding(column, inplace = False)
                             
-                        elif column in self._categorical_columns:
-                            temp[column] = self.categorical_tokenizer(column, inplace = False)
+                        elif column in self.categorical_columns:
+                            temp[column] = self.categorical_tokenization(column, inplace = False)
                         
-                        elif column in self._datetime_columns:
+                        elif column in self.datetime_columns:
                             temp[column] = self.datetime_noise(column, inplace = False)
                 return temp 
         # if dictionary with methods was passed
@@ -261,8 +198,8 @@ General:
                         self.categorical_fake(key)
                     elif value == "categorical_resampling":
                         self.categorical_resampling(key)
-                    elif value == "categorical_tokenize":
-                        self.categorical_tokenize(key)
+                    elif value == "categorical_tokenization":
+                        self.categorical_tokenization(key)
                     # datetime
                     elif value == "datetime_fake":
                         self.datetime_fake(key)
@@ -288,8 +225,8 @@ General:
                         temp[key] = self.categorical_fake(key, inplace = False)
                     elif value == "categorical_resampling":
                         temp[key] = self.categorical_resampling(key, inplace = False)
-                    elif value == "categorical_tokenize":
-                        temp[key] = self.categorical_tokenize(key, inplace = False)
+                    elif value == "categorical_tokenization":
+                        temp[key] = self.categorical_tokenization(key, inplace = False)
                     # datetime
                     elif value == "datetime_fake":
                         temp[key] = self.datetime_fake(key, inplace = False)
@@ -304,10 +241,6 @@ General:
                 elif len(temp.columns) == 1:
                     return pd.Series(temp[temp.columns[0]])
                     
-                
-                
-                    
-
 
     def _fake_column(self,
                   column: str,
@@ -360,6 +293,7 @@ General:
         ----------
             faked : None if inplace = True, else pandas Series or pandas DataFrame 
         '''
+        
         if inplace:
             for column, method in methods.items():
                 self._fake_column(column, method, inplace = True, locale = locale)
@@ -496,6 +430,7 @@ General:
         ----------
             ser: pandas Series or pandas DataFrame
         '''
+        
         # if a single column is passed
         if isinstance(columns, str) or (len(columns) == 1 and isinstance(columns, list)):
             if isinstance(columns, list):
@@ -612,6 +547,7 @@ General:
       ----------
             ser : pandas Series or pandas DataFrame
         '''
+        
         # if a single column is passed
         if isinstance(columns, str) or (len(columns) == 1 and isinstance(columns, list)):
             if isinstance(columns, list):
@@ -649,7 +585,7 @@ General:
                 self._df[columns] = pca.fit_transform(self._df[columns])
 
 
-    def categorical_tokenize(self,
+    def categorical_tokenization(self,
                   columns: Union[str, List[str]],
                   max_token_len: int = 10,
                   key: str = b"my secret",
@@ -668,6 +604,7 @@ General:
         ----------
             ser : pandas Series or pandas DataFrame
         '''
+        
         # if a single column is passed
         if isinstance(columns, str) or (len(columns) == 1 and isinstance(columns, list)):
             if isinstance(columns, list):
@@ -729,6 +666,7 @@ General:
         ----------
             ser : pandas Series or pandas DataFrame
         '''
+        
         fake = Faker(locale=locale)
 
         # if a single column is passed 
@@ -832,6 +770,7 @@ General:
         ----------
             ser : None if inplace = True, else pandas Series or pandas DataFrame
         '''
+        
         # if a single column is passed 
         if isinstance(columns, str) or (len(columns) == 1 and isinstance(columns, list)):
             if isinstance(columns, list):
@@ -887,6 +826,7 @@ General:
         ----------
             ser : None if inplace = True, else pandas Series or pandas DataFrame
         '''
+        
         # if a single column is passed 
         if isinstance(columns, str) or (len(columns) == 1 and isinstance(columns, list)):
             if isinstance(columns, list):
@@ -925,8 +865,6 @@ General:
             if not inplace:
                 return temp
 
-
-            
                 
     def _info(self):
         '''
@@ -936,6 +874,7 @@ General:
         ----------
             None
         '''
+        
         t = Texttable(max_width=150)
         header = f'Total number of columns: {self._df.shape[1]}'
 
@@ -961,6 +900,7 @@ General:
         ----------
             None
         '''
+        
         t  = Texttable(150)
         t.header(['Column', 'Status', 'Method'])
 
@@ -988,4 +928,5 @@ General:
         ----------
         DataFrame object
         '''
+        
         return self._df.copy()
