@@ -16,18 +16,12 @@ from cape_privacy.pandas.transformations import DatePerturbation
 from cape_privacy.pandas.transformations import NumericRounding
 from cape_privacy.pandas.transformations import Tokenizer
 
+import utils as _utils 
+from utils import timer_func
 from faker import Faker
-from utils import * 
+
 
 from sklearn.decomposition import PCA
-
-df = pd.DataFrame({
-        "name": ["alice", "bob"],
-        "age": [34, 55],
-        "birthdate": [pd.Timestamp(1985, 2, 23), pd.Timestamp(1963, 5, 10)],
-        "salary": [59234.32, 49324.53],
-        "ssn": ["343554334", "656564664"],
-    })
 
 
 class dfAnonymizer(object):
@@ -72,9 +66,12 @@ class dfAnonymizer(object):
         self.columns = self._df.columns.tolist()
         self.unanonymized_columns = self.columns.copy()
         
-        self.numeric_columns = get_numeric_columns(self._df)
-        self.categorical_columns = get_categorical_columns(self._df)
-        self.datetime_columns = get_datetime_columns(self._df)
+        self.numeric_columns = _utils.get_numeric_columns(self._df)
+        self.categorical_columns = _utils.get_categorical_columns(self._df)
+        self.datetime_columns = _utils.get_datetime_columns(self._df)
+
+        self.available_methods = _utils.available_methods 
+        self.fake_methods = _utils.fake_methods
 
 
     def __str__(self):
@@ -116,7 +113,7 @@ class dfAnonymizer(object):
         else:
             return None
         
-
+    
     def anonymize(self,
                   methods: Optional[Dict[str, str]] = None,
                   locale: Optional[Union[str, List[str]]] = ['en_US'],
@@ -222,7 +219,7 @@ class dfAnonymizer(object):
                         temp[key] = self.numeric_rounding(key, inplace = False)
                     # categorical
                     elif value == "categorical_fake":
-                        temp[key] = self.categorical_fake(key, inplace = False)
+                        temp[key] = self._categorical_fake(column=key, method=key, inplace = False)
                     elif value == "categorical_resampling":
                         temp[key] = self.categorical_resampling(key, inplace = False)
                     elif value == "categorical_tokenization":
@@ -241,7 +238,7 @@ class dfAnonymizer(object):
                 elif len(temp.columns) == 1:
                     return pd.Series(temp[temp.columns[0]])
                     
-
+    @timer_func
     def _fake_column(self,
                   column: str,
                   method: str,
@@ -275,7 +272,7 @@ class dfAnonymizer(object):
         else:
             return faked
 
-
+    @timer_func
     def categorical_fake(self,
                   methods: Dict[str, str],
                   locale: Optional[Union[str, List[str]]] = ['en_US'],
@@ -304,7 +301,7 @@ class dfAnonymizer(object):
                 temp[column] = faked
             return temp
 
-                
+    @timer_func            
     def _fake_data_auto(self,
                         locale: Optional[Union[str, List[str]]] = ['en_US'],
                         inplace: Optional[bool]= True):
@@ -342,7 +339,7 @@ class dfAnonymizer(object):
             else:
                 return None
 
-
+    @timer_func
     def numeric_noise(self,
                       columns: Union[str, List[str]],
                       MIN: Union[int, float] = -10,
@@ -405,7 +402,7 @@ class dfAnonymizer(object):
             if not inplace:
                 return temp
 
-
+    @timer_func
     def datetime_noise(self,
                        columns: Union[str, List[str]],
                        frequency: Union[str, Tuple[str, ...]]  = ("MONTH", "DAY"),
@@ -469,7 +466,7 @@ class dfAnonymizer(object):
         if not inplace:
             return temp
 
-
+    @timer_func
     def numeric_rounding(self,
                          columns: Union[str, List[str]],
                          precision: int = None,
@@ -530,7 +527,7 @@ class dfAnonymizer(object):
             if not inplace:
                 return temp
 
-    
+    @timer_func
     def numeric_masking(self,
                         columns: Union[str, List[str]],
                         inplace: bool = True):
@@ -583,8 +580,8 @@ class dfAnonymizer(object):
                         
                 pca = PCA(n_components=len(columns))
                 self._df[columns] = pca.fit_transform(self._df[columns])
-
-
+    
+    @timer_func
     def categorical_tokenization(self,
                   columns: Union[str, List[str]],
                   max_token_len: int = 10,
@@ -643,7 +640,7 @@ class dfAnonymizer(object):
             if not inplace:
                 return temp
 
-
+    @timer_func
     def datetime_fake(self,
                   columns: Union[str, List[str]],
                   pattern: str = '%Y-%m-%d',
@@ -704,7 +701,7 @@ class dfAnonymizer(object):
             if not inplace:
                 return temp
 
-
+    @timer_func
     def column_suppression(self,
                           columns: Union[str, List[str]],
                           inplace: bool = True):
@@ -751,7 +748,7 @@ class dfAnonymizer(object):
             else:
                 return self._df.drop(columns, axis = 1, inplace = False)
 
-
+    @timer_func
     def numeric_binning(self,
                         columns: Union[str, List[str]],
                         bins: int = 4,
@@ -809,8 +806,8 @@ class dfAnonymizer(object):
 
             if not inplace:
                 return temp
-
-
+    
+    @timer_func
     def categorical_resampling(self,
                                columns: Union[str, List[str]],
                                inplace: Optional[bool] = True):
@@ -865,7 +862,7 @@ class dfAnonymizer(object):
             if not inplace:
                 return temp
 
-                
+    @timer_func
     def _info(self):
         '''
         Print a summary of the a DataFrame, which columns have been anonymized and which haven't.
@@ -889,7 +886,7 @@ class dfAnonymizer(object):
 
         return t
 
-
+    @timer_func
     def info(self):
         '''
         Print a summary of the a DataFrame.
