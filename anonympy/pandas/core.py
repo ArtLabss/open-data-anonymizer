@@ -141,7 +141,7 @@ class dfAnonymizer(object):
         if not methods:
             if inplace:
             # try synthetic data 
-                self.fake_data_auto(locale = locale)   # anonymize using fake data if any column's name is similar to Faker's method (print(fake_methods) for all available methods)
+                self.categorical_fake_auto(locale = locale)   # anonymize using fake data if any column's name is similar to Faker's method (print(fake_methods) for all available methods)
                 # if there are still columns left unanonymized 
                 if self.unanonymized_columns:
                     for column in self.unanonymized_columns.copy():
@@ -332,7 +332,7 @@ class dfAnonymizer(object):
 
 
     @timer_func            
-    def fake_data_auto(self,
+    def categorical_fake_auto(self,
                         locale: Optional[Union[str, List[str]]] = ['en_US'],
                         inplace: Optional[bool]= True):
         '''
@@ -353,20 +353,14 @@ class dfAnonymizer(object):
         
         for column in self.columns:
             func = column.strip().lower()
-            if func in _utils.fake_methods:
+            if func in _utils._fake_methods:
                 if inplace:
                     if column in self.anonymized_columns:
                         print(f'`{column}` column already anonymized!')
                     else:
-                        try:
-                            self._fake_column(column, func, inplace = True, locale = locale)
-                        except AttributeError:
-                            print(f'Faker has no attribute `{column}`')
+                        self._fake_column(column, func, inplace = True, locale = locale)
                 else:
-                    try:
-                        temp[column] = self._fake_column(column, func, inplace = False, locale = locale)
-                    except AttributeError:
-                        print(f'Faker has no attribute `{column}`')
+                    temp[column] = self._fake_column(column, func, inplace = False, locale = locale)
         if not inplace:
             if len(temp.columns) > 1:
                 return temp
