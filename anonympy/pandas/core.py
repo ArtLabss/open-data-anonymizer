@@ -358,9 +358,15 @@ class dfAnonymizer(object):
                     if column in self.anonymized_columns:
                         print(f'`{column}` column already anonymized!')
                     else:
-                        self._fake_column(column, func, inplace = True, locale = locale)
+                        try:
+                            self._fake_column(column, func, inplace = True, locale = locale)
+                        except AttributeError:
+                            print(f'Faker has no attribute `{column}`')
                 else:
-                    temp[column] = self._fake_column(column, func, inplace = False, locale = locale)
+                    try:
+                        temp[column] = self._fake_column(column, func, inplace = False, locale = locale)
+                    except AttributeError:
+                        print(f'Faker has no attribute `{column}`')
         if not inplace:
             if len(temp.columns) > 1:
                 return temp
