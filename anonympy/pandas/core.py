@@ -60,6 +60,7 @@ class dfAnonymizer(object):
         self._drop = 'Column Suppression'
         self._sample = 'Resampling'
         self._PCA = 'PCA Masking'
+        self._email = 'Partial Masking'
             
         # Public Attributes
         self.anonymized_columns = []
@@ -140,7 +141,7 @@ class dfAnonymizer(object):
         if not methods:
             if inplace:
             # try synthetic data 
-                self._fake_data_auto(locale = locale)   # anonymize using fake data if any column's name is similar to Faker's method (print(fake_methods) for all available methods)
+                self.fake_data_auto(locale = locale)   # anonymize using fake data if any column's name is similar to Faker's method (print(fake_methods) for all available methods)
                 # if there are still columns left unanonymized 
                 if self.unanonymized_columns:
                     for column in self.unanonymized_columns.copy():
@@ -155,7 +156,7 @@ class dfAnonymizer(object):
                             self.datetime_noise(column)
             else:
                 # try synthetic data
-                temp = self._fake_data_auto(locale = locale, inplace = False)
+                temp = self.fake_data_auto(locale = locale, inplace = False)
                 unanonymized = self.unanonymized_columns.copy()
                 
                 if isinstance(temp, pd.DataFrame):
@@ -331,7 +332,7 @@ class dfAnonymizer(object):
 
 
     @timer_func            
-    def _fake_data_auto(self,
+    def fake_data_auto(self,
                         locale: Optional[Union[str, List[str]]] = ['en_US'],
                         inplace: Optional[bool]= True):
         '''
@@ -352,7 +353,7 @@ class dfAnonymizer(object):
         
         for column in self.columns:
             func = column.strip().lower()
-            if func in fake_methods:
+            if func in _utils.fake_methods:
                 if inplace:
                     if column in self.anonymized_columns:
                         print(f'`{column}` column already anonymized!')
@@ -668,6 +669,84 @@ class dfAnonymizer(object):
                     temp[column] = ser
             if not inplace:
                 return temp
+
+            
+    def _mask(self, s: str):
+        '''
+        Private function for a masking a single email string
+
+        Parameters
+        ----------
+            s : str
+
+        Returns
+        ----------
+            masked : str 
+        '''
+
+        lo = s.find('@')
+
+        if lo > 0:
+            masked = s[0] + '*****' + s[lo-1:]
+            return masked
+        else:
+            raise Exception('Invalid Email')
+    
+    @timer_func
+    def email_masking(self,
+                      columns: Union[str, List[str]],
+                      inplace: Optional[bool] = True):
+        '''
+        Apply Partial Masking to emails.
+
+        Parameters
+        ----------
+            columns: Union[str, List[str]]
+            inplace: Optional[bool] = True
+
+        Returns
+        ----------
+            ser : pandas Series or pandas DataFrame 
+
+        '''
+        # if a single column is passed
+        if isinstance(columns, str) or (len(columns) == 1 and isinstance(columns, list)):
+            if isinstance(columns, list):
+                columns = columns[0]
+            ser = self._df[columns].apply(lambda x: self._mask(x))
+
+            if inplace:
+                if columns in self.anonymized_columns:
+                    print(f'`{columns}` column already anonymized!')
+                else:
+                    self._df[columns] = ser
+                    self.anonymized_columns.append(columns)
+                    self.unanonymized_columns.remove(columns)
+                    self._methods_applied[columns] = self._email
+            else:
+                return ser
+        # if a list of columns is passed
+        else:
+            temp = pd.DataFrame()
+
+            for column in columns:
+                ser = self._df[columns].apply(lambda x: self._mask(x))
+
+                if inplace:
+                    if column in self.anonymized_columns:
+                        print(f'`{column}` column already anonymized!')
+                    else:
+                        self._df[column] = ser
+                        self.anonymized_columns.append(column)
+                        self.unanonymized_columns.remove(column)
+                        self._methods_applied[column] = self._email
+                else:
+                    temp[column] = ser
+
+            if not inplace:
+                return temp
+                        
+        
 
     @timer_func
     def datetime_fake(self,
