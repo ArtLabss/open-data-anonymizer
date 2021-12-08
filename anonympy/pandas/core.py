@@ -51,14 +51,12 @@ class dfAnonymizer(object):
     0 	alice 	34 	1985-02-23 	59234.32 	343554334
     1 	bob 	55 	1963-05-10 	49324.53 	656564664
     """
-
-
     def __init__(self,
                  df: pd.DataFrame):
         
         if df.__class__.__name__ != "DataFrame":
             raise Exception(f"{df} is not a pandas DataFrame.")
-
+        
         # Private Attributes
         self._df = df.copy()
         self._methods_applied = {}
@@ -107,7 +105,6 @@ class dfAnonymizer(object):
         ----------
             dtype: numpy dtype 
         '''
-        
         dtype = self._df[column].dtype
 
         if dtype == np.float32:
@@ -144,8 +141,10 @@ class dfAnonymizer(object):
         methods : Optional[Dict[str, str]], default None
             {column_name: anonympy_method}. List of all methods is stored in attribute `available_methods`.
         locale : str or List[str], default ['en_US']
-            See https://faker.readthedocs.io/en/master/locales.html - for all faker's locales 
+            See https://faker.readthedocs.io/en/master/locales.html for all faker's locales 
         inplace : bool, default True
+            if True, the changes will be applied to DataFrame (access using `to_df()` method).
+            Else, a DataFrame is returned 
 
         Returns
         ----------
@@ -153,11 +152,11 @@ class dfAnonymizer(object):
 
         Examples
         ----------
-        Without specifiying methods to apply
+        If methods None 
 
         >>> df = load_dataset()
         >>> anonym = dfAnonymizer(df)
-        >>> anonym.anonymize(methods = None, locale = 'ru_RU', inplace = False)
+        >>> anonym.anonymize(inplace = False)
         ...
         '''
         if not methods:
@@ -1002,24 +1001,7 @@ class dfAnonymizer(object):
         t.add_rows([[header], [row1], [row2]])
 
         return t
-
-    def load_dataset():
-        '''
-        Sample dataset for demonstration purposes
-
-        Returns
-        ----------
-            df : pd.DataFrame 
-        '''
-        df = pd.DataFrame({
-        "name": ["alice", "bob"],
-        "age": [34, 55],
-        "birthdate": [pd.Timestamp(1985, 2, 23), pd.Timestamp(1963, 5, 10)],
-        "salary": [59234.32, 49324.53],
-        "ssn": ["343554334", "656564664"]})
-
-        return df
-
+    
 
     def info(self):
         '''

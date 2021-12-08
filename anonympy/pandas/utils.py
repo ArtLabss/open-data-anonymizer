@@ -1,6 +1,6 @@
 from typing import List
 from time import time
-
+import pandas as pd
 
 fake_methods = '''
 A | aba, address, administrative_unit, am_pm, android_platform_token, ascii_company_email, ascii_email, ascii_free_email, ascii_safe_email,
@@ -127,3 +127,20 @@ def timer_func(func):
         print(f'Function {func.__name__!r} executed in {(t2-t1):.4f}s')
         return result
     return wrap_func
+
+def load_dataset():
+    '''
+    Sample dataset for demonstration purposes
+
+    Returns
+    ----------
+        df : pd.DataFrame 
+    '''
+    df = pd.DataFrame({
+        "name": ["alice", "bob"],
+        "age": [34, 55],
+        "birthdate": [pd.Timestamp(1985, 2, 23), pd.Timestamp(1963, 5, 10)],
+        "salary": [59234.32, 49324.53],
+        "ssn": ["343554334", "656564664"]})
+
+    return df
