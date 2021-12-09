@@ -47,9 +47,9 @@ class dfAnonymizer(object):
     >>> df = load_dataset()
     >>> anonym = dfAnonymizer(df)
     >>> anonym.to_df()
-         name 	age 	 birthdate 	salary 	           ssn
-    0 	alice 	34 	1985-02-23 	59234.32 	343554334
-    1 	bob 	55 	1963-05-10 	49324.53 	656564664
+         name   age  ...                 email                  ssn
+    0   Bruce   33  ...  josefrazier@owen.com  343554334
+    1   Tony   48  ...       eryan@lewis.com    656564664
     """
     def __init__(self,
                  df: pd.DataFrame):
@@ -157,9 +157,9 @@ class dfAnonymizer(object):
         >>> df = load_dataset()
         >>> anonym = dfAnonymizer(df)
         >>> anonym.anonymize(inplace = False)
-                name    	ssn 	        age 	birthdate       salary
-        0 	Lance Best 	292-67-3214 	30 	1984-09-26 	60000.0
-        1 	Crystal Hill 	289-42-4194 	60 	1963-03-10 	50000.0
+                       name            age  ...                  email                    ssn
+        0  Douglas Williams   30   ...  dcampbell@example.org  718-51-5290
+        1     Nicholas Hall       50   ...  orichards@example.com  684-81-8137
 
 
         Specifying which methods to apply
@@ -168,12 +168,12 @@ class dfAnonymizer(object):
             numeric_noise   numeric_binning	numeric_masking	  numeric_rounding
         >>> anonym.fake_methods('n')
             name, name_female, name_male, name_nonbinary, nic_handle, nic_handles, null_boolean, numerify
-        >>> anonym.anonymize({'name': 'name_nonbinary', 'age': 'numeric_noise'}, inplace = False)
+        >>> anonym.anonymize({'name': 'categorical_fake', 'age': 'numeric_noise'}, inplace = False)
         
         '''
         if not methods:
             if inplace:
-            # try synthetic data 
+                # try synthetic data 
                 self.categorical_fake_auto(locale = locale)   # anonymize using fake data if any column's name is similar to Faker's method (print(fake_methods) for all available methods)
                 # if there are still columns left unanonymized 
                 if self.unanonymized_columns:
@@ -253,7 +253,7 @@ class dfAnonymizer(object):
                         temp[key] = self.numeric_rounding(key, inplace = False)
                     # categorical
                     elif value == "categorical_fake":
-                        temp[key] = self._categorical_fake(column=key, method=key, inplace = False)
+                        temp[key] = self.categorical_fake(column=key, method=key, inplace = False)
                     elif value == "categorical_resampling":
                         temp[key] = self.categorical_resampling(key, inplace = False)
                     elif value == "categorical_tokenization":
@@ -1069,7 +1069,7 @@ class dfAnonymizer(object):
         if letter == None or letter == 'all':
             print(text)
         else:
-            for line in a.split('\n'):
+            for line in text.split('\n'):
                 if line[0] == letter.upper():
                     print(line[3:])
 
