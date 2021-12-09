@@ -67,8 +67,10 @@ Numeric Anonymization:
 
 Categorical Anonymization:
         * Synthetic Data - "categorical_fake"
+        * Synthetic Data Auto - "categorical_fake_auto"
         * Resampling from same Distribution - "categorical_resampling"
         * Tokenazation - "categorical_tokenization"
+        * Email Masking - "categorical_email_masking"
 
 Datetime Anonymization:
         * Synthetic Date - "datetime_fake"
