@@ -59,6 +59,7 @@ class dfAnonymizer(object):
         
         # Private Attributes
         self._df = df.copy()
+        self._df2 = df.copy()
         self._methods_applied = {}
         self._synthetic_data = 'Synthetic Data'
         self._tokenization = 'Tokenization'
@@ -778,7 +779,7 @@ class dfAnonymizer(object):
             temp = pd.DataFrame()
 
             for column in columns:
-                ser = self._df[columns].apply(lambda x: self._mask(x))
+                ser = self._df[column].apply(lambda x: self._mask(x))
 
                 if inplace:
                     if column in self.anonymized_columns:
@@ -885,7 +886,7 @@ class dfAnonymizer(object):
                     self.unanonymized_columns.remove(columns)
                     self._methods_applied[columns] = self._drop
             else:
-                return self._df.drop(columns, axis = 1, inplace = False)
+                return self._df2.drop(columns, axis = 1, inplace = False)
 
         # if a list of columns is passed
         else:
@@ -1104,5 +1105,5 @@ class dfAnonymizer(object):
         ----------
         DataFrame object
         '''
-        
+
         return self._df.copy()
