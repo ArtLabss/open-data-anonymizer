@@ -17,7 +17,7 @@ from cape_privacy.pandas.transformations import NumericRounding
 from cape_privacy.pandas.transformations import Tokenizer
 
 import utils as _utils 
-from utils import timer_func
+from utils import timer_func, load_dataset
 from faker import Faker
 
 from sklearn.decomposition import PCA
@@ -47,9 +47,9 @@ class dfAnonymizer(object):
     >>> df = load_dataset()
     >>> anonym = dfAnonymizer(df)
     >>> anonym.to_df()
-         name 	age 	 birthdate 	salary 	           ssn
-    0 	alice 	34 	1985-02-23 	59234.32 	343554334
-    1 	bob 	55 	1963-05-10 	49324.53 	656564664
+         name   age  ...                 email                  ssn
+    0   Bruce   33  ...  josefrazier@owen.com  343554334
+    1   Tony   48  ...       eryan@lewis.com    656564664
     """
     def __init__(self,
                  df: pd.DataFrame):
@@ -80,8 +80,8 @@ class dfAnonymizer(object):
         self.categorical_columns = _utils.get_categorical_columns(self._df)
         self.datetime_columns = _utils.get_datetime_columns(self._df)
 
-        self.available_methods = _utils.available_methods 
-        self.fake_methods = _utils.fake_methods
+        self._available_methods = _utils.available_methods 
+        self._fake_methods = _utils.fake_methods
 
 
     def __str__(self):
@@ -134,16 +134,16 @@ class dfAnonymizer(object):
         for categorical columns and ``datetime_noise`` or ``datetime_fake`` are applied for datetime columns.
 
         In order to produce synthetic data, column name should have same name as faker's method name.
-        List of all faker's method is stored in attribute `fake_methods`. 
+        To see the list of all faker's methods call ``faker_methods()``. 
 
         Parameters
         ----------
         methods : Optional[Dict[str, str]], default None
-            {column_name: anonympy_method}. List of all methods is stored in attribute `available_methods`.
+            {column_name: anonympy_method}. List of all methods can be accessed by calling ``available_methods()``.
         locale : str or List[str], default ['en_US']
             See https://faker.readthedocs.io/en/master/locales.html for all faker's locales 
         inplace : bool, default True
-            if True, the changes will be applied to DataFrame (access using `to_df()` method).
+            if True, the changes will be applied to DataFrame (access using ``to_df()`` method).
             Else, a DataFrame is returned 
 
         Returns
@@ -157,11 +157,23 @@ class dfAnonymizer(object):
         >>> df = load_dataset()
         >>> anonym = dfAnonymizer(df)
         >>> anonym.anonymize(inplace = False)
-        ...
+                       name            age  ...                  email                    ssn
+        0  Douglas Williams   30   ...  dcampbell@example.org  718-51-5290
+        1     Nicholas Hall       50   ...  orichards@example.com  684-81-8137
+
+
+        Specifying which methods to apply
+        
+        >>> anonym.available_methods('numeric')
+            numeric_noise   numeric_binning	numeric_masking	  numeric_rounding
+        >>> anonym.fake_methods('n')
+            name, name_female, name_male, name_nonbinary, nic_handle, nic_handles, null_boolean, numerify
+        >>> anonym.anonymize({'name': 'categorical_fake', 'age': 'numeric_noise'}, inplace = False)
+        
         '''
         if not methods:
             if inplace:
-            # try synthetic data 
+                # try synthetic data 
                 self.categorical_fake_auto(locale = locale)   # anonymize using fake data if any column's name is similar to Faker's method (print(fake_methods) for all available methods)
                 # if there are still columns left unanonymized 
                 if self.unanonymized_columns:
@@ -177,7 +189,7 @@ class dfAnonymizer(object):
                             self.datetime_noise(column)
             else:
                 # try synthetic data
-                temp = self.fake_data_auto(locale = locale, inplace = False)
+                temp = self.categorical_fake_auto(locale = locale, inplace = False)
                 unanonymized = self.unanonymized_columns.copy()
                 
                 if isinstance(temp, pd.DataFrame):
@@ -241,7 +253,7 @@ class dfAnonymizer(object):
                         temp[key] = self.numeric_rounding(key, inplace = False)
                     # categorical
                     elif value == "categorical_fake":
-                        temp[key] = self._categorical_fake(column=key, method=key, inplace = False)
+                        temp[key] = self.categorical_fake(column=key, method=key, inplace = False)
                     elif value == "categorical_resampling":
                         temp[key] = self.categorical_resampling(key, inplace = False)
                     elif value == "categorical_tokenization":
@@ -708,7 +720,7 @@ class dfAnonymizer(object):
             raise Exception('Invalid Email')
     
     
-    def email_masking(self,
+    def categorical_email_masking(self,
                       columns,
                       inplace = True):
         '''
@@ -1030,6 +1042,36 @@ class dfAnonymizer(object):
             t.add_row(row)
 
         print(t.draw())
+
+
+    def available_methods(self, dtype = None):
+        '''
+        Print a list of available methods
+        '''
+        text = self._available_methods
+        splitted = {'numeric': ['numeric_noise', 'numeric_binning', 'numeric_masking', 'numeric_rounding'],
+                    'categorical': ['categorical_fake', 'categorical_fake_auto', 'categorical_resampling', 'categorical_tokenization', 'categorical_email_masking'],
+                    'datetime': ["datetime_fake", "datetime_noise"],
+                    'general': ['column_suppression']}
+        
+        if dtype == None or dtype == 'all':
+            print(text)
+        else:
+            print(*splitted[dtype], sep='\t')
+            
+    
+    def fake_methods(self, letter = None):
+        '''
+        Print a list of faker's methods
+        '''
+        text = self._fake_methods
+
+        if letter == None or letter == 'all':
+            print(text)
+        else:
+            for line in text.split('\n'):
+                if line[0] == letter.upper():
+                    print(line[3:])
 
         
     def to_df(self):
