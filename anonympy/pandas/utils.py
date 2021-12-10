@@ -2,8 +2,7 @@ from typing import List
 from time import time
 import pandas as pd
 
-fake_methods = '''
-A | aba, address, administrative_unit, am_pm, android_platform_token, ascii_company_email, ascii_email, ascii_free_email, ascii_safe_email,
+fake_methods = '''A | aba, address, administrative_unit, am_pm, android_platform_token, ascii_company_email, ascii_email, ascii_free_email, ascii_safe_email,
 B | bank_country, bban, boolean, bothify, bs, building_number,
 C | cache_pattern, catch_phrase, century, chrome, city, city_prefix, city_suffix, color, color_name, company, company_email, company_suffix, coordinate, country, country_calling_code, country_code, credit_card_expire, credit_card_full, credit_card_number, credit_card_provider, credit_card_security_code, cryptocurrency, cryptocurrency_code, cryptocurrency_name, csv, currency, currency_code, currency_name, currency_symbol, current_country, current_country_code,
 D | date, date_between, date_between_dates, date_object, date_of_birth, date_this_century, date_this_decade, date_this_month, date_this_year, date_time, date_time_ad, date_time_between, date_time_between_dates, date_time_this_century, date_time_this_decade, date_time_this_month, date_time_this_year, day_of_month, day_of_week, del_arguments, dga, domain_name, domain_word, dsv, 
@@ -24,8 +23,7 @@ T | tar, text, texts, time, time_delta, time_object, time_series, timezone, tld,
 U | unique, unix_device, unix_partition, unix_time, upc_a, upc_e, uri, uri_extension, uri_page, uri_path, url, user_agent, user_name, uuid4, 
 W | weights, windows_platform_token, word, words, 
 Y | year, 
-Z | zipcode, zipcode_in_state, zipcode_plus4
-'''
+Z | zipcode, zipcode_in_state, zipcode_plus4'''
 
 _fake_methods = ['aba', 'address', 'administrative_unit', 'am_pm', 'android_platform_token',
                  'ascii_company_email', 'ascii_email', 'ascii_free_email', 'ascii_safe_email', 'bank_country', 'bban',
@@ -67,8 +65,10 @@ Numeric Anonymization:
 
 Categorical Anonymization:
         * Synthetic Data - "categorical_fake"
+        * Synthetic Data Auto - "categorical_fake_auto"
         * Resampling from same Distribution - "categorical_resampling"
         * Tokenazation - "categorical_tokenization"
+        * Email Masking - "categorical_email_masking"
 
 Datetime Anonymization:
         * Synthetic Date - "datetime_fake"
@@ -128,6 +128,7 @@ def timer_func(func):
         return result
     return wrap_func
 
+
 def load_dataset():
     '''
     Sample dataset for demonstration purposes
@@ -137,10 +138,12 @@ def load_dataset():
         df : pd.DataFrame 
     '''
     df = pd.DataFrame({
-        "name": ["alice", "bob"],
-        "age": [34, 55],
-        "birthdate": [pd.Timestamp(1985, 2, 23), pd.Timestamp(1963, 5, 10)],
+        "name": ["Bruce", "Tony"],
+        "age": [33, 48],
+        "birthdate": [pd.Timestamp(1915, 4, 17), pd.Timestamp(1970, 5, 29)],
         "salary": [59234.32, 49324.53],
+        "web": ['http://www.alandrosenburgcpapc.co.uk', 'http://www.capgeminiamerica.co.uk'],
+        "email": ['josefrazier@owen.com', 'eryan@lewis.com'],
         "ssn": ["343554334", "656564664"]})
 
     return df
