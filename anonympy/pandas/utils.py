@@ -2,6 +2,7 @@ from typing import List
 from time import time
 import pandas as pd
 
+
 fake_methods = '''A | aba, address, administrative_unit, am_pm, android_platform_token, ascii_company_email, ascii_email, ascii_free_email, ascii_safe_email
 B | bank_country, bban, boolean, bothify, bs, building_number
 C | cache_pattern, catch_phrase, century, chrome, city, city_prefix, city_suffix, color, color_name, company, company_email, company_suffix, coordinate, country, country_calling_code, country_code, credit_card_expire, credit_card_full, credit_card_number, credit_card_provider, credit_card_security_code, cryptocurrency, cryptocurrency_code, cryptocurrency_name, csv, currency, currency_code, currency_name, currency_symbol, current_country, current_country_code
@@ -24,6 +25,7 @@ U | unique, unix_device, unix_partition, unix_time, upc_a, upc_e, uri, uri_exten
 W | weights, windows_platform_token, word, words
 Y | year
 Z | zipcode, zipcode_in_state, zipcode_plus4'''
+
 
 _fake_methods = ['aba', 'address', 'administrative_unit', 'am_pm', 'android_platform_token',
                  'ascii_company_email', 'ascii_email', 'ascii_free_email', 'ascii_safe_email', 'bank_country', 'bban',
