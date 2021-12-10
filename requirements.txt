@@ -1,0 +1,7 @@
+cape_privacy==0.3.0
+Faker==10.0.0
+scikit_learn==1.0.1
+setuptools==52.0.0
+texttable==1.6.4
+numpy
+pandas 
