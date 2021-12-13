@@ -59,24 +59,24 @@ _fake_methods = ['aba', 'address', 'administrative_unit', 'am_pm', 'android_plat
 
 
 available_methods = f'''
-Numeric Anonymization:
+`numeric`:
         * Perturbation - "numeric_noise"
         * Binning - "numeric_binning"
         * PCA Masking - "numeric_masking"
         * Rounding - "numeric_rounding"
 
-Categorical Anonymization:
+`categorical`:
         * Synthetic Data - "categorical_fake"
         * Synthetic Data Auto - "categorical_fake_auto"
         * Resampling from same Distribution - "categorical_resampling"
         * Tokenazation - "categorical_tokenization"
         * Email Masking - "categorical_email_masking"
 
-Datetime Anonymization:
+`datetime`:
         * Synthetic Date - "datetime_fake"
         * Perturbation - "datetime_noise"
 
-General:
+`general`:
         * Drop Column - "column_suppression"
         '''
 
