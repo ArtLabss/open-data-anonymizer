@@ -154,10 +154,11 @@ class dfAnonymizer(object):
 
         Examples
         ----------
-        If methods None 
-
         >>> df = load_dataset()
         >>> anonym = dfAnonymizer(df)
+
+        If methods None
+        
         >>> anonym.anonymize(inplace = False)
                        name       age  ...                  email          ssn
         0  Douglas Williams       30   ...  dcampbell@example.org  718-51-5290
@@ -294,7 +295,7 @@ class dfAnonymizer(object):
             method : str
             locale : str or List[str], default ['en_US']
             inplace : bool, default True
-
+    
         Returns
         ----------
             None if inplace = True, else pandas Series.
@@ -313,30 +314,35 @@ class dfAnonymizer(object):
         else:
             return faked
 
-    
+
     def categorical_fake(self,
                   columns,
                   locale = ['en_US'],
                   inplace = True):
         '''
-        Anonymize pandas Series or pandas DataFrame using synthetic data generator
-        To see the list of all faker's methods, call ``faker_methods()``. 
-        
+        Replace data with synthetic data using faker's generator. 
+        To see the list of all faker's methods, call ``fake_methods()``.
 
+        If column name coincides with faker's method then pass a string or a list of strings for `columns` argument.
+        Otherwise, pass a dictionary with column name as a key and faker's method as a value `{col_name: fake_method}`
+        
         Parameters
         ----------
             columns : Union[str, List[str], Dict[str, str]]
-                * if column string or list of column strings is passed, faker's method which is the same as the column name will be applied.
+                If a string or list of strings is passed, function will assume that column name is same as method name.
             locale : str or List[str], default ['en_US']
             inplace : bool, default True
+                See https://faker.readthedocs.io/en/master/locales.html for all faker's locales.
 
         Returns
         ----------
             faked : None if inplace = True, else pandas Series or pandas DataFrame
+            
         Examples
         ----------
         >>> df = load_dataset()
         >>> anonym = dfAnonymizer(df)
+        
         If methods are not specified
         
         >>> anonym.categorical_fake(['name', 'email', 'ssn'], inplace = False)
