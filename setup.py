@@ -9,7 +9,7 @@ setup(
   name="anonympy",
   version="0.1.0",
   packages=find_packages(include=["anonympy", "anonympy.*"]),
-  install_requires=['pandas', 'faker', 'cape-python', 'numpy'],
+  install_requires=['faker', 'cape-python', 'numpy', 'pandas', 'scikit-learn', 'texttable', 'setuptools'],
   python_requires='>=3.6.*',
   classifiers=[
     'Development Status :: 2 - Pre-Alpha',
@@ -20,6 +20,8 @@ setup(
     'Programming Language :: Python :: 3.6',
     'Programming Language :: Python :: 3.7',
     'Programming Language :: Python :: 3.8',
+    'Programming Language :: Python :: 3.9',
+    'Programming Language :: Python :: 3.10',
     ],
   license="BSD license",
   long_description=readme,
@@ -27,6 +29,3 @@ setup(
   keywords='anonympy',    
   zip_safe=False,
 )
-
-# pip install -e .
-# pip freeze > requirements.txt
