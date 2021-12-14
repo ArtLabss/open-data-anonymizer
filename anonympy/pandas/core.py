@@ -358,7 +358,7 @@ class dfAnonymizer(object):
 
         See Also
         --------
-        dfAnonymizer.categorical_fake_auto : Similar to categorical_fake but if assumes that column names are same as faker'.bash_history
+        dfAnonymizer.categorical_fake_auto : Replace values with synthetically generated ones, assuming column names are similar to faker's methods 
         
         Examples
         ----------
@@ -420,7 +420,6 @@ class dfAnonymizer(object):
                         inplace = True):
         '''
         Anonymize only those column which names are in ``fake_methods()`` list.
-        In order to produce synthetic data, column name should have same name as faker's method name.
 
         Parameters
         ----------
@@ -433,6 +432,31 @@ class dfAnonymizer(object):
         Returns
         ----------
             None if inplace = True, else an anonymized pandas Series or pandas DataFrame
+
+        See also
+        ----------
+        dfAnonymizer.categorical_fake : Replace values with synthetically generated ones by specifying which methods to apply 
+
+        Notes
+        ----------
+        In order to produce synthetic data, column name should have same name as faker's method name.
+        Function will go over all columns and if column name mathces any faker's method, values will be replaced.
+
+        Examples
+        ----------
+        Change column names 
+        >>> df = load_dataset()
+        >>> anonym.fake_methods('n')
+            name, name_female, name_male, name_nonbinary, nic_handle, nic_handles, null_boolean, numerify
+        >>> df.rename(columns = {'name': 'name_female'}, inplace = True)
+        >>> anonym = dfAnonymizer(df)
+
+        Change column names so the function can understand will methods to apply
+
+        >>> anonym.categorical_fake_auto(locale='ru_RU', inplace = False)
+                                            name_female                                        email                     ssn
+        0  Ларионова Эмилия Альбертовна            ustin_64@example.org  132644502284
+        1    Лариса Георгиевна Сафонова  seliverstovippolit@example.net  997953899019
         '''
         temp = pd.DataFrame()
         
