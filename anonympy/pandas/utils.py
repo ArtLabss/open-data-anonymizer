@@ -58,8 +58,7 @@ _fake_methods = ['aba', 'address', 'administrative_unit', 'am_pm', 'android_plat
                  'user_agent', 'user_name', 'uuid4', 'weights', 'windows_platform_token', 'word', 'words', 'year', 'zipcode', 'zipcode_in_state', 'zipcode_plus4']
 
 
-av_methods = f'''
-`numeric`:
+av_methods = f'''`numeric`:
         * Perturbation - "numeric_noise"
         * Binning - "numeric_binning"
         * PCA Masking - "numeric_masking"
