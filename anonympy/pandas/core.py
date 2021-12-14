@@ -42,7 +42,7 @@ class dfAnonymizer(object):
 
     Examples
     ----------
-    Contructing dfAnonymizer object from a DataFrame.
+    Contructing dfAnonymizer object:
 
     >>> df = load_dataset()
     >>> anonym = dfAnonymizer(df)
@@ -104,7 +104,7 @@ class dfAnonymizer(object):
 
         Returns
         ----------
-            dtype: numpy dtype 
+            dtype: numpy dtype
         '''
         dtype = self._df[column].dtype
 
@@ -129,49 +129,48 @@ class dfAnonymizer(object):
                   locale = ['en_US'],
                   inplace = True):
         '''
-        Anonymize all columns using different method for each dtype.
+        Anonymize all columns using different methods for each dtype.
 
         If dictionary is not provided, for numerical columns ``numeric_rounding`` is applied. 
         ``categorical_fake`` and ``categorical_tokenization`` for categorical columns 
         and ``datetime_noise`` or ``datetime_fake`` are applied for columns of datetime type.
 
-        In order to produce synthetic data, column name should have same name as faker's method name.
-        To see the list of all faker's methods call ``faker_methods()``. 
-
         Parameters
         ----------
         methods : Optional[Dict[str, str]], default None
-            {column_name: anonympy_method}. List of all methods ``dfAnonymizer.available_methods``.
+            {column_name: anonympy_method}. Call ``available_methods`` for list of all methods.
         locale : str or List[str], default ['en_US']
-            See https://faker.readthedocs.io/en/master/locales.html for all faker's locales 
+            See https://faker.readthedocs.io/en/master/locales.html for all faker's locales.
         inplace : bool, default True
-            If True, the changes will be applied to DataFrame (access using ``dfAnonymizer.to_df``)
-            Else, output is returned. 
+            If True the changes will be applied to DataFrame, else output will be returned. 
 
         Returns
         ----------
-            None if inplace = True, else pandas Series or pandas DataFrame.
+            If inplace is False, pandas Series or DataFrame is returned
 
         Examples
         ----------
         >>> df = load_dataset()
         >>> anonym = dfAnonymizer(df)
 
-        If methods None
+        If methods None:
         
         >>> anonym.anonymize(inplace = False)
                        name       age  ...                  email          ssn
         0  Douglas Williams       30   ...  dcampbell@example.org  718-51-5290
         1     Nicholas Hall       50   ...  orichards@example.com  684-81-8137
 
-        Dictionary for specifying which methods to apply.
+        Passing a dict for specifying which methods to apply:
         
-        >>> anonym.available_methods('numeric')
+        >>> available_methods('numeric')
             numeric_noise   numeric_binning	numeric_masking	  numeric_rounding
-        >>> anonym.anonymize({'name':'categorical_fake', 'age':'numeric_noise', 'email':'categorical_email_masking'}, inplace = False)
-                    name  age               email
-        0  Kyle Thompson   38    j*****r@owen.com
-        1  Michael Smith   47   e*****n@lewis.com
+        >>> anonym.anonymize({'name':'categorical_fake',
+        ...                                      'age':'numeric_noise',
+        ...                                      'email':'categorical_email_masking',
+        ...                                      'salary': 'numeric_rounding'}, inplace = False)
+                              name    age                     email       salary
+        0  Daniel Campbell   37   j*****r@owen.com   60000.0
+        1       Cory Sharp       52   e*****n@lewis.com  50000.0
         '''
         if not methods:
             if inplace:
@@ -293,27 +292,28 @@ class dfAnonymizer(object):
             column : str
                 Column name which data will be substituted.
             method : str
-                Method name. See list of all faker's methods``fake_methods()``.
+                Method name. List of all methods ``fake_methods``.
             locale : str or List[str], default ['en_US']
                 See https://faker.readthedocs.io/en/master/locales.html for all faker's locales.
             inplace : bool, default True
-                If True, the changes will be applied to DataFrame (access using ``dfAnonymizer.to_df``).
-                Else, output is returned.
-    
+                If True the changes will be applied to DataFrame, else output will be returned. 
+
+        Returns
+        ----------
+            None if inplace is True, else pandas Series is returned
+            
         Examples
         ----------
-        Passing column and method name
+        Passing column and method name:
         
         >>> df = load_dataset()
         >>> anonym = dfAnonymizer(df)
-        >>> anonym._fake_column(column='email', method='company_email', inplace = False)
+        >>> anonym._fake_column(column='email',
+        ...                                          method='company_email',
+        ...                                          inplace = False)
         0    matthew29@gonzalez-robertson.biz
         1             zheath@walker-allen.net
         Name: email, dtype: object
-        
-        Returns
-        ----------
-            None if inplace = True, else pandas Series.
         '''
         fake = Faker(locale=locale)
         method = getattr(fake, method)
@@ -336,51 +336,53 @@ class dfAnonymizer(object):
                   inplace = True):
         '''
         Replace data with synthetic data using faker's generator. 
-        To see the list of all faker's methods, call ``fake_methods()``.
+        To see the list of all faker's methods, call ``fake_methods``.
 
-        If column name coincides with faker's method then pass a string or a list of strings for `columns` argument.
-        Otherwise, pass a dictionary with column name as a key and faker's method as a value `{col_name: fake_method}`
+        If column name and  faker's method are similar, then pass a string or a list of strings for `columns` argument
+        Otherwise, pass a dictionary with column name as a key and faker's method as a value `{col_name: fake_method}`.
         
         Parameters
         ----------
             columns : Union[str, List[str], Dict[str, str]]
-                If a string or list of strings is passed, function will assume that column name is same as method name.
+                If a string or list of strings is passed, function will assume that method name is same as column name.
             locale : str or List[str], default ['en_US']
                 See https://faker.readthedocs.io/en/master/locales.html for all faker's locales.
             inplace : bool, default True
-                If True, the changes will be applied to DataFrame (access using ``dfAnonymizer.to_df``).
-                Else, output is returned.
+                If True the changes will be applied to DataFrame, else output will be returned. 
 
         Returns
         ----------
-            faked : None if inplace = True, else pandas Series or pandas DataFrame
-                Synthetically generated data. 
+            None if inplace is True, else pandas Series or pandas DataFrame is returned
 
         See Also
         --------
-        dfAnonymizer.categorical_fake_auto : Replace values with synthetically generated ones, assuming column names are similar to faker's methods 
+        dfAnonymizer.categorical_fake_auto : Replace values with synthetically generated ones, assuming column names are similar to faker's methods
         
         Examples
         ----------
         >>> df = load_dataset()
         >>> anonym = dfAnonymizer(df)
         
-        If methods are not specified
+        If methods are not specified, locale Great Britain:
         
-        >>> anonym.categorical_fake(['name', 'email', 'ssn'], locale = 'en_GB', inplace = False) # locale Great Britain 
+        >>> anonym.categorical_fake(['name', 'email', 'ssn'],
+        ...                                              locale = 'en_GB',
+        ...                                              inplace = False) 
                               name                       email          ssn
         0  Allan Richardson-Gibson  bryantjonathan@example.org  ZZ 180372 T
         1           Dominic Taylor        thopkins@example.org    ZZ780511T
 
-        Passing a specific faker's method
+        Passing a specific method, locale Russia:
         
         >>> fake_methods('n')
             name, name_female, name_male, name_nonbinary, nic_handle, nic_handles, null_boolean, numerify
-        >>> anonym.categorical_fake({'name': 'name_nonbinary', 'web': 'url'}, locale = 'ru_RU', inplace = False) # locale Russia 
+        >>> anonym.categorical_fake({'name': 'name_nonbinary', 'web': 'url'},
+        ...                                              locale = 'ru_RU',
+        ...                                              inplace = False) 
                                                   name                     web
         0   Бобров Борислав Ефимович  https://shestakov.biz/
         1  Шилов Викентий Георгиевич    https://monetka.net/
-        '''
+        ''' 
         # if a single column is passed (str)
         if isinstance(columns, str) or (len(columns) == 1 and isinstance(columns, list)):
             if isinstance(columns, list):
@@ -419,15 +421,14 @@ class dfAnonymizer(object):
                         locale = ['en_US'],
                         inplace = True):
         '''
-        Anonymize only those column which names are in ``fake_methods()`` list.
+        Anonymize only those column which names are in ``fake_methods`` list.
 
         Parameters
         ----------
             locale : str or List[str], default ['en_US']
                 See https://faker.readthedocs.io/en/master/locales.html for all faker's locales.
             inplace : bool, default True
-                If True, the changes will be applied to DataFrame (access using ``dfAnonymizer.to_df``).
-                Else, output is returned.
+                If True the changes will be applied to DataFrame, else output will be returned. 
 
         Returns
         ----------
@@ -435,25 +436,27 @@ class dfAnonymizer(object):
 
         See also
         ----------
-        dfAnonymizer.categorical_fake : Replace values with synthetically generated ones by specifying which methods to apply. 
+        dfAnonymizer.categorical_fake : Replace values with synthetically generated ones by specifying which methods to apply
 
         Notes
         ----------
-        In order to produce synthetic data, column name should have same name as faker's method name.
+        In order to produce synthetic data, column name should have same name as faker's method name
         Function will go over all columns and if column name mathces any faker's method, values will be replaced.
 
         Examples
         ----------
-        Change column names so the function can understand which method to apply.
+        Change column names so the function can understand which method to apply:
+        
         >>> df = load_dataset()
         >>> fake_methods('n')
             name, name_female, name_male, name_nonbinary, nic_handle, nic_handles, null_boolean, numerify
-        >>> anonym = dfAnonymizer(df)
         >>> df.rename(columns={'name': 'name_female'}, inplace = True)
+        >>> anonym = dfAnonymizer(df)
 
-        Call method without specifying which methods to apply. 
+        Call the method without specifying which methods to apply, locale Japan:
         
-        >>> anonym.categorical_fake_auto(local = 'ja_JP', inplace = False) # locale Japan 
+        >>> anonym.categorical_fake_auto(local = 'ja_JP',
+        ...                                                      inplace = False)
               name_female                     email                                ssn
         0      西村 あすか     qwatanabe@example.org  783-28-2531
         1       山口 直子  okamotochiyo@example.net  477-58-9577
@@ -486,7 +489,7 @@ class dfAnonymizer(object):
                       seed = None,
                       inplace = True):
         '''
-        Add uniform random noise.
+        Add uniform random noise
         Based on cape-privacy's NumericPerturbation function.
 
         Mask a numeric pandas Series/DataFrame by adding uniform random
@@ -513,8 +516,15 @@ class dfAnonymizer(object):
 
         Examples
         ----------
+        >>> df = load_dataset()
+        >>> anonym = dfAnonymizer(df)
+
+        Call the method with column name or names:
         
-        
+        >>> anonym.numeric_noise('age', inplace = False)
+        0    29
+        1    48
+        dtype: int64
         '''
         # If a single column is passed
         if isinstance(columns, str) or (len(columns) == 1 and isinstance(columns, list)):
@@ -1136,41 +1146,6 @@ class dfAnonymizer(object):
 
         print(t.draw())
             
-    
-    def rename(self, mapper = None,
-               index = None,
-               columns = None,
-               axis = None,
-               copy = True,
-               inplace = True,
-               level = None,
-               errors='ignore'):
-        '''
-        Alter axes labels.
-        Based on pandas.Dataframe.rename function
-
-        Call ``help(pd.DataFrame.rename)``` for more. 
-        '''
-        if inplace:
-            self._df.rename(mapper = mapper,
-                            index = index,
-                            columns = columns,
-                            axis = axis,
-                            copy = copy,
-                            inplace = inplace,
-                            level = level,
-                            errors = errors)
-            self._df2 = df.copy()
-        else:
-            return self._df.rename(mapper = mapper,
-                                   index = index,
-                                    columns = columns,
-                                    axis = axis,
-                                    copy = copy,
-                                    inplace = inplace,
-                                    level = level,
-                                    errors = errors)
-
 
     def to_df(self):
         ''' 
