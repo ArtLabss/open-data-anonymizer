@@ -133,7 +133,7 @@ class dfAnonymizer(object):
 
         If dictionary is not provided, for numerical columns ``numeric_rounding`` is applied. 
         ``categorical_fake`` and ``categorical_tokenization`` for categorical columns 
-        and ``datetime_noise`` or ``datetime_fake`` are applied for datetime columns.
+        and ``datetime_noise`` or ``datetime_fake`` are applied for columns of datetime type.
 
         In order to produce synthetic data, column name should have same name as faker's method name.
         To see the list of all faker's methods call ``faker_methods()``. 
@@ -172,7 +172,6 @@ class dfAnonymizer(object):
                     name  age               email
         0  Kyle Thompson   38    j*****r@owen.com
         1  Michael Smith   47   e*****n@lewis.com
-        
         '''
         if not methods:
             if inplace:
@@ -337,7 +336,12 @@ class dfAnonymizer(object):
         Returns
         ----------
             faked : None if inplace = True, else pandas Series or pandas DataFrame
-            
+                Synthetically generated data. 
+
+        See Also
+        --------
+        dfAnonymizer.categorical_fake_auto : Similar to categorical_fake but if assumes that column names are same as faker's methods 
+        
         Examples
         ----------
         >>> df = load_dataset()
@@ -349,14 +353,15 @@ class dfAnonymizer(object):
                        name                     email          ssn
         0  Veronica Nichols  michealscott@example.com  741-09-3939
         1       Brent Smith    amberyoder@example.net  443-53-3660
+
         Passing a specific faker's method
         
         >>> anonym.fake_methods('n')
             name, name_female, name_male, name_nonbinary, nic_handle, nic_handles, null_boolean, numerify
-        >>> anonym.categorical_fake({'name':'name_nonbinary'}, inplace = False)
-                      name
-        0         Ann Snow
-        1  Lindsay Roberts 
+        >>> anonym.categorical_fake({'name': 'name_nonbinary', 'web': 'url'}, inplace = False)
+                       name                  web
+        0  Jennifer Schultz  http://wheeler.net/
+        1    Albert Richard  https://suarez.com/
         '''
         # if a single column is passed (str)
         if isinstance(columns, str) or (len(columns) == 1 and isinstance(columns, list)):
