@@ -3,7 +3,7 @@ from time import time
 import pandas as pd
 
 
-fake_methods = '''A | aba, address, administrative_unit, am_pm, android_platform_token, ascii_company_email, ascii_email, ascii_free_email, ascii_safe_email
+faker_methods = '''A | aba, address, administrative_unit, am_pm, android_platform_token, ascii_company_email, ascii_email, ascii_free_email, ascii_safe_email
 B | bank_country, bban, boolean, bothify, bs, building_number
 C | cache_pattern, catch_phrase, century, chrome, city, city_prefix, city_suffix, color, color_name, company, company_email, company_suffix, coordinate, country, country_calling_code, country_code, credit_card_expire, credit_card_full, credit_card_number, credit_card_provider, credit_card_security_code, cryptocurrency, cryptocurrency_code, cryptocurrency_name, csv, currency, currency_code, currency_name, currency_symbol, current_country, current_country_code
 D | date, date_between, date_between_dates, date_object, date_of_birth, date_this_century, date_this_decade, date_this_month, date_this_year, date_time, date_time_ad, date_time_between, date_time_between_dates, date_time_this_century, date_time_this_decade, date_time_this_month, date_time_this_year, day_of_month, day_of_week, del_arguments, dga, domain_name, domain_word, dsv
@@ -58,7 +58,7 @@ _fake_methods = ['aba', 'address', 'administrative_unit', 'am_pm', 'android_plat
                  'user_agent', 'user_name', 'uuid4', 'weights', 'windows_platform_token', 'word', 'words', 'year', 'zipcode', 'zipcode_in_state', 'zipcode_plus4']
 
 
-available_methods = f'''
+av_methods = f'''
 `numeric`:
         * Perturbation - "numeric_noise"
         * Binning - "numeric_binning"
@@ -129,6 +129,32 @@ def timer_func(func):
         print(f'Function {func.__name__!r} executed in {(t2-t1):.4f}s')
         return result
     return wrap_func
+
+
+def fake_methods(letter = None):
+    '''
+    Print a list of faker's methods
+    '''
+    if letter == None or letter == 'all':
+        print(faker_methods)
+    else:
+        for line in faker_methods.split('\n'):
+            if line[0] == letter.upper():
+                print(line[3:])
+
+def available_methods(dtype = None):
+    '''
+    Print a list of available methods
+    '''
+    splitted = {'numeric': ['numeric_noise', 'numeric_binning', 'numeric_masking', 'numeric_rounding'],
+                'categorical': ['categorical_fake', 'categorical_fake_auto', 'categorical_resampling', 'categorical_tokenization', 'categorical_email_masking'],
+                'datetime': ["datetime_fake", "datetime_noise"],
+                'general': ['column_suppression']}
+    
+    if dtype == None or dtype == 'all':
+        print(av_methods)
+    else:
+        print(*splitted[dtype], sep='\t')
 
 
 def load_dataset():
