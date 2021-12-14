@@ -42,14 +42,14 @@ class dfAnonymizer(object):
 
     Examples
     ----------
-    Contructing dfAnonymizer object from a DataFrame
+    Contructing dfAnonymizer object from a DataFrame.
 
     >>> df = load_dataset()
     >>> anonym = dfAnonymizer(df)
     >>> anonym.to_df()
-         name   age  ...                 email                  ssn
-    0   Bruce   33  ...  josefrazier@owen.com  343554334
-    1   Tony   48  ...       eryan@lewis.com    656564664
+         name   age  ...                 email          ssn
+    0   Bruce   33   ...  josefrazier@owen.com    343554334
+    1   Tony    48   ...       eryan@lewis.com    656564664
     """
     def __init__(self,
                  df: pd.DataFrame):
@@ -59,6 +59,7 @@ class dfAnonymizer(object):
         
         # Private Attributes
         self._df = df.copy()
+        self._df2 = df.copy()
         self._methods_applied = {}
         self._synthetic_data = 'Synthetic Data'
         self._tokenization = 'Tokenization'
@@ -130,8 +131,9 @@ class dfAnonymizer(object):
         '''
         Anonymize all columns using different method for each dtype.
 
-        For numerical columns ``numeric_rounding`` is applied. ``categorical_fake`` and ``categorical_tokenization``
-        for categorical columns and ``datetime_noise`` or ``datetime_fake`` are applied for datetime columns.
+        If dictionary is not provided, for numerical columns ``numeric_rounding`` is applied. 
+        ``categorical_fake`` and ``categorical_tokenization`` for categorical columns 
+        and ``datetime_noise`` or ``datetime_fake`` are applied for columns of datetime type.
 
         In order to produce synthetic data, column name should have same name as faker's method name.
         To see the list of all faker's methods call ``faker_methods()``. 
@@ -139,37 +141,37 @@ class dfAnonymizer(object):
         Parameters
         ----------
         methods : Optional[Dict[str, str]], default None
-            {column_name: anonympy_method}. List of all methods can be accessed by calling ``available_methods()``.
+            {column_name: anonympy_method}. List of all methods ``dfAnonymizer.available_methods``.
         locale : str or List[str], default ['en_US']
             See https://faker.readthedocs.io/en/master/locales.html for all faker's locales 
         inplace : bool, default True
-            if True, the changes will be applied to DataFrame (access using ``to_df()`` method).
-            Else, a DataFrame is returned 
+            If True, the changes will be applied to DataFrame (access using ``dfAnonymizer.to_df``)
+            Else, output is returned. 
 
         Returns
         ----------
-            ser : None if inplace = True, else pandas Series or pandas DataFrame
+            None if inplace = True, else pandas Series or pandas DataFrame.
 
         Examples
         ----------
-        If methods None 
-
         >>> df = load_dataset()
         >>> anonym = dfAnonymizer(df)
+
+        If methods None
+        
         >>> anonym.anonymize(inplace = False)
-                       name            age  ...                  email                    ssn
-        0  Douglas Williams   30   ...  dcampbell@example.org  718-51-5290
+                       name       age  ...                  email          ssn
+        0  Douglas Williams       30   ...  dcampbell@example.org  718-51-5290
         1     Nicholas Hall       50   ...  orichards@example.com  684-81-8137
 
-
-        Specifying which methods to apply
+        Dictionary for specifying which methods to apply.
         
         >>> anonym.available_methods('numeric')
             numeric_noise   numeric_binning	numeric_masking	  numeric_rounding
-        >>> anonym.fake_methods('n')
-            name, name_female, name_male, name_nonbinary, nic_handle, nic_handles, null_boolean, numerify
-        >>> anonym.anonymize({'name': 'categorical_fake', 'age': 'numeric_noise'}, inplace = False)
-        
+        >>> anonym.anonymize({'name':'categorical_fake', 'age':'numeric_noise', 'email':'categorical_email_masking'}, inplace = False)
+                    name  age               email
+        0  Kyle Thompson   38    j*****r@owen.com
+        1  Michael Smith   47   e*****n@lewis.com
         '''
         if not methods:
             if inplace:
@@ -231,6 +233,8 @@ class dfAnonymizer(object):
                         self.categorical_resampling(key)
                     elif value == "categorical_tokenization":
                         self.categorical_tokenization(key)
+                    elif value == "categorical_email_masking":
+                        self.categorical_email_masking(key)
                     # datetime
                     elif value == "datetime_fake":
                         self.datetime_fake(key)
@@ -253,11 +257,13 @@ class dfAnonymizer(object):
                         temp[key] = self.numeric_rounding(key, inplace = False)
                     # categorical
                     elif value == "categorical_fake":
-                        temp[key] = self.categorical_fake(column=key, method=key, inplace = False)
+                        temp[key] = self.categorical_fake(key, inplace = False)
                     elif value == "categorical_resampling":
                         temp[key] = self.categorical_resampling(key, inplace = False)
                     elif value == "categorical_tokenization":
                         temp[key] = self.categorical_tokenization(key, inplace = False)
+                    elif value == 'categorical_email_masking':
+                        temp[key] = self.categorical_email_masking(key, inplace = False)
                     # datetime
                     elif value == "datetime_fake":
                         temp[key] = self.datetime_fake(key, inplace = False)
@@ -279,8 +285,8 @@ class dfAnonymizer(object):
                   locale = ['en_US'],
                   inplace = True):
         '''
-        Anonymize pandas Series object using synthetic data generator.
-        Based on faker's genarator object
+        Anonymize pandas Series object using synthetic data generator
+        Based on faker.Faker.
         
         Parameters
         ----------
@@ -288,10 +294,10 @@ class dfAnonymizer(object):
             method : str
             locale : str or List[str], default ['en_US']
             inplace : bool, default True
-
+    
         Returns
         ----------
-            faked : None if inplace = True, else pandas Series
+            None if inplace = True, else pandas Series.
         '''
         fake = Faker(locale=locale)
         method = getattr(fake, method)
@@ -307,27 +313,55 @@ class dfAnonymizer(object):
         else:
             return faked
 
-    
+
     def categorical_fake(self,
                   columns,
                   locale = ['en_US'],
                   inplace = True):
         '''
-        Anonymize pandas Series or pandas DataFrame using synthetic data generator
-        Based on faker's genarator object 
+        Replace data with synthetic data using faker's generator. 
+        To see the list of all faker's methods, call ``fake_methods()``.
 
+        If column name coincides with faker's method then pass a string or a list of strings for `columns` argument.
+        Otherwise, pass a dictionary with column name as a key and faker's method as a value `{col_name: fake_method}`
+        
         Parameters
         ----------
-            methods : Union[str, List[str], Dict[str, str]]
-                * if a single column is passed, faker's method which is the same as the column name will be applied
-                * same method will be applied to a list of columns' names
-                * dictionary with column as a key and method name as value should be used if column name doesn't correspond to any faker's methods.
+            columns : Union[str, List[str], Dict[str, str]]
+                If a string or list of strings is passed, function will assume that column name is same as method name.
             locale : str or List[str], default ['en_US']
             inplace : bool, default True
+                See https://faker.readthedocs.io/en/master/locales.html for all faker's locales.
 
         Returns
         ----------
-            faked : None if inplace = True, else pandas Series or pandas DataFrame 
+            faked : None if inplace = True, else pandas Series or pandas DataFrame
+                Synthetically generated data. 
+
+        See Also
+        --------
+        dfAnonymizer.categorical_fake_auto : Similar to categorical_fake but if assumes that column names are same as faker's methods 
+        
+        Examples
+        ----------
+        >>> df = load_dataset()
+        >>> anonym = dfAnonymizer(df)
+        
+        If methods are not specified
+        
+        >>> anonym.categorical_fake(['name', 'email', 'ssn'], inplace = False)
+                       name                     email          ssn
+        0  Veronica Nichols  michealscott@example.com  741-09-3939
+        1       Brent Smith    amberyoder@example.net  443-53-3660
+
+        Passing a specific faker's method
+        
+        >>> anonym.fake_methods('n')
+            name, name_female, name_male, name_nonbinary, nic_handle, nic_handles, null_boolean, numerify
+        >>> anonym.categorical_fake({'name': 'name_nonbinary', 'web': 'url'}, inplace = False)
+                       name                  web
+        0  Jennifer Schultz  http://wheeler.net/
+        1    Albert Richard  https://suarez.com/
         '''
         # if a single column is passed (str)
         if isinstance(columns, str) or (len(columns) == 1 and isinstance(columns, list)):
@@ -357,7 +391,7 @@ class dfAnonymizer(object):
                 for column, method in columns.items():
                     self._fake_column(column, method, inplace = True, locale = locale)
             else:
-                for column, method in methods.items():
+                for column, method in columns.items():
                     faked = self._fake_column(column, method, inplace = False, locale = locale)
                     temp[column] = faked
                 return temp
@@ -367,8 +401,8 @@ class dfAnonymizer(object):
                         locale = ['en_US'],
                         inplace = True):
         '''
-        Compare a column's name to faker's method from utils.fake_method.
-        Anonymize if column name is similar to the method. 
+        Anonymize if column name is similar to the method.
+        In order to produce synthetic data, column name should have same name as faker's method name.
 
         Parameters
         ----------
@@ -608,18 +642,18 @@ class dfAnonymizer(object):
             if isinstance(columns, list):
                 columns = columns[0]
             pca = PCA(n_components=1)
-            ser = pd.Series(pca.fit_transform(self._df[columns]))
+            ser = pd.DataFrame(pca.fit_transform(self._df[[columns]]), columns=[columns])
 
             if inplace:
                 if columns in self.anonymized_columns:
                     print(f'`{columns}` column already anonymized!')
                 else:
-                    self._df[columns] = ser
+                    self._df[columns] = ser[columns]
                     self.anonymized_columns.append(columns)
                     self.unanonymized_columns.remove(columns)
                     self._methods_applied[columns] = self._PCA
             else:
-                return ser
+                return ser[columns]
         # if a list of columns is passed
         else:
             if not inplace:
@@ -630,7 +664,6 @@ class dfAnonymizer(object):
                 for column in columns:
                     if column in self.anonymized_columns:
                         print(f'`{column}` column already anonymized!')
-                        columns.remove(column)
                     else:
                         self.anonymized_columns.append(column)
                         self.unanonymized_columns.remove(column)
@@ -756,7 +789,7 @@ class dfAnonymizer(object):
             temp = pd.DataFrame()
 
             for column in columns:
-                ser = self._df[columns].apply(lambda x: self._mask(x))
+                ser = self._df[column].apply(lambda x: self._mask(x))
 
                 if inplace:
                     if column in self.anonymized_columns:
@@ -863,7 +896,7 @@ class dfAnonymizer(object):
                     self.unanonymized_columns.remove(columns)
                     self._methods_applied[columns] = self._drop
             else:
-                return self._df.drop(columns, axis = 1, inplace = False)
+                return self._df2.drop(columns, axis = 1, inplace = False)
 
         # if a list of columns is passed
         else:
@@ -877,7 +910,8 @@ class dfAnonymizer(object):
                         self.unanonymized_columns.remove(column)
                         self._methods_applied[column] = self._drop
             else:
-                return self._df.drop(columns, axis = 1, inplace = False)
+                return self._df2.drop(columns, axis = 1, inplace = False)
+                
 
 
     def numeric_binning(self,
