@@ -287,14 +287,30 @@ class dfAnonymizer(object):
         '''
         Anonymize pandas Series object using synthetic data generator
         Based on faker.Faker.
-        
+                
         Parameters
         ----------
             column : str
+                Column name which data will be substituted.
             method : str
+                Method name. See list of all faker's methods``fake_methods()``.
             locale : str or List[str], default ['en_US']
+                See https://faker.readthedocs.io/en/master/locales.html for all faker's locales.
             inplace : bool, default True
+                If True, the changes will be applied to DataFrame (access using ``dfAnonymizer.to_df``).
+                Else, output is returned.
     
+        Examples
+        ----------
+        Passing column and method name
+        
+        >>> df = load_dataset()
+        >>> anonym = dfAnonymizer(df)
+        >>> anonym._fake_column(column='email', method='company_email', inplace = False)
+        0    matthew29@gonzalez-robertson.biz
+        1             zheath@walker-allen.net
+        Name: email, dtype: object
+        
         Returns
         ----------
             None if inplace = True, else pandas Series.
@@ -330,8 +346,10 @@ class dfAnonymizer(object):
             columns : Union[str, List[str], Dict[str, str]]
                 If a string or list of strings is passed, function will assume that column name is same as method name.
             locale : str or List[str], default ['en_US']
-            inplace : bool, default True
                 See https://faker.readthedocs.io/en/master/locales.html for all faker's locales.
+            inplace : bool, default True
+                If True, the changes will be applied to DataFrame (access using ``dfAnonymizer.to_df``).
+                Else, output is returned.
 
         Returns
         ----------
@@ -340,7 +358,7 @@ class dfAnonymizer(object):
 
         See Also
         --------
-        dfAnonymizer.categorical_fake_auto : Similar to categorical_fake but if assumes that column names are same as faker's methods 
+        dfAnonymizer.categorical_fake_auto : Similar to categorical_fake but if assumes that column names are same as faker'.bash_history
         
         Examples
         ----------
@@ -349,10 +367,10 @@ class dfAnonymizer(object):
         
         If methods are not specified
         
-        >>> anonym.categorical_fake(['name', 'email', 'ssn'], inplace = False)
-                       name                     email          ssn
-        0  Veronica Nichols  michealscott@example.com  741-09-3939
-        1       Brent Smith    amberyoder@example.net  443-53-3660
+        >>> anonym.categorical_fake(['name', 'email', 'ssn'], locale = 'en_GB', inplace = False) # locale Great Britain 
+                              name                       email          ssn
+        0  Allan Richardson-Gibson  bryantjonathan@example.org  ZZ 180372 T
+        1           Dominic Taylor        thopkins@example.org    ZZ780511T
 
         Passing a specific faker's method
         
@@ -401,13 +419,16 @@ class dfAnonymizer(object):
                         locale = ['en_US'],
                         inplace = True):
         '''
-        Anonymize if column name is similar to the method.
+        Anonymize only those column which names are in ``fake_methods()`` list.
         In order to produce synthetic data, column name should have same name as faker's method name.
 
         Parameters
         ----------
             locale : str or List[str], default ['en_US']
+                See https://faker.readthedocs.io/en/master/locales.html for all faker's locales.
             inplace : bool, default True
+                If True, the changes will be applied to DataFrame (access using ``dfAnonymizer.to_df``).
+                Else, output is returned.
 
         Returns
         ----------
@@ -441,16 +462,26 @@ class dfAnonymizer(object):
                       seed = None,
                       inplace = True):
         '''
-        Add uniform random noise to a numeric Pandas series.
-        Based on cape-privacy's NumericPerturbation function
+        Add uniform random noise.
+        Based on cape-privacy's NumericPerturbation function.
 
+        Mask a numeric pandas Series/DataFrame by adding uniform random
+        noise to each value. The amount of noise is drawn from
+        the interval [min, max).
+        
         Parameters
         ----------
             columns : Union[str, List[str]]
+                Column name or a list of column names.
             MIN : (int, float), default -10
-            MAX : (int, float), default 10 
+                The values generated will be greater then or equal to min.
+            MAX : (int, float), default 10
+                The values generated will be less than max.
             seed : int, default None
+                To initialize the random generator.
             inplace : bool, default True
+                If True, the changes will be applied to DataFrame (access using ``dfAnonymizer.to_df``).
+                Else, output is returned.
 
         Returns
         ----------
@@ -461,7 +492,7 @@ class dfAnonymizer(object):
             if isinstance(columns, list):
                 columns = columns[0]
             dtype = self._dtype_checker(columns)
-            noise = NumericPerturbation(dtype = dtype, min = MIN, max = MAX)
+            noise = NumericPerturbation(dtype = dtype, min = MIN, max = MAX, seed = seed)
             ser = noise(self._df[columns].copy()).astype(dtype)
 
             if inplace:
@@ -480,7 +511,7 @@ class dfAnonymizer(object):
             for column in columns:
                 
                 dtype = self._dtype_checker(column)
-                noise = NumericPerturbation(dtype = dtype, min = MIN, max = MAX)
+                noise = NumericPerturbation(dtype = dtype, min = MIN, max = MAX, seed = seed)
                 ser = noise(self._df[column].copy()).astype(dtype)
 
                 if inplace:
@@ -525,7 +556,7 @@ class dfAnonymizer(object):
         if isinstance(columns, str) or (len(columns) == 1 and isinstance(columns, list)):
             if isinstance(columns, list):
                 columns = columns[0]
-            noise = DatePerturbation(frequency = frequency, min = MIN, max = MAX)
+            noise = DatePerturbation(frequency = frequency, min = MIN, max = MAX, seed = seed)
             ser = noise(self._df[columns].copy())
 
             if inplace:
@@ -543,7 +574,7 @@ class dfAnonymizer(object):
             temp = pd.DataFrame()
             
             for column in columns:
-                noise = DatePerturbation(frequency = frequency, min = MIN, max = MAX)
+                noise = DatePerturbation(frequency = frequency, min = MIN, max = MAX, seed = seed)
                 ser = noise(self._df[column].copy())
 
                 if inplace:
@@ -576,7 +607,7 @@ class dfAnonymizer(object):
 
         Returns
         ----------
-            ser: pandas Series or pandas DataFrame
+            pandas Series or pandas DataFrame if inplace = False, else None 
         '''
         # if a single column is passed
         if isinstance(columns, str) or (len(columns) == 1 and isinstance(columns, list)):
