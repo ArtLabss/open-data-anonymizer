@@ -29,16 +29,20 @@ class dfAnonymizer(object):
 
     Parameters:
     ----------
-        df: pandas DataFrame
+    df: pandas DataFrame
          
     Returns:
     ----------
-        dfAnonymizer object
+    dfAnonymizer object
 
     Raises
     ----------
-        Exception:
-            * If ``df`` is not a DataFrame
+    Exception:
+        * If ``df`` is not a DataFrame
+
+    See also
+    ----------
+    dfAnonymizer.to_df : Return a DataFrame
 
     Examples
     ----------
@@ -100,11 +104,11 @@ class dfAnonymizer(object):
 
         Parameters
         ----------
-            column: str
+        column: str
 
         Returns
         ----------
-            dtype: numpy dtype
+        dtype: numpy dtype
         '''
         dtype = self._df[column].dtype
 
@@ -142,11 +146,15 @@ class dfAnonymizer(object):
         locale : str or List[str], default ['en_US']
             See https://faker.readthedocs.io/en/master/locales.html for all faker's locales.
         inplace : bool, default True
-            If True the changes will be applied to `dfAnonymizer` obejct, else output will be returned. 
+            If True the changes will be applied to `dfAnonymizer` obejct, else output is returned. 
 
         Returns
         ----------
-            If inplace is False, pandas Series or DataFrame is returned
+        If inplace is False, pandas Series or DataFrame is returned
+
+        See Also
+        --------
+        dfAnonymizer.categorical_fake_auto : Replace values with synthetically generated ones
 
         Examples
         ----------
@@ -289,31 +297,22 @@ class dfAnonymizer(object):
                 
         Parameters
         ----------
-            column : str
-                Column name which data will be substituted.
-            method : str
-                Method name. List of all methods ``fake_methods``.
-            locale : str or List[str], default ['en_US']
-                See https://faker.readthedocs.io/en/master/locales.html for all faker's locales.
-            inplace : bool, default True
-                If True the changes will be applied to `dfAnonymizer` obejct, else output will be returned. 
+        column : str
+            Column name which data will be substituted.
+        method : str
+            Method name. List of all methods ``fake_methods``.
+        locale : str or List[str], default ['en_US']
+            See https://faker.readthedocs.io/en/master/locales.html for all faker's locales.
+        inplace : bool, default True
+            If True the changes will be applied to `dfAnonymizer` obejct, else output is returned. 
 
         Returns
         ----------
-            None if inplace is True, else pandas Series is returned
-            
-        Examples
+        None if inplace is True, else pandas Series is returned
+
+        See also
         ----------
-        Passing column and method name:
-        
-        >>> df = load_dataset()
-        >>> anonym = dfAnonymizer(df)
-        >>> anonym._fake_column(column='email',
-        ...                     method='company_email',
-        ...                     inplace = False)
-        0    matthew29@gonzalez-robertson.biz
-        1             zheath@walker-allen.net
-        Name: email, dtype: object
+        dfAnonymizer.categorical_fake : Replace values with synthetically generated ones by specifying which methods to apply
         '''
         fake = Faker(locale=locale)
         method = getattr(fake, method)
@@ -343,12 +342,12 @@ class dfAnonymizer(object):
         
         Parameters
         ----------
-            columns : Union[str, List[str], Dict[str, str]]
-                If a string or list of strings is passed, function will assume that method name is same as column name.
-            locale : str or List[str], default ['en_US']
-                See https://faker.readthedocs.io/en/master/locales.html for all faker's locales.
-            inplace : bool, default True
-                If True the changes will be applied to `dfAnonymizer` obejct, else output will be returned. 
+        columns : Union[str, List[str], Dict[str, str]]
+            If a string or list of strings is passed, function will assume that method name is same as column name.
+        locale : str or List[str], default ['en_US']
+            See https://faker.readthedocs.io/en/master/locales.html for all faker's locales.
+        inplace : bool, default True
+            If True the changes will be applied to `dfAnonymizer` obejct, else output is returned. 
 
         Returns
         ----------
@@ -356,7 +355,7 @@ class dfAnonymizer(object):
 
         See Also
         --------
-        dfAnonymizer.categorical_fake_auto : Replace values with synthetically generated ones, assuming column names are similar to faker's methods
+        dfAnonymizer.categorical_fake_auto : Replace values with synthetically generated ones
         
         Examples
         ----------
@@ -425,14 +424,14 @@ class dfAnonymizer(object):
 
         Parameters
         ----------
-            locale : str or List[str], default ['en_US']
-                See https://faker.readthedocs.io/en/master/locales.html for all faker's locales.
-            inplace : bool, default True
-                If True the changes will be applied to `dfAnonymizer` obejct, else output will be returned. 
+        locale : str or List[str], default ['en_US']
+            See https://faker.readthedocs.io/en/master/locales.html for all faker's locales.
+        inplace : bool, default True
+            If True the changes will be applied to `dfAnonymizer` obejct, else output is returned. 
 
         Returns
         ----------
-            None if inplace = True, else an anonymized pandas Series or pandas DataFrame
+        None if inplace = True, else an anonymized pandas Series or pandas DataFrame
 
         See also
         ----------
@@ -498,20 +497,26 @@ class dfAnonymizer(object):
         
         Parameters
         ----------
-            columns : Union[str, List[str]]
-                Column name or a list of column names.
-            MIN : (int, float), default -10
-                The values generated will be greater then or equal to min.
-            MAX : (int, float), default 10
-                The values generated will be less than max.
-            seed : int, default None
-                To initialize the random generator.
-            inplace : bool, default True
-                If True the changes will be applied to `dfAnonymizer` obejct, else output will be returned. 
+        columns : Union[str, List[str]]
+            Column name or a list of column names.
+        MIN : (int, float), default -10
+            The values generated will be greater then or equal to min.
+        MAX : (int, float), default 10
+            The values generated will be less than max.
+        seed : int, default None
+            To initialize the random generator.
+        inplace : bool, default True
+            If True the changes will be applied to `dfAnonymizer` obejct, else output is returned. 
         
         Returns
         ----------
-            ser: pandas Series or pandas DataFrame with uniform random noise added
+        ser: pandas Series or pandas DataFrame with uniform random noise added
+
+        See also
+        ----------
+        dfAnonymizer.numeric_binning : Bin values into discrete intervals
+        dfAnonymizer.numeric_masking : Apply PCA masking to numeric values 
+        dfAnonymizer.numeric_rounding :  Round values to the given number
 
         Examples
         ----------
@@ -519,7 +524,7 @@ class dfAnonymizer(object):
         >>> anonym = dfAnonymizer(df)
 
         Applying numeric perturbation:
-        
+
         >>> anonym.numeric_noise('age', inplace = False)
         0    29
         1    48
@@ -579,22 +584,26 @@ class dfAnonymizer(object):
 
         Parameters
         ----------
-            columns : Union[str, List[str]]
-                Column name or a list of column names.
-            frequency : Union[str, Tuple[str]], default ("MONTH", "DAY")
-                One or more frequencies to perturbate
-            MIN : Union[int, Tuple[int, ...]], default (-10, -5, -5)
-                The values generated will be greater then or equal to min.
-            MAX : Union[int, Tuple[int, ...]], default (10, 5, 5)
-                The values generated will be less than max.
-            seed : int, default None
-                To initialize the random generator.
-            inplace : bool, default True
-                If True the changes will be applied to `dfAnonymizer` obejct, else output will be returned.
+        columns : Union[str, List[str]]
+            Column name or a list of column names.
+        frequency : Union[str, Tuple[str]], default ("MONTH", "DAY")
+            One or more frequencies to perturbate
+        MIN : Union[int, Tuple[int, ...]], default (-10, -5, -5)
+            The values generated will be greater then or equal to min.
+        MAX : Union[int, Tuple[int, ...]], default (10, 5, 5)
+            The values generated will be less than max.
+        seed : int, default None
+            To initialize the random generator.
+        inplace : bool, default True
+            If True the changes will be applied to `dfAnonymizer` obejct, else output is returned.
 
         Returns
         ----------
-            ser: pandas Series or pandas DataFrame
+        ser: pandas Series or pandas DataFrame
+
+        See also
+        ----------
+        dfAnonymizer.datetime_fake : Replace values with synthetic dates
         
         Examples
         ----------
@@ -657,16 +666,22 @@ class dfAnonymizer(object):
 
         Parameters
         ----------
-            columns : Union[str, List[str]]
-                Column name or a list of column names.
-            precision : int, default None
-                The number of digits.
-            inplace : bool, default True
-                If True the changes will be applied to `dfAnonymizer` obejct, else output will be returned.
+        columns : Union[str, List[str]]
+            Column name or a list of column names.
+        precision : int, default None
+            The number of digits.
+        inplace : bool, default True
+            If True the changes will be applied to `dfAnonymizer` obejct, else output is returned.
 
         Returns
         ----------
-            pandas Series or pandas DataFrame if inplace = False, else None
+        pandas Series or pandas DataFrame if inplace = False, else None
+
+        See also
+        ----------
+        dfAnonymizer.numeric_binning : Bin values into discrete intervals
+        dfAnonymizer.numeric_masking : Apply PCA masking 
+        dfAnonymizer.numeric_noise : Add uniform random noise 
 
         Examples
         ----------
@@ -730,15 +745,21 @@ class dfAnonymizer(object):
 
         Parameters
         ----------
-            columns : Union[str, List[str]]
-                Column name or a list of column names.
-            inplace : bool, default True
-                If True the changes will be applied to `dfAnonymizer` obejct, else output will be returned.
-
+        columns : Union[str, List[str]]
+            Column name or a list of column names.
+        inplace : bool, default True
+            If True the changes will be applied to `dfAnonymizer` obejct, else output is returned.
+            
         Returns
         ----------
         ser : pandas Series or pandas DataFrame
 
+        See also
+        ----------
+        dfAnonymizer.numeric_binning : Bin values into discrete intervals
+        dfAnonymizer.numeric_rounding : Apply PCA masking 
+        dfAnonymizer.numeric_noise : Round values to the given number
+        
         Examples
         ----------
         >>> df = load_dataset()
@@ -798,19 +819,25 @@ class dfAnonymizer(object):
 
         Parameters
         ----------
-            columns : Union[str, List[str]]
-                Column name or a list of column names.
-            max_token_len : int, default 10
-            
-            key : str, default None
+        columns : Union[str, List[str]]
+            Column name or a list of column names.
+        max_token_len : int, default 10
+            Control the token length.
+        key : str, default None
             String or Byte String. If not specified, key will be set to a random byte string.
-            inplace : bool, default True
-                If True the changes will be applied to `dfAnonymizer` obejct, else output will be returned.
+        inplace : bool, default True
+            If True the changes will be applied to `dfAnonymizer` obejct, else output is returned.
 
         Returns
         ----------
-            ser : pandas Series or pandas DataFrame
-    
+        ser : pandas Series or pandas DataFrame
+
+        See also
+        ----------
+        dfAnonymizer.categorical_fake : Replace values with synthetically generated ones by specifying which methods to apply
+        dfAnonymizer.categorical_resampling : Resample values from the same distribution
+        dfAnonymizer.categorical_email_masking : Apply partial masking to emails
+
         Examples
         ----------
         >>> df = load_dataset()
@@ -870,11 +897,16 @@ class dfAnonymizer(object):
 
         Parameters
         ----------
-            s : str
+        s : str
+            string to mask.
 
         Returns
         ----------
-            masked : str 
+        masked : str
+
+        See also
+        ----------
+        dfAnonymizer.categorical_email_masking : Apply partial masking to email
         '''
         lo = s.find('@')
 
@@ -893,12 +925,36 @@ class dfAnonymizer(object):
 
         Parameters
         ----------
-            columns: Union[str, List[str]]
-            inplace: Optional[bool] = True
+        columns: Union[str, List[str]]
+            Column name or a list of column names.
+        inplace: Optional[bool] = True
+            If True the changes will be applied to `dfAnonymizer` obejct, else output is returned.
 
         Returns
         ----------
-            ser : pandas Series or pandas DataFrame 
+        ser : pandas Series or pandas DataFrame
+
+        See also
+        ----------
+        dfAnonymizer.categorical_fake : Replace values with synthetically generated ones by specifying which methods to apply
+        dfAnonymizer.categorical_resampling : Resample values from the same distribution
+        dfAnonymizer.categorical_tokenization : Map a string to a token
+        
+        Notes
+        ----------
+        Applicable only to column with email strings.
+
+        Examples
+        ----------
+        >>> df = load_dataset()
+        >>> anonym = dfAnonymizer(df)
+
+        Calling the method on email column:
+
+        >>> anonym.categorical_email_masking('email', inplace=False)
+        0    k*****e@example.org
+        1    m*****1@example.org
+        Name: email, dtype: object
         '''
         # if a single column is passed
         if isinstance(columns, str) or (len(columns) == 1 and isinstance(columns, list)):
@@ -950,15 +1006,31 @@ class dfAnonymizer(object):
 
         Parameters
         ----------
-            columns : Union[str, List[str]]
-            pattern : str, default  '%Y-%m-%d'
-            end_datetime : Union[datetime.date, datetime.datetime, datetime.timedelta, str, int, None], default None
-            locale : str or List[str], default ['en_US']
-            inplace : bool, default True
+        columns : Union[str, List[str]]
+            Column name or a list of column names.
+        pattern : str, default  '%Y-%m-%d'
+        end_datetime : Union[datetime.date, datetime.datetime, datetime.timedelta, str, int, None], default None
+        locale : str or List[str], default ['en_US']
+            See https://faker.readthedocs.io/en/master/locales.html for all faker's locales.
+        inplace : bool, default True
+            If True the changes will be applied to `dfAnonymizer` obejct, else output is returned.
 
         Returns
         ----------
-            ser : pandas Series or pandas DataFrame
+        ser : pandas Series or pandas DataFrame
+
+        See also
+        ----------
+        dfAnonymizer.datetime_noise : Add uniform random noise to the column
+
+        Examples
+        ----------
+        >>> df = load_dataset()
+        >>> anonym = dfAnonymizer(df)
+        >>> anonym.datetime_fake('birthdate', inplace = False)
+        0   2018-04-09
+        1   2005-05-28
+        Name: birthdate, dtype: datetime64[ns]
         '''
         fake = Faker(locale=locale)
 
@@ -997,7 +1069,7 @@ class dfAnonymizer(object):
             if not inplace:
                 return temp
 
-    
+
     def column_suppression(self,
                           columns,
                           inplace = True):
@@ -1007,12 +1079,30 @@ class dfAnonymizer(object):
 
         Parameters
         ----------
-            columns : Union[str, List[str]]
-            inplace : bool, default True
+        columns : Union[str, List[str]]
+             Column name or a list of column names.
+        inplace : bool, default True
+            If True the changes will be applied to `dfAnonymizer` obejct, else output is returned.
 
         Returns
         ----------
-            ser : None if inplace = True, else pandas Series or pandas DataFrame
+        ser : None if inplace = True, else pandas Series or pandas DataFrame
+
+        Examples
+        ----------
+        >>> df = load_dataset()
+        >>> anonym = dfAnonymizer(df)
+        >>> anonym.to_df()
+            name  age  ...                 email        ssn
+        0  Bruce   33  ...  josefrazier@owen.com  343554334
+        1   Tony   48  ...       eryan@lewis.com  656564664
+
+        Dropping `ssn` column
+        
+        >>> anonym.column_suppression('ssn', inplace = False)
+                    name  age  ...                                   web                 email
+        0  Bruce   33  ...  http://www.alandrosenburgcpapc.co.uk  josefrazier@owen.com
+        1   Tony   48  ...     http://www.capgeminiamerica.co.uk       eryan@lewis.com
         '''
         # if single column is passed
         if isinstance(columns, str) or (len(columns) == 1 and isinstance(columns, list)):
@@ -1043,7 +1133,7 @@ class dfAnonymizer(object):
                         self._methods_applied[column] = self._drop
             else:
                 return self._df2.drop(columns, axis = 1, inplace = False)
-                
+
 
     def numeric_binning(self,
                         columns,
@@ -1055,13 +1145,34 @@ class dfAnonymizer(object):
 
         Parameters
         ----------
-            columns : Union[str, List[str]]
-            bins : int, default 4 
-            inplace : bool, default True
+        columns : Union[str, List[str]]
+            Column name or a list of column names.
+        bins : int, default 4
+            the number of equal-width bins in the range of `bins`
+        inplace : bool, default True
+            If True the changes will be applied to `dfAnonymizer` obejct, else output is returned.
 
         Returns
         ----------
-            ser : None if inplace = True, else pandas Series or pandas DataFrame
+        ser : None if inplace = True, else pandas Series or pandas DataFrame
+
+        See also
+        ----------
+        dfAnonymizer.numeric_noise : Add uniform random noise
+        dfAnonymizer.numeric_masking : Apply PCA masking to numeric values 
+        dfAnonymizer.numeric_rounding :  Round values to the given number
+
+        Examples
+        ----------
+        >>> df = load_dataset()
+        >>> anonym = dfAnonymizer(df)
+
+        Call the method with specifying the number of bins:
+
+        >>> anonym.numeric_binning('age', bins = 2, inplace = False)
+        0    (33.0, 40.0]
+        1    (40.0, 48.0]
+        Name: age, dtype: category
         '''
         # if a single column is passed 
         if isinstance(columns, str) or (len(columns) == 1 and isinstance(columns, list)):
@@ -1111,12 +1222,29 @@ class dfAnonymizer(object):
 
         Parameters
         ----------
-            columns : Union[str, List[str]]
-            inplace : bool, default True
-
+        columns : Union[str, List[str]]
+            Column name or a list of column names.
+        inplace : bool, default True
+            If True the changes will be applied to `dfAnonymizer` obejct, else output is returned.
+            
         Returns
         ----------
-            ser : None if inplace = True, else pandas Series or pandas DataFrame
+        ser : None if inplace = True, else pandas Series or pandas DataFrame
+
+        See also:
+        ----------
+        dfAnonymizer.categorical_fake : Replace values with synthetically generated ones by specifying which methods to apply
+        dfAnonymizer.categorical_email_masking : Apply partial masking to email column
+        dfAnonymizer.categorical_tokenization : Map a string to a token
+
+        Examples
+        ----------
+        >>> df = load_dataset()
+        >>> anonym = dfAnonymizer(df)
+        >>> anonym.categorical_resampling('name', inplace =False)
+        0    Bruce
+        1    Bruce
+        dtype: object
         '''
         # if a single column is passed 
         if isinstance(columns, str) or (len(columns) == 1 and isinstance(columns, list)):
