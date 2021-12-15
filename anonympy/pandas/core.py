@@ -142,7 +142,7 @@ class dfAnonymizer(object):
         locale : str or List[str], default ['en_US']
             See https://faker.readthedocs.io/en/master/locales.html for all faker's locales.
         inplace : bool, default True
-            If True the changes will be applied to DataFrame, else output will be returned. 
+            If True the changes will be applied to `dfAnonymizer` obejct, else output will be returned. 
 
         Returns
         ----------
@@ -165,12 +165,12 @@ class dfAnonymizer(object):
         >>> available_methods('numeric')
             numeric_noise   numeric_binning	numeric_masking	  numeric_rounding
         >>> anonym.anonymize({'name':'categorical_fake',
-        ...                                      'age':'numeric_noise',
-        ...                                      'email':'categorical_email_masking',
-        ...                                      'salary': 'numeric_rounding'}, inplace = False)
-                              name    age                     email       salary
+        ...                   'age':'numeric_noise',
+        ...                   'email':'categorical_email_masking',
+        ...                   'salary': 'numeric_rounding'}, inplace = False)
+                     name    age         email       salary
         0  Daniel Campbell   37   j*****r@owen.com   60000.0
-        1       Cory Sharp       52   e*****n@lewis.com  50000.0
+        1       Cory Sharp   52   e*****n@lewis.com  50000.0
         '''
         if not methods:
             if inplace:
@@ -296,7 +296,7 @@ class dfAnonymizer(object):
             locale : str or List[str], default ['en_US']
                 See https://faker.readthedocs.io/en/master/locales.html for all faker's locales.
             inplace : bool, default True
-                If True the changes will be applied to DataFrame, else output will be returned. 
+                If True the changes will be applied to `dfAnonymizer` obejct, else output will be returned. 
 
         Returns
         ----------
@@ -309,8 +309,8 @@ class dfAnonymizer(object):
         >>> df = load_dataset()
         >>> anonym = dfAnonymizer(df)
         >>> anonym._fake_column(column='email',
-        ...                                          method='company_email',
-        ...                                          inplace = False)
+        ...                     method='company_email',
+        ...                     inplace = False)
         0    matthew29@gonzalez-robertson.biz
         1             zheath@walker-allen.net
         Name: email, dtype: object
@@ -348,7 +348,7 @@ class dfAnonymizer(object):
             locale : str or List[str], default ['en_US']
                 See https://faker.readthedocs.io/en/master/locales.html for all faker's locales.
             inplace : bool, default True
-                If True the changes will be applied to DataFrame, else output will be returned. 
+                If True the changes will be applied to `dfAnonymizer` obejct, else output will be returned. 
 
         Returns
         ----------
@@ -366,8 +366,8 @@ class dfAnonymizer(object):
         If methods are not specified, locale Great Britain:
         
         >>> anonym.categorical_fake(['name', 'email', 'ssn'],
-        ...                                              locale = 'en_GB',
-        ...                                              inplace = False) 
+        ...                         locale = 'en_GB',
+        ...                         inplace = False) 
                               name                       email          ssn
         0  Allan Richardson-Gibson  bryantjonathan@example.org  ZZ 180372 T
         1           Dominic Taylor        thopkins@example.org    ZZ780511T
@@ -377,9 +377,9 @@ class dfAnonymizer(object):
         >>> fake_methods('n')
             name, name_female, name_male, name_nonbinary, nic_handle, nic_handles, null_boolean, numerify
         >>> anonym.categorical_fake({'name': 'name_nonbinary', 'web': 'url'},
-        ...                                              locale = 'ru_RU',
-        ...                                              inplace = False) 
-                                                  name                     web
+        ...                         locale = 'ru_RU',
+        ...                         inplace = False) 
+                               name                     web
         0   Бобров Борислав Ефимович  https://shestakov.biz/
         1  Шилов Викентий Георгиевич    https://monetka.net/
         ''' 
@@ -428,7 +428,7 @@ class dfAnonymizer(object):
             locale : str or List[str], default ['en_US']
                 See https://faker.readthedocs.io/en/master/locales.html for all faker's locales.
             inplace : bool, default True
-                If True the changes will be applied to DataFrame, else output will be returned. 
+                If True the changes will be applied to `dfAnonymizer` obejct, else output will be returned. 
 
         Returns
         ----------
@@ -453,13 +453,13 @@ class dfAnonymizer(object):
         >>> df.rename(columns={'name': 'name_female'}, inplace = True)
         >>> anonym = dfAnonymizer(df)
 
-        Call the method without specifying which methods to apply, locale Japan:
+        Calling the method without specifying which methods to apply, locale Japan:
         
         >>> anonym.categorical_fake_auto(local = 'ja_JP',
-        ...                                                      inplace = False)
-              name_female                     email                                ssn
+        ...                              inplace = False)
+              name_female                    email          ssn
         0      西村 あすか     qwatanabe@example.org  783-28-2531
-        1       山口 直子  okamotochiyo@example.net  477-58-9577
+        1       山口 直子   okamotochiyo@example.net  477-58-9577
         '''
         temp = pd.DataFrame()
         
@@ -507,8 +507,7 @@ class dfAnonymizer(object):
             seed : int, default None
                 To initialize the random generator.
             inplace : bool, default True
-                If True, the changes will be applied to DataFrame (access using ``dfAnonymizer.to_df``).
-                Else, output is returned.
+                If True the changes will be applied to `dfAnonymizer` obejct, else output will be returned. 
         
         Returns
         ----------
@@ -519,7 +518,7 @@ class dfAnonymizer(object):
         >>> df = load_dataset()
         >>> anonym = dfAnonymizer(df)
 
-        Call the method with column name or names:
+        Applying numeric perturbation:
         
         >>> anonym.numeric_noise('age', inplace = False)
         0    29
@@ -581,15 +580,33 @@ class dfAnonymizer(object):
         Parameters
         ----------
             columns : Union[str, List[str]]
-            frequency : Union[str, Tuple[str, ...]] , default ("MONTH", "DAY")
+                Column name or a list of column names.
+            frequency : Union[str, Tuple[str]], default ("MONTH", "DAY")
+                One or more frequencies to perturbate
             MIN : Union[int, Tuple[int, ...]], default (-10, -5, -5)
+                The values generated will be greater then or equal to min.
             MAX : Union[int, Tuple[int, ...]], default (10, 5, 5)
+                The values generated will be less than max.
             seed : int, default None
+                To initialize the random generator.
             inplace : bool, default True
+                If True the changes will be applied to `dfAnonymizer` obejct, else output will be returned.
 
         Returns
         ----------
             ser: pandas Series or pandas DataFrame
+        
+        Examples
+        ----------
+        >>> df = load_dataset()
+        >>> anonym = dfAnonymizer(df)
+
+        Calling the method with specifying the frequency to perturbate:
+
+        >>> anonym.datetime_noise('birthdate', frequency=('YEAR', 'MONTH', 'DAY'), inplace = False)
+        0   1916-03-16
+        1   1971-04-24
+        Name: birthdate, dtype: datetime64[ns]
         '''
         # if a single column is passed
         if isinstance(columns, str) or (len(columns) == 1 and isinstance(columns, list)):
@@ -636,24 +653,37 @@ class dfAnonymizer(object):
                          inplace = True):
         '''
         Round each value in the Pandas Series to the given number
-        Based on cape-privacy's NumericRounding
+        Based on cape-privacy's NumericRounding.
 
         Parameters
         ----------
             columns : Union[str, List[str]]
+                Column name or a list of column names.
             precision : int, default None
+                The number of digits.
             inplace : bool, default True
+                If True the changes will be applied to `dfAnonymizer` obejct, else output will be returned.
 
         Returns
         ----------
-            pandas Series or pandas DataFrame if inplace = False, else None 
+            pandas Series or pandas DataFrame if inplace = False, else None
+
+        Examples
+        ----------
+        >>> df = load_dataset()
+        >>> anonym = dfAnonymizer(df)
+        >>> anonym.numeric_rounding(['age', 'salary'], inplace = False)
+           age   salary
+        0   30  60000.0
+        1   50  50000.0        
         '''
         # if a single column is passed
         if isinstance(columns, str) or (len(columns) == 1 and isinstance(columns, list)):
             if isinstance(columns, list):
                 columns = columns[0]
             dtype = self._dtype_checker(columns)
-            precision = len(str(int(self._df[columns].mean()))) - 1
+            if precision is None:
+                precision = len(str(int(self._df[columns].mean()))) - 1
             rounding = NumericRounding(dtype = dtype, precision = -precision)
             ser = rounding(self._df[columns].copy()).astype(dtype)
 
@@ -701,11 +731,26 @@ class dfAnonymizer(object):
         Parameters
         ----------
             columns : Union[str, List[str]]
+                Column name or a list of column names.
             inplace : bool, default True
+                If True the changes will be applied to `dfAnonymizer` obejct, else output will be returned.
 
-      Returns
-      ----------
-            ser : pandas Series or pandas DataFrame
+        Returns
+        ----------
+        ser : pandas Series or pandas DataFrame
+
+        Examples
+        ----------
+        >>> df = load_dataset()
+        >>> anonym = dfAnonymizer(df)
+
+        Apply PCA Masking:
+
+        >>> num_cols = anonym.numeric_columns
+        >>> anonym.numeric_masking(num_cols, inplace = False)
+                   age        salary
+        0 -4954.900676  5.840671e-15
+        1  4954.900676  5.840671e-15
         '''
         # if a single column is passed
         if isinstance(columns, str) or (len(columns) == 1 and isinstance(columns, list)):
@@ -746,7 +791,7 @@ class dfAnonymizer(object):
     def categorical_tokenization(self,
                   columns,
                   max_token_len = 10,
-                  key = b"my secret",
+                  key = None,
                   inplace = True):
         '''
         Maps a string to a token (hexadecimal string) to obfuscate it.
@@ -754,20 +799,37 @@ class dfAnonymizer(object):
         Parameters
         ----------
             columns : Union[str, List[str]]
+                Column name or a list of column names.
             max_token_len : int, default 10
-            key : str, default b"my secret"
+            
+            key : str, default None
+            String or Byte String. If not specified, key will be set to a random byte string.
             inplace : bool, default True
+                If True the changes will be applied to `dfAnonymizer` obejct, else output will be returned.
 
         Returns
         ----------
             ser : pandas Series or pandas DataFrame
+    
+        Examples
+        ----------
+        >>> df = load_dataset()
+        >>> anonym = dfAnonymizer(df)
+
+        Passing only categorical columns:
+
+        >>> anonym.categorical_columns
+            ['name', 'web', 'email', 'ssn']
+        >>> anonym.categorical_tokenization(['name', 'web', 'email', 'ssn'], inplace = False)
+                 name         web       email         ssn
+        0  a6488532f8  f8516a7ce9  a07981a4d6  9285bc9cb7
+        1  f7231e5026  44dfa9af8e  25ca1a128b  a7a16a7c7d
         '''
-        
         # if a single column is passed
         if isinstance(columns, str) or (len(columns) == 1 and isinstance(columns, list)):
             if isinstance(columns, list):
                 columns = columns[0]
-            tokenize = Tokenizer(max_token_len = max_token_len, key = b"my secret")
+            tokenize = Tokenizer(max_token_len = max_token_len, key = None)
             ser = tokenize(self._df[columns])
 
             if inplace:
