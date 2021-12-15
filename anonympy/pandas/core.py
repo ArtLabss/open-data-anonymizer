@@ -1230,12 +1230,16 @@ class dfAnonymizer(object):
         Returns
         ----------
         ser : None if inplace = True, else pandas Series or pandas DataFrame
-
+        
         See also:
         ----------
         dfAnonymizer.categorical_fake : Replace values with synthetically generated ones by specifying which methods to apply
         dfAnonymizer.categorical_email_masking : Apply partial masking to email column
         dfAnonymizer.categorical_tokenization : Map a string to a token
+
+        Notes
+        ----------
+        This method should be used on categorical data with finite number of unique elements. 
 
         Examples
         ----------
@@ -1287,11 +1291,39 @@ class dfAnonymizer(object):
 
     def _info(self):
         '''
-        Print a summary of the a DataFrame, which columns have been anonymized and which haven't.
+        Print a summary of the a DataFrame.
+        Which columns have been anonymized and which haven't.
 
         Returns
         ----------
-            None
+        None
+
+        See also
+        ----------
+        dfAnonymizer.info : Print a summy of the DataFrame
+
+        Examples
+        ----------
+        >>> df = load_dataset()
+        >>> anonym = dfAnonymizer(df)
+
+        Method gets called when the instance of `dfAnonymizer` object is called
+
+        >>> anonym
+        +-------------------------------+
+        |  Total number of columns: 7   |
+        +===============================+
+        | Anonymized Column -> Method:  |
+        +-------------------------------+
+        | Unanonymized Columns:         |
+        | - name                        |
+        | - age                         |
+        | - birthdate                   |
+        | - salary                      |
+        | - web                         |
+        | - email                       |
+        | - ssn                         |
+        +-------------------------------+
         '''
         t = Texttable(max_width=150)
         header = f'Total number of columns: {self._df.shape[1]}'
@@ -1311,12 +1343,37 @@ class dfAnonymizer(object):
     def info(self):
         '''
         Print a summary of the a DataFrame.
-        `status = 1 ` - anonymized
-        `status = 0 ` - unanonymized
+
+        Which columns have been anonymized using which methods.
+        `status = 1 ` means the column have been anonymized and `status = 0 `
+        means the contrary.
 
         Returns
         ----------
-            None
+        None
+
+        Examples
+        ----------
+        >>> df = load_dataset()
+        >>> anonym = dfAnonymizer(df)
+        >>> anonym.info()
+        +-----------+--------+--------+
+        |  Column   | Status | Method |
+        +===========+========+========+
+        | name      | 0      |        |
+        +-----------+--------+--------+
+        | age       | 0      |        |
+        +-----------+--------+--------+
+        | birthdate | 0      |        |
+        +-----------+--------+--------+
+        | salary    | 0      |        |
+        +-----------+--------+--------+
+        | web       | 0      |        |
+        +-----------+--------+--------+
+        | email     | 0      |        |
+        +-----------+--------+--------+
+        | ssn       | 0      |        |
+        +-----------+--------+--------+
         '''
         t  = Texttable(150)
         t.header(['Column', 'Status', 'Method'])
@@ -1344,6 +1401,15 @@ class dfAnonymizer(object):
         Returns
         ----------
         DataFrame object
+
+        Examples
+        ----------
+        >>> df = load_dataset()
+        >>> anonym = dfAnonymizer(df)
+        >>> anonym.to_df()
+             name   age  ...                 email                       ssn
+        0  Bruce    33  ...  josefrazier@owen.com  343554334
+        1   Tony   48  ...       eryan@lewis.com      656564664
         '''
         
         return self._df.copy()
