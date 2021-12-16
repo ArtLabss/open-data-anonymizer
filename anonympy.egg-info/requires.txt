@@ -1,0 +1,7 @@
+faker
+cape-privacy
+scikit-learn
+texttable
+setuptools
+numpy
+pandas

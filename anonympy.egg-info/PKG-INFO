@@ -1,0 +1,33 @@
+Metadata-Version: 2.1
+Name: anonympy
+Version: 0.1.3
+Summary: A Data Anonymization package for tabular, image and sound data
+Home-page: https://github.com/ArtLabss/open-data-anonimizer
+Author: ArtLabss
+Author-email: art@artlabs.tech
+License: BSD license
+Keywords: anonympy
+Platform: UNKNOWN
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Natural Language :: English
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Requires-Python: >=3.6*
+Description-Content-Type: text/markdown
+License-File: LICENSE
+
+<p align='center'>
+  <a href="https://www.artlabs.tech"><img src='https://github.com/ArtLabss/tennis-tracking/blob/eb4eab3ee19090d33119e1cfa0ad525050da302b/VideoOutput/artLabs_new.png' ></a>
+</p>
+
+<h1 align='center'>Data Anonymizer 🕶️</h1>
+
+
+
+
