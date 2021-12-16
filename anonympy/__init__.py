@@ -7,7 +7,7 @@ __version__ =  "0.1.0"
 
 # Check if all dependencies have been installed
 
-hard_dependencies = ("pandas", "faker", "cape-python")
+hard_dependencies = ("faker", "cape_privacy", "pandas", "numpy")
 missing_dependencies = []
 
 for dependency in hard_dependencies:
