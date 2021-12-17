@@ -19,7 +19,7 @@
 
 <h2>Main Features</h2>
 
-<p>Tabular</p>
+<p><u>Tabular</u></p>
 
 <ul>
   <li>Ease of usage</li>
