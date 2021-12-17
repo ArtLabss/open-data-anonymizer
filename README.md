@@ -15,3 +15,18 @@
  <br>
   
 <p>A general Python library for data anonymization of tabular, text, image and sound data.</p>
+
+<h3>Main Features</h3>
+
+<p>Tabular</p>
+
+<ul>
+  <li>Ease of usage</li>
+  <li>Efficient anonymization (based on pandas DataFrame)</li>
+  <li>Numerous anonymization techniques (perturbation, tokenization, synthetic data ...)</li>
+</ul>
+
+<p>Text, Image, Sound</p>
+<ul>
+  <li>In development</li>
+</ul>
