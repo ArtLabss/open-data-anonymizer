@@ -32,11 +32,33 @@
 </ul>
 
 
-<h2>Prerequisite</h2>
+<h2>Installation</h2>
 
+<p>The source code is currently hosted on GitHub at: <a href="https://github.com/ArtLabss/open-data-anonimizer">https://github.com/ArtLabss/open-data-anonimizer</a></p>
+
+<h3>Dependencies</h3>
 <ol>
-  <li>pandas</li>
-  <li>faker</li>
+  <li> Python (>= 3.7)</li>
   <li>cape-privacy</li>
+  <li>faker</li>
   <li>scikit_learn</li>
+  <li>pandas</li>
 </ol>
+
+<h3>Install with pip</h3>
+
+<p>Easiest way to install anonympy is using <code>pip</code></p>
+
+```
+pip install anonympy 
+```
+
+<h3>Install from source</h3>
+
+<p>Installing the library from source code is also possible</p>
+
+```
+git clone https://github.com/ArtLabss/open-data-anonimizer.git
+cd open-data-anonimizer
+make bootstrap
+```
