@@ -12,11 +12,12 @@
   <img src="https://img.shields.io/pypi/v/anonympy.svg">
   <img src="https://img.shields.io/pypi/l/open-data-anonimizer.svg">
  
- <br>
+<br>
   
 <p>A general Python library for data anonymization of tabular, text, image and sound data.</p>
 
-<h3>Main Features</h3>
+
+<h2>Main Features</h2>
 
 <p>Tabular</p>
 
@@ -30,3 +31,5 @@
 <ul>
   <li>In development</li>
 </ul>
+
+<h2>Getting Started</h2>
