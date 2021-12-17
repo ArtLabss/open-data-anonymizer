@@ -3,7 +3,6 @@
 </p>
 
 <h1 align='center'>anonympy 🕶️</h1>
-<h3 align='center'>powerful Python Data Anonymization toolkit</h3>
 <p align='center'>
 <img src="https://img.shields.io/github/forks/ArtLabss/open-data-anonimizer.svg">
   <img src="https://img.shields.io/github/stars/ArtLabss/open-data-anonimizer.svg">
@@ -12,3 +11,7 @@
   <br>
   <img src="https://img.shields.io/pypi/v/anonympy.svg">
   <img src="https://img.shields.io/pypi/l/open-data-anonimizer.svg">
+ 
+ <br>
+  
+<p>A general Python library for data anonymization of tabular, text, image and sound data.</p>
