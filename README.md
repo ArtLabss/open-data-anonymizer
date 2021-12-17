@@ -35,8 +35,6 @@
 
 <h2>Installation</h2>
 
-<p>The source code is currently hosted on GitHub at: <a href="https://github.com/ArtLabss/open-data-anonimizer">https://github.com/ArtLabss/open-data-anonimizer</a></p>
-
 <h3>Dependencies</h3>
 <ol>
   <li> Python (>= 3.7)</li>
@@ -67,4 +65,12 @@ make bootstrap
 <br>
 
 <h2>Development</h2>
-<p>We welcome new contributors of all experience levels. The <a href="https://artlabs.tech/">ArtLabss</a> goals are to be helpful, welcoming, and effective.</p>
+<p>We welcome new contributors of all experience levels. The <a href="https://artlabs.tech/">ArtLabss</a> goals are to be helpful, welcoming, and effective. The <a href="https://github.com/ArtLabss/open-data-anonimizer/blob/main/CONTRIBUTING.md">Contributing Guide</a> has detailed information about contributing code and documentation</p>
+
+<h3>Important Links</h3>
+<ul>
+  <p>The source code is currently hosted on GitHub at: /p>
+  <li>Official source code repo: <a href="https://github.com/ArtLabss/open-data-anonimizer">https://github.com/ArtLabss/open-data-anonimizer</a><</li>
+  <li>Download releases: <a href="https://pypi.org/project/anonympy/">https://pypi.org/project/anonympy/</a><</li>
+  <li>Issue tracker: <a href="https://github.com/ArtLabss/open-data-anonimizer/issues">https://github.com/ArtLabss/open-data-anonimizer/issues</li>
+</ul>
