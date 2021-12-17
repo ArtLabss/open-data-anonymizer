@@ -31,6 +31,7 @@
   <li>In development</li>
 </ul>
 
+<br>
 
 <h2>Installation</h2>
 
@@ -62,3 +63,8 @@ git clone https://github.com/ArtLabss/open-data-anonimizer.git
 cd open-data-anonimizer
 make bootstrap
 ```
+
+<br>
+
+<h2>Development</h2>
+<p>We welcome new contributors of all experience levels. The <a href="https://artlabs.tech/">ArtLabss</a> goals are to be helpful, welcoming, and effective.</p>
