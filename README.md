@@ -21,7 +21,7 @@
 <p><strong>Tabular</strong></p>
 
 <ul>
-  <li>Ease of usage</li>
+  <li>Ease of use</li>
   <li>Efficient anonymization (based on pandas DataFrame)</li>
   <li>Numerous anonymization techniques (perturbation, tokenization, synthetic data ...)</li>
 </ul>
@@ -30,5 +30,13 @@
 <ul>
   <li>In development</li>
 </ul>
-<br>
-<h2>Getting Started</h2>
+
+
+<h2>Prerequisite</h2>
+
+<ol>
+  <li>pandas</li>
+  <li>faker</li>
+  <li>cape-privacy</li>
+  <li>scikit_learn</li>
+</ol>
