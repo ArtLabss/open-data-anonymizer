@@ -37,7 +37,7 @@ articles, and such.
 ### Submit Feedback
 
 The best way to send feedback is to file an issue at 
-https://github.com/ArtLabss/open-data-anonimizer/issues/new.
+https://github.com/ArtLabss/open-data-anonimizer/issues.
 
 If you are proposing a feature:
 
