@@ -119,7 +119,7 @@ anonym.anonymize({'name': 'categorical_fake',
 
 <h3>Contributions</h3>
 
-<p>The <a href="https://github.com/ArtLabss/open-data-anonimizer/blob/main/CONTRIBUTING.md">Contributing Guide</a> has detailed information about contributing code and documentation</p>
+<p>The <a href="https://github.com/ArtLabss/open-data-anonimizer/blob/main/CONTRIBUTING.md">Contributing Guide</a> has detailed information about contributing code and documentation.</p>
 
 <h3>Important Links</h3>
 <ul>
