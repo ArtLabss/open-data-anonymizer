@@ -104,6 +104,7 @@ anonym.anonymize({'name': 'categorical_fake',
                   'web': 'categorical_tokenization', 
                   'email':'categorical_email_masking', 
                   'ssn': 'categorical_fake'})
+print(anonym.to_df())
 ```
   
 |   |              name |      email |             email | ssn         |
