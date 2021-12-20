@@ -5,18 +5,21 @@ with open('README.md') as readme_file:
 
 setup(
   author="ArtLabss",
-  description="A Data Anonymization package for tabular, text, image and sound data",
+  author_email="art@artlabs.tech",
+  description="A Data Anonymization package for tabular, image and sound data",
   name="anonympy",
-  version="0.1.0",
-  packages=find_packages(include=["anonympy", "anonympy.*"]),
-  install_requires=['faker', 'cape-python', 'numpy', 'pandas', 'scikit-learn', 'texttable', 'setuptools'],
-  python_requires='>=3.6.*',
+  version="0.1.7",
+  
+  packages=find_packages(exclude=['test']),
+  install_requires=['faker', 'cape-privacy', 'scikit-learn', 'texttable', 'setuptools', 'numpy', 'pandas'],
+  python_requires='>=3.6*',
+  url='https://github.com/ArtLabss/open-data-anonimizer',
   classifiers=[
     'Development Status :: 3 - Alpha',
     'Intended Audience :: Developers',
     'License :: OSI Approved :: BSD License',
     'Natural Language :: English',
-    'Programming Language :: Python :: 3',
+    'Programming Language :: Python :: 3.5',
     'Programming Language :: Python :: 3.6',
     'Programming Language :: Python :: 3.7',
     'Programming Language :: Python :: 3.8',
