@@ -127,3 +127,12 @@ anonym.anonymize({'name': 'categorical_fake',
   <li>Download releases: <a href="https://pypi.org/project/anonympy/">https://pypi.org/project/anonympy/</a></li>
   <li>Issue tracker: <a href="https://github.com/ArtLabss/open-data-anonimizer/issues">https://github.com/ArtLabss/open-data-anonimizer/issues</li>
 </ul>
+
+<h2>License</h2>
+
+<p><a href="https://github.com/ArtLabss/open-data-anonimizer/blob/main/LICENSE">BSD 3</a></p>
+
+
+<h2>Code of Conduct</h2>
+<p>Please see <a href="https://github.com/ArtLabss/open-data-anonimizer/blob/main/CODE_OF_CONDUCT.md">Code of Conduct</a>. 
+All community members are expected to follow it.</p>
