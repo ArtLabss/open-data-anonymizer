@@ -115,7 +115,7 @@ anonym.anonymize({'name': 'categorical_fake',
 
 <h2>Development</h2>
 
-<p>The <a href="https://artlabs.tech/">ArtLabss</a> goals are to be helpful, welcoming, and effective.</p>
+<p><a href="https://artlabs.tech/">ArtLabss</a> goals are to be helpful, welcoming, and effective.</p>
 
 <h3>Contributions</h3>
 
