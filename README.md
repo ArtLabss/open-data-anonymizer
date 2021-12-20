@@ -10,7 +10,7 @@
   <img src="https://img.shields.io/github/last-commit/ArtLabss/open-data-anonimizer.svg">
   <br>
   <img src="https://img.shields.io/pypi/v/anonympy.svg">
-  <img src="https://img.shields.io/pypi/l/open-data-anonimizer.svg">
+  <img src="https://img.shields.io/pypi/l/anonympy.svg">
  
 <br>
   
