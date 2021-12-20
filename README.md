@@ -82,7 +82,6 @@ print(df)
   
 ```python
 # Calling the generic Function
-  
 anonym = dfAnonymizer(df)
 anonym.anonymize(inplace = False) # changes will be returned, not applied
 ```
@@ -94,13 +93,13 @@ anonym.anonymize(inplace = False) # changes will be returned, not applied
   
 ```python
 # Or applying a specific anonymization technique to a column
-
 from anonympy.pandas.utils import available_methods
 
 anonym.categorical_columns
 ... ['name', 'web', 'email', 'ssn']
 available_methods('categorical') 
 ... categorical_fake	categorical_fake_auto	categorical_resampling	categorical_tokenization	categorical_email_masking
+  
 anonym.anonymize({'name': 'categorical_fake', 
                   'web': 'categorical_tokenization', 
                   'email':'categorical_email_masking', 
