@@ -1,5 +1,5 @@
 <p align='center'>
-  <a href="https://www.artlabs.tech"><img src='https://github.com/ArtLabss/open-data-anonimizer/blob/faca437a7675572306aba35824287f174edd230f/examples/artLabs_new.png' ></a>
+  <img src='https://github.com/ArtLabss/open-data-anonimizer/blob/faca437a7675572306aba35824287f174edd230f/examples/artLabs_new.png' >
 </p>
 
 <h1 align='center'>anonympy 🕶️</h1>
