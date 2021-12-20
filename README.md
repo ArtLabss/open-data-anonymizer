@@ -63,6 +63,16 @@ git clone https://github.com/ArtLabss/open-data-anonimizer.git
 cd open-data-anonimizer
 make bootstrap
 ```
+<br>
+
+<h2>Usage Example </h2>
+
+<p>You can find more examples <a href="https://github.com/ArtLabss/open-data-anonimizer/blob/main/examples/pandas.ipynb">here</a>
+
+```
+
+```
+  
 
 <br>
 
@@ -70,15 +80,13 @@ make bootstrap
 
 <p>The <a href="https://artlabs.tech/">ArtLabss</a> goals are to be helpful, welcoming, and effective.</p>
 
+<h3>Contributions</h3>
+
+<p>The <a href="https://github.com/ArtLabss/open-data-anonimizer/blob/main/CONTRIBUTING.md">Contributing Guide</a> has detailed information about contributing code and documentation</p>
+
 <h3>Important Links</h3>
 <ul>
   <li>Official source code repo: <a href="https://github.com/ArtLabss/open-data-anonimizer">https://github.com/ArtLabss/open-data-anonimizer</a></li>
   <li>Download releases: <a href="https://pypi.org/project/anonympy/">https://pypi.org/project/anonympy/</a></li>
   <li>Issue tracker: <a href="https://github.com/ArtLabss/open-data-anonimizer/issues">https://github.com/ArtLabss/open-data-anonimizer/issues</li>
 </ul>
-
-<h3>Contributions</h3>
-
-<p>The <a href="https://github.com/ArtLabss/open-data-anonimizer/blob/main/CONTRIBUTING.md">Contributing Guide</a> has detailed information about contributing code and documentation</p>
-
-
