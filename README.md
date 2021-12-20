@@ -126,7 +126,7 @@ print(anonym.to_df())
 <ul>
   <li>Official source code repo: <a href="https://github.com/ArtLabss/open-data-anonimizer">https://github.com/ArtLabss/open-data-anonimizer</a></li>
   <li>Download releases: <a href="https://pypi.org/project/anonympy/">https://pypi.org/project/anonympy/</a></li>
-  <li>Issue tracker: <a href="https://github.com/ArtLabss/open-data-anonimizer/issues">https://github.com/ArtLabss/open-data-anonimizer/issues</li>
+  <li>Issue tracker: <a href="https://github.com/ArtLabss/open-data-anonimizer/issues">https://github.com/ArtLabss/open-data-anonimizer/issues</li></a>
 </ul>
 
 <h2>License</h2>
