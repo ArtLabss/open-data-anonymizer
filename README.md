@@ -74,16 +74,17 @@ from anonympy.pandas.utils import load_dataset
 df = load_dataset() 
 print(df)
 ```
-  
+
 |   |  name | age |  birthdate |   salary |                                  web |                email |       ssn |
 |--:|------:|----:|-----------:|---------:|-------------------------------------:|---------------------:|----------:|
 | 0 | Bruce | 33  | 1915-04-17 | 59234.32 | http://www.alandrosenburgcpapc.co.uk | josefrazier@owen.com | 343554334 |
 | 1 | Tony  | 48  | 1970-05-29 | 49324.53 | http://www.capgeminiamerica.co.uk    | eryan@lewis.com      | 656564664 |
   
 ```python
+# Calling the generic Function
+  
 anonym = dfAnonymizer(df)
-anonym.anonymize()
-print(anonym.to_df())
+anonym.anonymize(inplace = False) # changes will be returned, not applied
 ```
 
 |      | name            | age    | birthdate  | age     | web        |         email       |     ssn     |
@@ -91,7 +92,26 @@ print(anonym.to_df())
 | 0    | Stephanie Patel | 30     | 1915-04-17 | 60000.0 | 5968b7880f | pjordan@example.com | 391-77-9210 |
 | 1    | Daniel Matthews | 50     | 1971-01-21 | 50000.0 | 2ae31d40d4 | tparks@example.org  | 872-80-9114 |
   
+```python
+# Or applying a specific anonymization technique to a column
 
+from anonympy.pandas.utils import available_methods
+
+anonym.categorical_columns
+... ['name', 'web', 'email', 'ssn']
+available_methods('categorical') 
+... categorical_fake	categorical_fake_auto	categorical_resampling	categorical_tokenization	categorical_email_masking
+anonym.anonymize({'name': 'categorical_fake', 
+                  'web': 'categorical_tokenization', 
+                  'email':'categorical_email_masking', 
+                  'ssn': 'categorical_fake'})
+```
+  
+|   |              name |      email |             email | ssn         |
+|--:|------------------:|-----------:|------------------:|-------------|
+| 0 | Paul Lang         | 8ee92fb1bd | j*****r@owen.com  | 792-82-0468 |
+| 1 | Michael Gillespie | 51b615c92e | e*****n@lewis.com | 762-13-6119 |
+  
 <br>
 
 <h2>Development</h2>
