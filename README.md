@@ -1,5 +1,5 @@
 <p align='center'>
-  <a href="https://www.artlabs.tech"><img src='https://github.com/ArtLabss/open-data-anonimizer/blob/faca437a7675572306aba35824287f174edd230f/examples/artLabs_new.png' ></a>
+  <img src='https://github.com/ArtLabss/open-data-anonimizer/blob/faca437a7675572306aba35824287f174edd230f/examples/artLabs_new.png' >
 </p>
 
 <h1 align='center'>anonympy 🕶️</h1>
@@ -10,7 +10,7 @@
   <img src="https://img.shields.io/github/last-commit/ArtLabss/open-data-anonimizer.svg">
   <br>
   <img src="https://img.shields.io/pypi/v/anonympy.svg">
-  <img src="https://img.shields.io/pypi/l/open-data-anonimizer.svg">
+  <img src="https://img.shields.io/pypi/l/anonympy.svg">
  
 <br>
   
