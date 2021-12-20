@@ -11,8 +11,6 @@
   <br>
   <img src="https://img.shields.io/pypi/v/anonympy.svg">
   <img src="https://img.shields.io/pypi/l/open-data-anonimizer.svg">
-  <br>
-  <img src="https://www.codetriage.com/artlabss/open-data-anonimizer/badges/users.svg">
  
 <br>
   
