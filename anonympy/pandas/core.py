@@ -46,8 +46,11 @@ class dfAnonymizer(object):
 
     Examples
     ----------
+    >>> from anonympy.pandas import dfAnonymizer
+    >>> from anonympy.pandas.utils import load_dataset
+    
     Contructing dfAnonymizer object:
-
+    
     >>> df = load_dataset()
     >>> anonym = dfAnonymizer(df)
     >>> anonym.to_df()
@@ -158,6 +161,8 @@ class dfAnonymizer(object):
 
         Examples
         ----------
+        >>> from anonympy.pandas import dfAnonymizer
+        >>> from anonympy.pandas.utils import load_dataset, available_methods
         >>> df = load_dataset()
         >>> anonym = dfAnonymizer(df)
 
@@ -359,6 +364,8 @@ class dfAnonymizer(object):
         
         Examples
         ----------
+        >>> from anonympy.pandas import dfAnonymizer
+        >>> from anonympy.pandas.utils import load_dataset
         >>> df = load_dataset()
         >>> anonym = dfAnonymizer(df)
         
@@ -444,6 +451,9 @@ class dfAnonymizer(object):
 
         Examples
         ----------
+        >>> from anonympy.pandas import dfAnonymizer
+        >>> from anonympy.pandas.utils import load_dataset, fake_methods
+        
         Change column names so the function can understand which method to apply:
         
         >>> df = load_dataset()
@@ -520,6 +530,8 @@ class dfAnonymizer(object):
 
         Examples
         ----------
+        >>> from anonympy.pandas import dfAnonymizer
+        >>> from anonympy.pandas.utils import load_dataset
         >>> df = load_dataset()
         >>> anonym = dfAnonymizer(df)
 
@@ -607,6 +619,8 @@ class dfAnonymizer(object):
         
         Examples
         ----------
+        >>> from anonympy.pandas import dfAnonymizer
+        >>> from anonympy.pandas.utils import load_dataset    
         >>> df = load_dataset()
         >>> anonym = dfAnonymizer(df)
 
@@ -685,8 +699,13 @@ class dfAnonymizer(object):
 
         Examples
         ----------
+        >>> from anonympy.pandas import dfAnonymizer
+        >>> from anonympy.pandas.utils import load_dataset
         >>> df = load_dataset()
         >>> anonym = dfAnonymizer(df)
+
+        Apply Numeric Rounding:
+        
         >>> anonym.numeric_rounding(['age', 'salary'], inplace = False)
            age   salary
         0   30  60000.0
@@ -762,6 +781,8 @@ class dfAnonymizer(object):
         
         Examples
         ----------
+        >>> from anonympy.pandas import dfAnonymizer
+        >>> from anonympy.pandas.utils import load_dataset
         >>> df = load_dataset()
         >>> anonym = dfAnonymizer(df)
 
@@ -840,6 +861,8 @@ class dfAnonymizer(object):
 
         Examples
         ----------
+        >>> from anonympy.pandas import dfAnonymizer
+        >>> from anonympy.pandas.utils import load_dataset        
         >>> df = load_dataset()
         >>> anonym = dfAnonymizer(df)
 
@@ -946,6 +969,8 @@ class dfAnonymizer(object):
 
         Examples
         ----------
+        >>> from anonympy.pandas import dfAnonymizer
+        >>> from anonympy.pandas.utils import load_dataset        
         >>> df = load_dataset()
         >>> anonym = dfAnonymizer(df)
 
@@ -1025,8 +1050,13 @@ class dfAnonymizer(object):
 
         Examples
         ----------
+        >>> from anonympy.pandas import dfAnonymizer
+        >>> from anonympy.pandas.utils import load_dataset
         >>> df = load_dataset()
         >>> anonym = dfAnonymizer(df)
+
+        Calling the method with specifying the datetime column
+        
         >>> anonym.datetime_fake('birthdate', inplace = False)
         0   2018-04-09
         1   2005-05-28
@@ -1090,6 +1120,8 @@ class dfAnonymizer(object):
 
         Examples
         ----------
+        >>> from anonympy.pandas import dfAnonymizer
+        >>> from anonympy.pandas.utils import load_dataset
         >>> df = load_dataset()
         >>> anonym = dfAnonymizer(df)
         >>> anonym.to_df()
@@ -1164,6 +1196,8 @@ class dfAnonymizer(object):
 
         Examples
         ----------
+        >>> from anonympy.pandas import dfAnonymizer
+        >>> from anonympy.pandas.utils import load_dataset
         >>> df = load_dataset()
         >>> anonym = dfAnonymizer(df)
 
@@ -1243,6 +1277,8 @@ class dfAnonymizer(object):
 
         Examples
         ----------
+        >>> from anonympy.pandas import dfAnonymizer
+        >>> from anonympy.pandas.utils import load_dataset
         >>> df = load_dataset()
         >>> anonym = dfAnonymizer(df)
         >>> anonym.categorical_resampling('name', inplace =False)
@@ -1304,6 +1340,8 @@ class dfAnonymizer(object):
 
         Examples
         ----------
+        >>> from anonympy.pandas import dfAnonymizer
+        >>> from anonympy.pandas.utils import load_dataset
         >>> df = load_dataset()
         >>> anonym = dfAnonymizer(df)
 
@@ -1354,6 +1392,8 @@ class dfAnonymizer(object):
 
         Examples
         ----------
+        >>> from anonympy.pandas import dfAnonymizer
+        >>> from anonympy.pandas.utils import load_dataset
         >>> df = load_dataset()
         >>> anonym = dfAnonymizer(df)
         >>> anonym.info()
@@ -1404,6 +1444,8 @@ class dfAnonymizer(object):
 
         Examples
         ----------
+        >>> from anonympy.pandas import dfAnonymizer
+        >>> from anonympy.pandas.utils import load_dataset
         >>> df = load_dataset()
         >>> anonym = dfAnonymizer(df)
         >>> anonym.to_df()
