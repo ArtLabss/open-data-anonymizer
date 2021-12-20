@@ -16,8 +16,8 @@ from cape_privacy.pandas.transformations import DatePerturbation
 from cape_privacy.pandas.transformations import NumericRounding
 from cape_privacy.pandas.transformations import Tokenizer
 
-import utils as _utils 
-from utils import load_dataset, fake_methods, available_methods
+from anonympy.pandas import utils as _utils 
+from anonympy.pandas.utils import load_dataset, fake_methods, available_methods
 from faker import Faker
 
 from sklearn.decomposition import PCA
