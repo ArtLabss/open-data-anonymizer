@@ -67,8 +67,24 @@ make bootstrap
 
 <p>You can find more examples <a href="https://github.com/ArtLabss/open-data-anonimizer/blob/main/examples/pandas.ipynb">here</a>
 
-```
+```python
+from anonympy.pandas import dfAnonymizer
+from anonympy.pandas.utils import load_dataset
 
+df = load_dataset() 
+print(df)
+  
+... name  	age 	birthdate 	salary                   web 	                        email      	   ssn
+0 	Bruce 	33 	1915-04-17 	59234.32 	http://www.alandrosenburgcpapc.co.uk 	josefrazier@owen.com 	343554334
+1 	Tony 	48 	1970-05-29 	49324.53 	http://www.capgeminiamerica.co.uk 	eryan@lewis.com 	656564664
+  
+anonym = dfAnonymizer(df)
+anonym.anonymize()
+print(anonym.to_df())
+
+...    name         	age birthdate 	salary     	 web           	email 	            ssn
+0 	Stephanie Patel 	30 	1915-04-17 	60000.0 	5968b7880f 	pjordan@example.com 	391-77-9210
+1 	Daniel Matthews 	50 	1971-01-21 	50000.0 	2ae31d40d4 	tparks@example.org 	872-80-9114
 ```
   
 
