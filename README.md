@@ -51,6 +51,11 @@
 ```
 pip install anonympy 
 ```
+<p><a href="https://github.com/capeprivacy/cape-python/issues/112">cape-privacy</a> downgrades numpy and pandas, therefore it's highly recommend to upgrade them after installing the requirements.txt</p>
+
+```
+pip install --upgrade numpy pandas
+```
 
 <h3>Install from source</h3>
 
@@ -61,6 +66,7 @@ git clone https://github.com/ArtLabss/open-data-anonimizer.git
 cd open-data-anonimizer
 make bootstrap
 ```
+
 <br>
 
 <h2>Usage Example </h2>
