@@ -106,11 +106,10 @@ anonym.anonymize({'name': 'categorical_fake',
                   'ssn': 'categorical_fake'})
 print(anonym.to_df())
 ```
-  
-|   |              name |      email |             email | ssn         |
-|--:|------------------:|-----------:|------------------:|-------------|
-| 0 | Paul Lang         | 8ee92fb1bd | j*****r@owen.com  | 792-82-0468 |
-| 1 | Michael Gillespie | 51b615c92e | e*****n@lewis.com | 762-13-6119 |
+|   |  name | age |  birthdate |   salary |                                  web |                email |       ssn |
+|--:|------:|----:|-----------:|---------:|-------------------------------------:|---------------------:|----------:|
+| 0 | Paul Lang | 33  | 1915-04-17 | 59234.32 | 8ee92fb1bd | j*****r@owen.com | 792-82-0468 |
+| 1 | Michael Gillespie  | 48  | 1970-05-29 | 49324.53 | 51b615c92e    | e*****n@lewis.com      | 762-13-6119 |
   
 <br>
 
