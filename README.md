@@ -65,6 +65,8 @@ pip install --upgrade numpy pandas
 ```
 git clone https://github.com/ArtLabss/open-data-anonimizer.git
 cd open-data-anonimizer
+pip install -r requirements.txt
+pip install --upgrade numpy pandas
 make bootstrap
 ```
 
