@@ -42,6 +42,7 @@
   <li>faker</li>
   <li>scikit_learn</li>
   <li>pandas</li>
+  <li>numpy</li>
 </ol>
 
 <h3>Install with pip</h3>
