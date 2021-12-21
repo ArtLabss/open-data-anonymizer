@@ -51,6 +51,11 @@
 ```
 pip install anonympy 
 ```
+<p><a href="https://github.com/capeprivacy/cape-python/issues/112">cape-privacy</a> downgrades numpy and pandas, therefore it's highly recommend to upgrade them after installing the requirements.txt</p>
+
+```
+pip install --upgrade numpy pandas
+```
 
 <h3>Install from source</h3>
 
@@ -61,6 +66,7 @@ git clone https://github.com/ArtLabss/open-data-anonimizer.git
 cd open-data-anonimizer
 make bootstrap
 ```
+
 <br>
 
 <h2>Usage Example </h2>
@@ -106,11 +112,10 @@ anonym.anonymize({'name': 'categorical_fake',
                   'ssn': 'categorical_fake'})
 print(anonym.to_df())
 ```
-  
-|   |              name |      email |             email | ssn         |
-|--:|------------------:|-----------:|------------------:|-------------|
-| 0 | Paul Lang         | 8ee92fb1bd | j*****r@owen.com  | 792-82-0468 |
-| 1 | Michael Gillespie | 51b615c92e | e*****n@lewis.com | 762-13-6119 |
+|   |  name | age |  birthdate |   salary |                                  web |                email |       ssn |
+|--:|------:|----:|-----------:|---------:|-------------------------------------:|---------------------:|----------:|
+| 0 | Paul Lang | 33  | 1915-04-17 | 59234.32 | 8ee92fb1bd | j*****r@owen.com | 792-82-0468 |
+| 1 | Michael Gillespie  | 48  | 1970-05-29 | 49324.53 | 51b615c92e    | e*****n@lewis.com      | 762-13-6119 |
   
 <br>
 
@@ -126,7 +131,7 @@ print(anonym.to_df())
 <ul>
   <li>Official source code repo: <a href="https://github.com/ArtLabss/open-data-anonimizer">https://github.com/ArtLabss/open-data-anonimizer</a></li>
   <li>Download releases: <a href="https://pypi.org/project/anonympy/">https://pypi.org/project/anonympy/</a></li>
-  <li>Issue tracker: <a href="https://github.com/ArtLabss/open-data-anonimizer/issues">https://github.com/ArtLabss/open-data-anonimizer/issues</li>
+  <li>Issue tracker: <a href="https://github.com/ArtLabss/open-data-anonimizer/issues">https://github.com/ArtLabss/open-data-anonimizer/issues</li></a>
 </ul>
 
 <h2>License</h2>
