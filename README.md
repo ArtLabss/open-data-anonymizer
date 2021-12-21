@@ -1,4 +1,8 @@
-<h1 align='center'>Anonympy 🕶️</h1>
+<p align='center'>
+  <img src='https://github.com/ArtLabss/open-data-anonimizer/blob/faca437a7675572306aba35824287f174edd230f/examples/artLabs_new.png' >
+</p>
+<h1 align='center'>anonympy 🕶️</h1>
+
 <p align='center'>
 <img src="https://img.shields.io/github/forks/ArtLabss/open-data-anonimizer.svg">
   <img src="https://img.shields.io/github/stars/ArtLabss/open-data-anonimizer.svg">
