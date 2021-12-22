@@ -11,7 +11,7 @@
   <br>
   <img src="https://img.shields.io/pypi/v/anonympy.svg">
   <img src="https://img.shields.io/pypi/l/anonympy.svg">
-  <p align="center">With :heartpulse: by <a href="https://artlabs.tech/">ArtLabs</a></p>
+  <p align="center">With :heartpulse: by ArtLabs</p>
 <br>
   
 <p>A general Python library for data anonymization of tabular, text, image and sound data.</p>
