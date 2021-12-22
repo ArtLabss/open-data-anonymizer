@@ -43,6 +43,7 @@
   <li>scikit_learn</li>
   <li>pandas</li>
   <li>numpy</li>
+  <li><a href="https://github.com/ArtLabss/open-data-anonimizer/blob/main/requirements.txt"> . . .</a></li>
 </ol>
 
 <h3>Install with pip</h3>
