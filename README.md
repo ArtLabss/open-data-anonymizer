@@ -40,10 +40,10 @@
   <li> Python (>= 3.7)</li>
   <li>cape-privacy</li>
   <li>faker</li>
-  <li>scikit_learn</li>
+  <li>scikit-learn</li>
   <li>pandas</li>
   <li>numpy</li>
-  <li><a href="https://github.com/ArtLabss/open-data-anonimizer/blob/main/requirements.txt"> . . .</a></li>
+  <li><a href="https://github.com/ArtLabss/open-data-anonimizer/blob/main/requirements.txt">    . . .</a></li>
 </ol>
 
 <h3>Install with pip</h3>
@@ -51,12 +51,12 @@
 <p>Easiest way to install anonympy is using <code>pip</code></p>
 
 ```
-pip install anonympy 
+pip install cape-privacy==0.3.0 --no-deps 
 ```
-<p><a href="https://github.com/capeprivacy/cape-python/issues/112">cape-privacy</a> downgrades numpy and pandas, therefore it's highly recommend to upgrade them after installing the requirements.txt</p>
+<p>Due to conflicting pandas/numpy versions with <a href="https://github.com/capeprivacy/cape-python/issues/112">cape-privacy</a>, it's recommend to install them seperately</p>
 
 ```
-pip install --upgrade numpy pandas
+pip install anonympy
 ```
 
 <h3>Install from source</h3>
@@ -67,8 +67,8 @@ pip install --upgrade numpy pandas
 git clone https://github.com/ArtLabss/open-data-anonimizer.git
 cd open-data-anonimizer
 pip install -r requirements.txt
-pip install --upgrade numpy pandas
 make bootstrap
+pip install cape-privacy==0.3.0 --no-deps 
 ```
 
 <br>
