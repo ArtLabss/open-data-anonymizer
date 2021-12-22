@@ -126,8 +126,6 @@ print(anonym.to_df())
 
 <h2>Development</h2>
 
-<p><a href="https://artlabs.tech/">ArtLabss</a> goals are to be helpful, welcoming, and effective.</p>
-
 <h3>Contributions</h3>
 
 <p>The <a href="https://github.com/ArtLabss/open-data-anonimizer/blob/main/CONTRIBUTING.md">Contributing Guide</a> has detailed information about contributing code and documentation.</p>
