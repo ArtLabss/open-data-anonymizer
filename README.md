@@ -13,9 +13,9 @@
   <img src="https://img.shields.io/pypi/l/anonympy.svg">
   <br>
   With :heartpulse: by ArtLabs
-<br>
   
-<p>A general Python library for data anonymization of tabular, text, image and sound data.</p>
+<h2>Overview</h2>
+<p>A general Python library for data anonymization of tabular, text, image and sound data. See <a href="https://artlabs.tech/projects/">ArtLabs/projects</a> for more or similar projects.</p>
 <br>
 <h2>Main Features</h2>
 
