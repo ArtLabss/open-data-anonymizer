@@ -1,3 +1,5 @@
+![Hits](https://hitcounter.pythonanywhere.com/count/tag.svg?url=https://github.com/ArtLabss/open-data-anonimizer)
+
 <p align='center'>
   <img src='https://github.com/ArtLabss/open-data-anonimizer/blob/faca437a7675572306aba35824287f174edd230f/examples/artLabs_new.png' >
 </p>
@@ -11,7 +13,7 @@
   <br>
   <img src="https://img.shields.io/pypi/v/anonympy.svg">
   <img src="https://img.shields.io/pypi/l/anonympy.svg">
-  <img src="http://hits.dwyl.com/ArtLabss/open-data-anonimizer.svg?style=flat">
+ 
   <br>
   With :heartpulse: by ArtLabs
   
