@@ -156,21 +156,25 @@ def available_methods(dtype = None):
         print(*splitted[dtype], sep='\t')
 
 
-def load_dataset():
+def load_dataset(size='small'):
     '''
-    Sample dataset for demonstration purposes
+    Sample dataset for demonstration purposes only
 
     Returns
     ----------
         df : pd.DataFrame 
     '''
-    df = pd.DataFrame({
-        "name": ["Bruce", "Tony"],
-        "age": [33, 48],
-        "birthdate": [pd.Timestamp(1915, 4, 17), pd.Timestamp(1970, 5, 29)],
-        "salary": [59234.32, 49324.53],
-        "web": ['http://www.alandrosenburgcpapc.co.uk', 'http://www.capgeminiamerica.co.uk'],
-        "email": ['josefrazier@owen.com', 'eryan@lewis.com'],
-        "ssn": ["343554334", "656564664"]})
+    if size == 'small':
+        df = pd.DataFrame({
+            "name": ["Bruce", "Tony"],
+            "age": [33, 48],
+            "birthdate": [pd.Timestamp(1915, 4, 17), pd.Timestamp(1970, 5, 29)],
+            "salary": [59234.32, 49324.53],
+            "web": ['http://www.alandrosenburgcpapc.co.uk', 'http://www.capgeminiamerica.co.uk'],
+            "email": ['josefrazier@owen.com', 'eryan@lewis.com'],
+            "ssn": ["343554334", "656564664"]})
 
-    return df
+        return df
+    elif size == 'big':
+        df = pd.read_csv('https://raw.githubusercontent.com/ArtLabss/open-data-anonimizer/main/examples/files/uk-500.csv')
+        return df
