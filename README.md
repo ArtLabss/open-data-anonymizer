@@ -1,6 +1,6 @@
 <p align='center'>
   <a href="https://artlabs.tech/">
-    <img src='https://github.com/ArtLabss/open-data-anonimizer/blob/8c15181375a6a6e361aa776ab1ffccd486729d1a/examples/files/artLabs_new.png' >
+    <img src='https://raw.githubusercontent.com/ArtLabss/open-data-anonimizer/8c15181375a6a6e361aa776ab1ffccd486729d1a/examples/files/artLabs_new.png'>
   </a>
 </p>
 <h1 align='center'>anonympy 🕶️</h1>
