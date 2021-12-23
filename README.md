@@ -16,7 +16,7 @@
   <img src="https://hits.sh/github.com/ArtLabss/open-data-anonimizer.svg">
   <a href="(https://pepy.tech/project/anonympy)"><img src="https://pepy.tech/badge/anonympy"></a>
   <br>
-  With :heartpulse: by ArtLabs
+  <code>With ❤️ by ArtLabs</code>
   
 <h2>Overview</h2>
 <p>A general Python library for data anonymization of tabular, text, image and sound data. See <a href="https://artlabs.tech/projects/">ArtLabs/projects</a> for more or similar projects.</p>
