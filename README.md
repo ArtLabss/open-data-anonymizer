@@ -14,7 +14,7 @@
   <img src="https://img.shields.io/pypi/v/anonympy.svg">
   <img src="https://img.shields.io/pypi/l/anonympy.svg">
   <img src="https://hits.sh/github.com/ArtLabss/open-data-anonimizer.svg">
-  <a href="(https://pepy.tech/project/anonympy)"><img src="https://pepy.tech/badge/anonympy"></a>
+  <a href="https://pepy.tech/project/anonympy"><img src="https://pepy.tech/badge/anonympy"></a>
   <br>
   <code>With ❤️ by ArtLabs</code>
   
