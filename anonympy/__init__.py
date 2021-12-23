@@ -3,11 +3,11 @@ Package for data anonymization of different data types
 such as tabular, text, images and sound. 
 '''
 
-__version__ =  "0.1.4"
+__version__ =  "0.1.5"
 
 # Check if all dependencies have been installed
 
-hard_dependencies = ("faker", "cape_privacy", "pandas", "numpy")
+hard_dependencies = ("faker", "pandas", "numpy")
 missing_dependencies = []
 
 for dependency in hard_dependencies:
