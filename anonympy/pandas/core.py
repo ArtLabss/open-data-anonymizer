@@ -1416,7 +1416,7 @@ class dfAnonymizer(object):
         +-----------+--------+--------+
         '''
         t  = Texttable(150)
-        t.header(['Column', 'Status', 'Method'])
+        t.header(['Column', 'Status', 'Type', 'Method'])
 
         for i in range(len(self.columns)):
             column = self.columns[i]
@@ -1428,7 +1428,16 @@ class dfAnonymizer(object):
                 status = 0
                 method = ''
 
-            row = [column, status, method]
+            if column in self.numeric_columns:
+                dtype = 'numeric'
+            elif column in self.categorical_columns:
+                dtype = 'categorical'
+            elif column in self.datetime_columns:
+                dtype = 'datetime'
+            else:
+                dtype = str(self._df[column].dtype)
+
+            row = [column, status, dtype, method]
             t.add_row(row)
 
         print(t.draw())
