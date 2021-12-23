@@ -28,7 +28,28 @@
 <ul>
   <li>Ease of use</li>
   <li>Efficient anonymization (based on pandas DataFrame)</li>
-  <li>Numerous anonymization techniques (perturbation, tokenization, synthetic data ...)</li>
+  <li>Numerous anonymization techniques</li>
+    <ul>
+      <li>Numeric</li>
+        <ul>
+          <li>Binning</li>
+          <li>Perturbation</li>
+          <li>PCA Masking</li>
+          <li>Rounding</li>
+        </ul>
+      <li>Categorical</li>
+        <ul>
+          <li>Synthetic Data</li>
+          <li>Resampling</li>
+          <li>Tokenization</li>
+          <li>Email Masking</li>
+        </ul>
+      <li>DateTime</li>
+        <ul>
+          <li>Synthetic Date</li>
+          <li>Perturbation</li>
+        </ul>
+      </ul>
 </ul>
 
 <p><strong>Text, Image, Sound</strong></p>
