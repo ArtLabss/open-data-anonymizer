@@ -8,7 +8,7 @@ setup(
   author_email="art@artlabs.tech",
   description="A Data Anonymization package for tabular, image and sound data",
   name="anonympy",
-  version="0.1.9",
+  version="0.2.0",
   
   packages=find_packages(exclude=['test']),
   install_requires=['faker', 'scikit-learn', 'texttable', 'setuptools', 'numpy', 'pandas', 'validators', 'pycryptodome', 'requests', 'pyyaml', 'rfc3339'],
