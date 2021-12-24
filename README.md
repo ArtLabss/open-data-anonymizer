@@ -101,7 +101,7 @@ pip install cape-privacy==0.3.0 --no-deps
 
 <h2>Usage Example </h2>
 
-<p>You can find more examples <a href="https://github.com/ArtLabss/open-data-anonimizer/blob/main/examples/pandas.ipynb">here</a>
+<p>You can find more examples <a href="https://github.com/ArtLabss/open-data-anonimizer/blob/b5d5f2df94b80011a8a93fa08f0046d1390cec49/examples/examples.ipynb">here</a>
 
 ```python
 from anonympy.pandas import dfAnonymizer
