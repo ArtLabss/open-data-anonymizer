@@ -176,5 +176,5 @@ def load_dataset(size='small'):
 
         return df
     elif size == 'big':
-        df = pd.read_csv('https://raw.githubusercontent.com/ArtLabss/open-data-anonimizer/main/examples/files/uk-500.csv')
+        df = pd.read_csv('https://raw.githubusercontent.com/ArtLabss/open-data-anonimizer/main/examples/files/new.csv')
         return df
