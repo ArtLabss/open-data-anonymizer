@@ -77,12 +77,12 @@
 <p>Easiest way to install anonympy is using <code>pip</code></p>
 
 ```
-pip install cape-privacy==0.3.0 --no-deps 
+pip install anonympy
 ```
 <p>Due to conflicting pandas/numpy versions with <a href="https://github.com/capeprivacy/cape-python/issues/112">cape-privacy</a>, it's recommend to install them seperately</p>
 
 ```
-pip install anonympy
+pip install cape-privacy==0.3.0 --no-deps 
 ```
 
 <h3>Install from source</h3>
