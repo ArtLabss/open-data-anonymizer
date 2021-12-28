@@ -32,17 +32,17 @@
     <ul>
       <li>Numeric</li>
         <ul>
-          <li>Binning</li>
+          <li>Generalization - Binning</li>
           <li>Perturbation</li>
           <li>PCA Masking</li>
-          <li>Rounding</li>
+          <li>Generalization - Rounding</li>
         </ul>
       <li>Categorical</li>
         <ul>
           <li>Synthetic Data</li>
           <li>Resampling</li>
           <li>Tokenization</li>
-          <li>Email Masking</li>
+          <li>Partial Email Masking</li>
         </ul>
       <li>DateTime</li>
         <ul>
