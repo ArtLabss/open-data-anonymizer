@@ -124,7 +124,7 @@ anonym.anonymize(inplace = False) # changes will be returned, not applied
 
 |      | name            | age    | birthdate  | age     | web        |         email       |     ssn     |
 |------|-----------------|--------|------------|---------|------------|---------------------|-------------|
-| 0    | Stephanie Patel | 30     | 1915-04-17 | 60000.0 | 5968b7880f | pjordan@example.com | 391-77-9210 |
+| 0    | Stephanie Patel | 30     | 1915-05-10 | 60000.0 | 5968b7880f | pjordan@example.com | 391-77-9210 |
 | 1    | Daniel Matthews | 50     | 1971-01-21 | 50000.0 | 2ae31d40d4 | tparks@example.org  | 872-80-9114 |
   
 ```python
@@ -137,6 +137,9 @@ available_methods('categorical')
 ... categorical_fake	categorical_fake_auto	categorical_resampling	categorical_tokenization	categorical_email_masking
   
 anonym.anonymize({'name': 'categorical_fake', 
+                  'age': 'numeric_noise',
+                  'birthdate': 'datetime_noise',
+                  'salary': 'numeric_rounding',
                   'web': 'categorical_tokenization', 
                   'email':'categorical_email_masking', 
                   'ssn': 'categorical_fake'})
@@ -144,8 +147,8 @@ print(anonym.to_df())
 ```
 |   |  name | age |  birthdate |   salary |                                  web |                email |       ssn |
 |--:|------:|----:|-----------:|---------:|-------------------------------------:|---------------------:|----------:|
-| 0 | Paul Lang | 33  | 1915-04-17 | 59234.32 | 8ee92fb1bd | j*****r@owen.com | 792-82-0468 |
-| 1 | Michael Gillespie  | 48  | 1970-05-29 | 49324.53 | 51b615c92e    | e*****n@lewis.com      | 762-13-6119 |
+| 0 | Paul Lang | 31  | 1915-04-17 | 60000.0 | 8ee92fb1bd | j*****r@owen.com | 792-82-0468 |
+| 1 | Michael Gillespie  | 42  | 1970-05-29 | 50000.0 | 51b615c92e    | e*****n@lewis.com      | 762-13-6119 |
   
 <br>
 
