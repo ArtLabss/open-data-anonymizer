@@ -111,6 +111,8 @@ python setup.py install
 
 <h2>Usage Example </h2>
 
+[![Google Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1wg4g4xWTSLvThYHYLKDIKSJEC4ChQHaM?usp=sharing)
+
 <p>You can find more examples <a href="https://github.com/ArtLabss/open-data-anonimizer/blob/b5d5f2df94b80011a8a93fa08f0046d1390cec49/examples/examples.ipynb">here</a>
 
 ```python
