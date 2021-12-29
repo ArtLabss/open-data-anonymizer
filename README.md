@@ -97,6 +97,16 @@ make bootstrap
 pip install cape-privacy==0.3.0 --no-deps 
 ```
 
+<h3>Downloading Repository</h3>
+
+<p>Or you could download this repository from <a href="https://pypi.org/project/anonympy/">pypi</a> and run the following:
+
+```
+cd open-data-anonimizer
+python setup.py install
+```
+
+
 <br>
 
 <h2>Usage Example </h2>
