@@ -1,8 +1,10 @@
 from setuptools import setup, find_packages
 
+
 with open('README.md', encoding='utf8') as readme_file:
     readme = readme_file.read()
 
+    
 setup(
   author="ArtLabs",
   author_email="art@artlabs.tech",
