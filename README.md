@@ -111,6 +111,8 @@ python setup.py install
 
 <h2>Usage Example </h2>
 
+[![Google Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1wg4g4xWTSLvThYHYLKDIKSJEC4ChQHaM?usp=sharing)
+
 <p>You can find more examples <a href="https://github.com/ArtLabss/open-data-anonimizer/blob/b5d5f2df94b80011a8a93fa08f0046d1390cec49/examples/examples.ipynb">here</a>
 
 ```python
@@ -152,13 +154,13 @@ anonym.anonymize({'name': 'categorical_fake',
                   'salary': 'numeric_rounding',
                   'web': 'categorical_tokenization', 
                   'email':'categorical_email_masking', 
-                  'ssn': 'categorical_fake'})
+                  'ssn': 'column_suppression'})
 print(anonym.to_df())
 ```
-|   |  name | age |  birthdate |   salary |                                  web |                email |       ssn |
-|--:|------:|----:|-----------:|---------:|-------------------------------------:|---------------------:|----------:|
-| 0 | Paul Lang | 31  | 1915-04-17 | 60000.0 | 8ee92fb1bd | j*****r@owen.com | 792-82-0468 |
-| 1 | Michael Gillespie  | 42  | 1970-05-29 | 50000.0 | 51b615c92e    | e*****n@lewis.com      | 762-13-6119 |
+|   |  name | age |  birthdate |   salary |                                  web |                email |
+|--:|------:|----:|-----------:|---------:|-------------------------------------:|---------------------:|
+| 0 | Paul Lang | 31  | 1915-04-17 | 60000.0 | 8ee92fb1bd | j*****r@owen.com |
+| 1 | Michael Gillespie  | 42  | 1970-05-29 | 50000.0 | 51b615c92e    | e*****n@lewis.com      | 
   
 <br>
 
