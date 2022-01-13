@@ -89,22 +89,3 @@ def add_noise(frame):
         img[y_coord][x_coord] = 0
          
     return img
-
-##img[y:y+h,x:x+w] = cv2.cvtColor(add_noise(cv2.cvtColor(img[y:y+h,x:x+w], cv2.COLOR_BGR2GRAY)), cv2.COLOR_GRAY2BGR )
-
-##def radius(x,y, w, h) -> tuple:
-##	pt1 = (x, y)
-##	pt2 = (x+w, y+h)
-##
-##	side_middle = x + w, (y + y + h) / 2
-##	center = find_middle(pt1, pt2)
-##	dis = side_middle[0] - center[0]
-##	
-##	return dis
-     
-
-##def find_middle(pt1: tuple, pt2: tuple) -> tuple:
-##	x1, y1 = pt1
-##	x2, y2 = pt2
-##	m1, m2 = int((x1 + x2)/2), int((y1 + y2)/2)
-##	return m1, m2
