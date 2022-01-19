@@ -1,8 +1,12 @@
-import cv2
-import numpy as np
 import os
+import cv2
 import random
-from utils import find_middle, find_radius, sap_noise 
+import numpy as np
+
+from utils import pixelated
+from utils import sap_noise
+from utils import find_middle, find_radius
+
 
 class imAnonymizer(object):
      """
@@ -25,6 +29,8 @@ class imAnonymizer(object):
           self.flag = flag
           self.frame = cv2.imread(path, flag)
           self.FACE = cv2.CascadeClassifier(r"utils/cascade.xml")
+          self.scaleFactor = 1.1
+          self.minNeighbors = 5
 
 
      def resize(self, new_width=500):
@@ -34,11 +40,11 @@ class imAnonymizer(object):
          return cv2.resize(self.frame, (new_width, new_height))
 
 
-     def blur_face(self, kernel = (15,15), scaleFactor = 1.1, minNeighbors =5, shape = 'c', box = None):
+     def face_blur(self, kernel = (15,15), shape = 'c', box = None):
           '''
           Apply Gaussian Blur to the Face 
           '''
-          self.detections = self.FACE.detectMultiScale(self.frame,scaleFactor = scaleFactor, minNeighbors = minNeighbors)
+          self.detections = self.FACE.detectMultiScale(self.frame,scaleFactor = self.scaleFactor, minNeighbors = self.minNeighbors)
           
           for face in self.detections:
                x,y,w,h = face
@@ -68,11 +74,11 @@ class imAnonymizer(object):
                     cv2.circle(self.frame, find_middle(x,y,w,h), find_radius(x,y,w,h), (255,0,0), 2)
 
      
-     def SaP_face(self, kernel = (15,15), scaleFactor = 1.1, minNeighbors =5, shape = 'c', box = None):
+     def face_SaP(self, kernel = (15,15), shape = 'c', box = None):
           '''
           Add Salt and Pepper Noise
           '''
-          self.detections = self.FACE.detectMultiScale(self.frame,scaleFactor = scaleFactor, minNeighbors = minNeighbors)
+          self.detections = self.FACE.detectMultiScale(self.frame,scaleFactor = self.scaleFactor, minNeighbors = slef.minNeighbors)
           
           for face in self.detections:
                x,y,w,h = face
@@ -100,8 +106,44 @@ class imAnonymizer(object):
                     cv2.rectangle(self.frame,(x,y),(x+w,y+h),(255,0,0),2)
                elif box == 'c':
                     cv2.circle(self.frame, find_middle(x,y,w,h), find_radius(x,y,w,h), (255,0,0), 2)
-          
 
+
+     def face_pixel(self, blocks = 20, shape = 'c', box = None):
+          '''
+          Add Pixelated Bluring to Face
+          '''
+          self.detections = self.FACE.detectMultiScale(self.frame,scaleFactor = self.scaleFactor, minNeighbors = self.minNeighbors)
+          
+          for face in self.detections:
+               x,y,w,h = face
+
+               noise = pixelated(self.frame[y:y+h,x:x+w], blocks = blocks)
+
+               if shape == 'c':
+                    # circular
+                    new = self.frame.copy()
+                    new[y:y+h,x:x+w] = noise
+
+                    #mask
+                    mask = np.zeros(new.shape[:2], dtype='uint8')
+                    # cirlce parameters 
+                    cv2.circle(mask, find_middle(x,y,w,h), find_radius(x,y,w,h), 255, -1)
+
+                    #apply
+                    self.frame[mask > 0] = new[mask > 0]
+                    
+               elif shape == 'r':
+                    # rectangular
+                    self.frame[y:y+h,x:x+w] = noise
+               
+               if box == 'r':
+                    cv2.rectangle(self.frame,(x,y),(x+w,y+h),(255,0,0),2)
+               elif box == 'c':
+                    cv2.circle(self.frame, find_middle(x,y,w,h), find_radius(x,y,w,h), (255,0,0), 2)
+          
+                    
+
+          
      
      def imshow(self, fname: str):
           '''
@@ -110,4 +152,17 @@ class imAnonymizer(object):
           cv2.imshow(fname, self.frame)
 
 
+##img[y:y+h,x:x+w] = cv2.cvtColor(add_noise(cv2.cvtColor(img[y:y+h,x:x+w], cv2.COLOR_BGR2GRAY)), cv2.COLOR_GRAY2BGR )
 
+## maskkkk
+##x,y,w,h = 389, 127,209,209
+##
+##noised = add_noise(img[y:y+h,x:x+w])
+##new = img.copy()
+##new[y:y+h,x:x+w]  = noised
+##
+##mask = np.zeros(new.shape[:2], dtype='uint8')
+##cv2.circle(mask, (493, 231), 105, 255, -1)
+##
+##img[mask > 0] = new[mask > 0]
+##cv2.imshow('a', img)
