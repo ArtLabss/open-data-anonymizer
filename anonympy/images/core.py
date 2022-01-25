@@ -42,8 +42,20 @@ class imAnonymizer(object):
 
      def face_blur(self, kernel = (15,15), shape = 'c', box = None):
           '''
-          Apply Gaussian Blur to the Face 
-          '''
+          Apply Gaussian Blur to the Face
+          
+          Parameters:
+          ----------
+
+          Returns:
+          ----------
+
+          Raises:
+          ----------
+
+          Examples
+          ---------- 
+               '''
           self.detections = self.FACE.detectMultiScale(self.frame,scaleFactor = self.scaleFactor, minNeighbors = self.minNeighbors)
           
           for face in self.detections:
@@ -77,6 +89,18 @@ class imAnonymizer(object):
      def face_SaP(self, kernel = (15,15), shape = 'c', box = None):
           '''
           Add Salt and Pepper Noise
+          
+          Parameters:
+          ----------
+
+          Returns:
+          ----------
+
+          Raises:
+          ----------
+
+          Examples
+          ---------- 
           '''
           self.detections = self.FACE.detectMultiScale(self.frame,scaleFactor = self.scaleFactor, minNeighbors = slef.minNeighbors)
           
@@ -111,6 +135,18 @@ class imAnonymizer(object):
      def face_pixel(self, blocks = 20, shape = 'c', box = None):
           '''
           Add Pixelated Bluring to Face
+
+          Parameters:
+          ----------
+
+          Returns:
+          ----------
+
+          Raises:
+          ----------
+
+          Examples
+          ---------- 
           '''
           self.detections = self.FACE.detectMultiScale(self.frame,scaleFactor = self.scaleFactor, minNeighbors = self.minNeighbors)
           
@@ -140,11 +176,43 @@ class imAnonymizer(object):
                     cv2.rectangle(self.frame,(x,y),(x+w,y+h),(255,0,0),2)
                elif box == 'c':
                     cv2.circle(self.frame, find_middle(x,y,w,h), find_radius(x,y,w,h), (255,0,0), 2)
-          
-                    
 
+
+     def blur(self, method='Gaussian', kernel=(15, 15)):
+          '''
+          Apply blurring to image. Available methods:
+          - Averaging
+          - Gaussian 
+          - Bilateral 
+          - Median 
+
+          Parameters:
+          ----------
+
+          Returns:
+          ----------
+
+          Raises:
+          ----------
+
+          Examples
+          ---------- 
           
-     
+          '''
+          if method.lower() == 'gaussian':
+               return cv2.GaussianBlur(self.frame, kernel, cv2.BORDER_DEFAULT) 
+          elif method.lower() == 'median':
+               if type(kernel) == tuple:
+                    ksize = kernel[0]
+               else:
+                    ksize = kernel
+               return  cv2.medianBlur(self.frame, ksize)
+          elif method.lower() == 'bilateral':
+               return  cv2.bilateralFilter(self.frame, *kernel)
+          elif method.lower() == 'averaging':
+               return cv2.blur(self.frame, kernel)
+
+
      def imshow(self, fname: str):
           '''
           Display the Image 
@@ -166,3 +234,51 @@ class imAnonymizer(object):
 ##
 ##img[mask > 0] = new[mask > 0]
 ##cv2.imshow('a', img)
+
+
+
+
+
+anonym = imAnonymizer('me.png')
+
+gaussian = anonym.blur(method = 'gaussian', kernel = (21, 21))
+avg = anonym.blur(method = 'averaging', kernel = (15, 15))
+median = anonym.blur(method = 'median', kernel = 11)
+bilateral = anonym.blur(method = 'bilateral', kernel = (30, 150, 150))
+
+
+cv2.imshow('gaussian', gaussian)
+cv2.imshow('averaging', avg)
+cv2.imshow('median', median)
+cv2.imshow('bilateral', bilateral)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
