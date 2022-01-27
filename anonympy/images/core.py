@@ -24,11 +24,17 @@ class imAnonymizer(object):
      Examples
      ---------- 
      """
-     def __init__(self, path, flag = None):
-          self.path = path
-          self.flag = flag
-          self.frame = cv2.imread(path, flag)
-          self.FACE = cv2.CascadeClassifier(r"utils/cascade.xml")
+     def __init__(self, path, output = None):
+          if os.path.isdir(path):
+               self.path = path
+               self._path = True
+               self._img = False
+          else:
+               self.frame = path.copy()
+               self._path = False
+               self._img = True
+                    
+          self.FACE = cv2.CascadeClassifier("utils\cascade.xml")
           self.scaleFactor = 1.1
           self.minNeighbors = 5
 
@@ -62,7 +68,7 @@ class imAnonymizer(object):
                x,y,w,h = face
                
                noise = cv2.GaussianBlur(self.frame[y:y+h,x:x+w], kernel, cv2.BORDER_DEFAULT)
-
+               copy = self.frame.copy()
                if shape == 'c':
                     # circular
                     new = self.frame.copy()
@@ -74,16 +80,17 @@ class imAnonymizer(object):
                     cv2.circle(mask, find_middle(x,y,w,h), find_radius(x,y,w,h), 255, -1)
 
                     #apply
-                    self.frame[mask > 0] = new[mask > 0]
+                    copy[mask > 0] = new[mask > 0]
                     
                elif shape == 'r':
                     # rectangular
-                    self.frame[y:y+h,x:x+w] = noise
+                    copy[y:y+h,x:x+w] = noise
                
                if box == 'r':
-                    cv2.rectangle(self.frame,(x,y),(x+w,y+h),(255,0,0),2)
+                    cv2.rectangle(copy, (x,y) ,(x+w,y+h), (255,0,0), 2)
                elif box == 'c':
-                    cv2.circle(self.frame, find_middle(x,y,w,h), find_radius(x,y,w,h), (255,0,0), 2)
+                    cv2.circle(copy, find_middle(x,y,w,h), find_radius(x,y,w,h), (255,0,0), 2)
+          return copy     
 
      
      def face_SaP(self, kernel = (15,15), shape = 'c', box = None):
@@ -102,12 +109,13 @@ class imAnonymizer(object):
           Examples
           ---------- 
           '''
-          self.detections = self.FACE.detectMultiScale(self.frame,scaleFactor = self.scaleFactor, minNeighbors = slef.minNeighbors)
+          self.detections = self.FACE.detectMultiScale(self.frame,scaleFactor = self.scaleFactor, minNeighbors = self.minNeighbors)
           
           for face in self.detections:
                x,y,w,h = face
 
                noise = sap_noise(self.frame[y:y+h,x:x+w])
+               copy = self.frame.copy()
 
                if shape == 'c':
                     # circular
@@ -120,16 +128,19 @@ class imAnonymizer(object):
                     cv2.circle(mask, find_middle(x,y,w,h), find_radius(x,y,w,h), 255, -1)
 
                     #apply
-                    self.frame[mask > 0] = new[mask > 0]
+                    copy[mask > 0] = new[mask > 0]
                     
                elif shape == 'r':
                     # rectangular
-                    self.frame[y:y+h,x:x+w] = noise
+                    copy[y:y+h,x:x+w] = noise
                
                if box == 'r':
-                    cv2.rectangle(self.frame,(x,y),(x+w,y+h),(255,0,0),2)
+                    cv2.rectangle(copy, (x,y),(x+w,y+h),(255,0,0),2)
                elif box == 'c':
-                    cv2.circle(self.frame, find_middle(x,y,w,h), find_radius(x,y,w,h), (255,0,0), 2)
+                    cv2.circle(copy, find_middle(x,y,w,h), find_radius(x,y,w,h), (255,0,0), 2)
+               else:
+                    raise Exception('Possible values: `r` (rectangular) and `c` (circular)')
+          return copy
 
 
      def face_pixel(self, blocks = 20, shape = 'c', box = None):
@@ -154,6 +165,7 @@ class imAnonymizer(object):
                x,y,w,h = face
 
                noise = pixelated(self.frame[y:y+h,x:x+w], blocks = blocks)
+               copy = self.frame.copy()
 
                if shape == 'c':
                     # circular
@@ -166,16 +178,18 @@ class imAnonymizer(object):
                     cv2.circle(mask, find_middle(x,y,w,h), find_radius(x,y,w,h), 255, -1)
 
                     #apply
-                    self.frame[mask > 0] = new[mask > 0]
+                    copy[mask > 0] = new[mask > 0]
                     
                elif shape == 'r':
                     # rectangular
-                    self.frame[y:y+h,x:x+w] = noise
+                    copy[y:y+h,x:x+w] = noise
                
                if box == 'r':
-                    cv2.rectangle(self.frame,(x,y),(x+w,y+h),(255,0,0),2)
+                    cv2.rectangle(copy, (x,y), (x+w,y+h), (255,0,0), 2)
                elif box == 'c':
-                    cv2.circle(self.frame, find_middle(x,y,w,h), find_radius(x,y,w,h), (255,0,0), 2)
+                    cv2.circle(copy, find_middle(x,y,w,h), find_radius(x,y,w,h), (255,0,0), 2)
+
+          return copy
 
 
      def blur(self, method='Gaussian', kernel=(15, 15)):
@@ -213,60 +227,30 @@ class imAnonymizer(object):
                return cv2.blur(self.frame, kernel)
 
 
-     def imshow(self, fname: str):
-          '''
-          Display the Image 
-          '''
-          cv2.imshow(fname, self.frame)
 
 
-##img[y:y+h,x:x+w] = cv2.cvtColor(add_noise(cv2.cvtColor(img[y:y+h,x:x+w], cv2.COLOR_BGR2GRAY)), cv2.COLOR_GRAY2BGR )
 
-## maskkkk
-##x,y,w,h = 389, 127,209,209
-##
-##noised = add_noise(img[y:y+h,x:x+w])
-##new = img.copy()
-##new[y:y+h,x:x+w]  = noised
-##
-##mask = np.zeros(new.shape[:2], dtype='uint8')
-##cv2.circle(mask, (493, 231), 105, 255, -1)
-##
-##img[mask > 0] = new[mask > 0]
-##cv2.imshow('a', img)
+## for dirpath, dirnames, filenames in os.walk(inputpath):
+##	print(dirpath, '\t', dirnames, '\t', filenames)
 
 
 
 
+##for dirpath, dirnames, filenames in os.walk(inputpath):
+##    structure = os.path.join(outputpath, dirpath[len(inputpath):])
+##    if not os.path.isdir(structure):
+##        os.mkdir(structure)
+##    else:
+##        print("Folder does already exits!")
 
-anonym = imAnonymizer('me.png')
-
-gaussian = anonym.blur(method = 'gaussian', kernel = (21, 21))
-avg = anonym.blur(method = 'averaging', kernel = (15, 15))
-median = anonym.blur(method = 'median', kernel = 11)
-bilateral = anonym.blur(method = 'bilateral', kernel = (30, 150, 150))
-
-
-cv2.imshow('gaussian', gaussian)
-cv2.imshow('averaging', avg)
-cv2.imshow('median', median)
-cv2.imshow('bilateral', bilateral)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+##def check_folders(path, lst):
+##	for file in os.listdir(path):
+##		dst = os.path.join(path, file)
+##		if os.path.isdir(dst):
+##			return hack_location(dst, lst)
+##		else:
+##			if os.path.splitext(dst)[1].strip('.') in ('jpg', 'jpeg', 'png'):
+##				lst.append(dst)
 
 
 
