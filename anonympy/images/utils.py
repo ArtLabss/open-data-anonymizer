@@ -80,3 +80,10 @@ def pixelated(image,  blocks = 20):
                     cv2.rectangle(image, (startX, startY), (endX, endY),(B, G, R), -1)
 
           return image
+
+
+def resize(self, new_width=500):
+        height, width, _ = self.frame.shape
+        ratio = height / width
+        new_height = int(ratio * new_width)
+        return cv2.resize(self.frame, (new_width, new_height))
