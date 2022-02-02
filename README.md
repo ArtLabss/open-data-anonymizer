@@ -207,7 +207,24 @@ anonym = imAnonymizer(path, dst)
 anonym.blur(method = 'median', kernel = 11) 
 ```
 
-<p>This will create a folder `Output` in <code>dst</code> directory</p>
+<p>This will create a folder `Output` in <code>dst</code> directory.</p>
+<p>The `Data` folder had the following structure</p>
+
+```
+|   1.jpg
+|   2.jpg
+|   3.jpeg
+|   output.doc
+|   
+\---test
+    |   4.png
+    |   5.jpeg
+    |   
+    \---test2
+            6.png
+```
+
+<p>The `Output` folder will have the same structure, file names but blurred images.</p>
 
 <br>
 
