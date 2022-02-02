@@ -184,18 +184,46 @@ print(anonym.to_df())
 <p><strong>Images</strong></p>
 
 ```python
+# Passing an Image
 import cv2
 from anonympy.images import imAnonymizer
 
-img = cv2.imread('adam.jpg')
+img = cv2.imread('sulking_boy.jpg')
 anonym = imAnonymizer(img)
 
 blurred = anonym.face_blur((31, 31), shape='r', box = 'r')  # blurring shape and bounding box ('r' / 'c')
-
 cv2.imshow('Blurred', blurred)
+```
+`anonym.face_blur()`            |  `anonym.face_pixel()`            |    `anonym.face_SaP()`
+:-------------------------:|:-------------------------:|:-------------------------:
+![input_img1](https://github.com/ArtLabss/open-data-anonimizer/blob/d61127f7a8fdff603af21dcab8edbf72f2aab292/examples/files/sad_boy_blurred.jpg)  |  ![output_img1](https://github.com/ArtLabss/open-data-anonimizer/blob/d61127f7a8fdff603af21dcab8edbf72f2aab292/examples/files/sad_boy_pixel.jpg)    |   ![sap_image](https://github.com/ArtLabss/open-data-anonimizer/blob/d61127f7a8fdff603af21dcab8edbf72f2aab292/examples/files/sad_boy_sap.jpg) 
 
+```python
+# Passing a Folder 
+path = 'C:/Users/shakhansho.sabzaliev/Downloads/Data' # images are inside `Data` folder
+dst = 'D:/' 
+anonym = imAnonymizer(path, dst)
+
+anonym.blur(method = 'median', kernel = 11) 
 ```
 
+<p>This will create a folder <i>Output</i> in <code>dst</code> directory.</p>
+<p>The <i>Data</i> folder had the following structure</p>
+
+```
+|   1.jpg
+|   2.jpg
+|   3.jpeg
+|   
+\---test
+    |   4.png
+    |   5.jpeg
+    |   
+    \---test2
+            6.png
+```
+
+<p>The <i>Output</i> folder will have the same structure and file names but blurred images.</p>
 
 <br>
 
