@@ -198,6 +198,16 @@ cv2.imshow('Blurred', blurred)
 :-------------------------:|:-------------------------:|:-------------------------:
 ![input_img1](https://github.com/ArtLabss/open-data-anonimizer/blob/d61127f7a8fdff603af21dcab8edbf72f2aab292/examples/files/sad_boy_blurred.jpg)  |  ![output_img1](https://github.com/ArtLabss/open-data-anonimizer/blob/d61127f7a8fdff603af21dcab8edbf72f2aab292/examples/files/sad_boy_pixel.jpg)    |   ![sap_image](https://github.com/ArtLabss/open-data-anonimizer/blob/d61127f7a8fdff603af21dcab8edbf72f2aab292/examples/files/sad_boy_sap.jpg) 
 
+```python
+# Passing a Folder 
+path = 'C:/Users/shakhansho.sabzaliev/Downloads/Data' # images are inside `Data` folder
+dst = 'D:/' 
+anonym = imAnonymizer(path, dst)
+
+anonym.blur(method = 'median', kernel = 11) 
+```
+
+<p>This will create a folder `Output` in <code>dst</code> directory</p>
 
 <br>
 
