@@ -183,6 +183,20 @@ print(anonym.to_df())
 <br >
 <p><strong>Images</strong></p>
 
+```python
+import cv2
+from anonympy.images import imAnonymizer
+
+img = cv2.imread('adam.jpg')
+anonym = imAnonymizer(img)
+
+blurred = anonym.face_blur((31, 31), shape='r', box = 'r')  # blurring shape and bounding box ('r' / 'c')
+
+cv2.imshow('Blurred', blurred)
+
+```
+
+
 <br>
 
 <h2>Development</h2>
