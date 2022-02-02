@@ -52,12 +52,7 @@
       </ul>
 </ul>
 
-<p><strong>Image</strong></p>
-<ul>
-  <li></li>
-</ul>
-
-<p><strong>Text, Sound</strong></p>
+<p><strong>Images</strong></p>
 <ul>
   <li>Anonymization Techniques</li>
   <ul>
@@ -72,6 +67,11 @@
       <li>Blurring</li>
     </ul>
   </ul>
+</ul>
+
+<p><strong>Text, Sound</strong></p>
+<ul>
+  <li></li>
 </ul>
 
 <br>
