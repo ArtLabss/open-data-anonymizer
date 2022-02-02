@@ -223,9 +223,8 @@ anonym.blur(method = 'median', kernel = 11)
             6.png
 ```
 
-<p>The <i>Output</i> folder will have the same structure, file names but blurred images.</p>
+<p>The <i>Output</i> folder will have the same structure and file names but blurred images.</p>
 
-<br>
 
 <h2>Development</h2>
 
