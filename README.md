@@ -52,9 +52,26 @@
       </ul>
 </ul>
 
-<p><strong>Text, Image, Sound</strong></p>
+<p><strong>Image</strong></p>
 <ul>
-  <li>In development</li>
+  <li></li>
+</ul>
+
+<p><strong>Text, Sound</strong></p>
+<ul>
+  <li>Anonymization Techniques</li>
+  <ul>
+    <li>Personal Images</li>
+    <ul>
+      <li>Blurring</li>
+      <li>Pixaled Face Blurring</li>
+      <li>Salt and Pepper Noise</li>
+    </ul>
+    <li>General Images</li>
+    <ul>
+      <li>Blurring</li>
+    </ul>
+  </ul>
 </ul>
 
 <br>
