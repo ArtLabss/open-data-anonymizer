@@ -62,7 +62,7 @@ class imAnonymizer(object):
           Function to apply Gaussian blur to an image
           '''
           self.detections = self._FACE.detectMultiScale(img,scaleFactor = self.scaleFactor, minNeighbors = self.minNeighbors)
-          if self.detections == ():
+          if self.detections == tuple():
                if self._img:
                     print(f'No Faces were Detected in the Image')
                elif self.path:
@@ -187,7 +187,7 @@ class imAnonymizer(object):
           Function to apply Salt and Pepper Noise to an Image 
           '''
           self.detections = self._FACE.detectMultiScale(img, scaleFactor = self.scaleFactor, minNeighbors = self.minNeighbors)
-          if self.detections == ():
+          if self.detections == tuple():
                if self._img:
                     print(f'No Faces were Detected in the Image')
                elif self.path:
@@ -307,7 +307,7 @@ class imAnonymizer(object):
           '''
           '''
           self.detections = self._FACE.detectMultiScale(img, scaleFactor = self.scaleFactor, minNeighbors = self.minNeighbors)
-          if self.detections == ():
+          if self.detections == tuple():
                if self._img:
                     print(f'No Faces were Detected in the Image')
                elif self.path:
