@@ -214,7 +214,6 @@ anonym.blur(method = 'median', kernel = 11)
 |   1.jpg
 |   2.jpg
 |   3.jpeg
-|   output.doc
 |   
 \---test
     |   4.png
