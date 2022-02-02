@@ -187,7 +187,7 @@ print(anonym.to_df())
 import cv2
 from anonympy.images import imAnonymizer
 
-img = cv2.imread('adam.jpg')
+img = cv2.imread('sulking_boy.jpg')
 anonym = imAnonymizer(img)
 
 blurred = anonym.face_blur((31, 31), shape='r', box = 'r')  # blurring shape and bounding box ('r' / 'c')
