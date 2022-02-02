@@ -4,21 +4,24 @@ import numpy as np
 import cv2
 
 def find_middle(x, y, w, h) -> tuple:
-	x1, y1 = x, y
-	x2, y2 = x + w, y + h
-	m1, m2 = int((x1 + x2)/2), int((y1 + y2)/2)
-	return m1, m2
+        '''
+        Supple
+        '''
+        x1, y1 = x, y
+        x2, y2 = x + w, y + h
+        m1, m2 = int((x1 + x2)/2), int((y1 + y2)/2)
+        return m1, m2
 
 
 def find_radius(x, y, w, h) -> tuple:
-	pt1 = (x, y)
-	pt2 = (x+w, y+h)
+        pt1 = (x, y)
+        pt2 = (x+w, y+h)
 
-	side_middle = x + w, (y + y + h) / 2
-	center = find_middle(x, y, w, h)
-	dis = side_middle[0] - center[0]
-	
-	return dis
+        side_middle = x + w, (y + y + h) / 2
+        center = find_middle(x, y, w, h)
+        dis = side_middle[0] - center[0]
+
+        return dis
 
 
 def sap_noise(frame):
