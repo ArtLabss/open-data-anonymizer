@@ -4,12 +4,12 @@ import glob
 import shutil
 import random
 import numpy as np
-
-from utils import pixelated
-from utils import sap_noise
-from utils import find_middle, find_radius
-
 from typing import Union
+
+from anonympy.images.utils import pixelated
+from anonympy.images.utils import sap_noise
+from anonympy.images.utils import find_middle, find_radius
+
 
 class imAnonymizer(object):
      """
