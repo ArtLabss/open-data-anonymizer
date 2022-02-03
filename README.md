@@ -196,7 +196,7 @@ cv2.imshow('Blurred', blurred)
 ```
 `anonym.face_blur()`            |  `anonym.face_pixel()`            |    `anonym.face_SaP()`
 :-------------------------:|:-------------------------:|:-------------------------:
-![input_img1](https://github.com/ArtLabss/open-data-anonimizer/blob/d61127f7a8fdff603af21dcab8edbf72f2aab292/examples/files/sad_boy_blurred.jpg)  |  ![output_img1](https://github.com/ArtLabss/open-data-anonimizer/blob/d61127f7a8fdff603af21dcab8edbf72f2aab292/examples/files/sad_boy_pixel.jpg)    |   ![sap_image](https://github.com/ArtLabss/open-data-anonimizer/blob/d61127f7a8fdff603af21dcab8edbf72f2aab292/examples/files/sad_boy_sap.jpg) 
+![input_img1](https://raw.githubusercontent.com/ArtLabss/open-data-anonimizer/d61127f7a8fdff603af21dcab8edbf72f2aab292/examples/files/sad_boy_blurred.jpg)  |  ![output_img1](https://raw.githubusercontent.com/ArtLabss/open-data-anonimizer/d61127f7a8fdff603af21dcab8edbf72f2aab292/examples/files/sad_boy_pixel.jpg)    |   ![sap_image](https://raw.githubusercontent.com/ArtLabss/open-data-anonimizer/d61127f7a8fdff603af21dcab8edbf72f2aab292/examples/files/sad_boy_sap.jpg) 
 
 ```python
 # Passing a Folder 
