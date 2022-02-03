@@ -1,5 +1,9 @@
 Faker==10.0.0
-scikit_learn==1.0.1
+imutils==0.5.4
+matplotlib==3.5.1
+numpy==1.22.0
+opencv_python==4.5.5.62
+scikit_learn==1.0.2
 setuptools==52.0.0
 texttable==1.6.4
 requests~=2.23.0
