@@ -7,7 +7,7 @@ __version__ =  "0.2.1"
 
 # Check if all dependencies have been installed
 
-hard_dependencies = ("faker", "pandas", "numpy", "opencv_python")
+hard_dependencies = ("faker", "pandas", "numpy", "cv2")
 missing_dependencies = []
 
 for dependency in hard_dependencies:
