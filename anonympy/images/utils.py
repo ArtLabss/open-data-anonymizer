@@ -3,6 +3,7 @@ import random
 import numpy as np
 import cv2
 
+
 def find_middle(x, y, w, h) -> tuple:
         '''
         Supple
