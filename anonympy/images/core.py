@@ -52,7 +52,7 @@ class imAnonymizer(object):
           else:
                self._dst = False
                     
-          self._FACE = cv2.CascadeClassifier("utils\cascade.xml")
+          self._FACE = cv2.CascadeClassifier("anonympy\images\utils\cascade.xml")
           self.scaleFactor = 1.1
           self.minNeighbors = 5
 
