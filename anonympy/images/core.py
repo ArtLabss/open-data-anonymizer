@@ -51,8 +51,8 @@ class imAnonymizer(object):
                self._dst = True
           else:
                self._dst = False
-                    
-          self._FACE = cv2.CascadeClassifier("anonympy\images\utils\cascade.xml")
+
+          self._FACE = cv2.CascadeClassifier(data_file('cascade.xml'))
           self.scaleFactor = 1.1
           self.minNeighbors = 5
 
@@ -507,3 +507,7 @@ class imAnonymizer(object):
                     data_to = os.path.join(self.dst, 'Output')
                     shutil.copytree(data_from, data_to, dirs_exist_ok = True)
                     shutil.rmtree(data_from)
+
+def data_file(fname):
+          """Return the path to a data file of ours."""
+          return os.path.join(os.path.split(__file__)[0], fname)
