@@ -201,7 +201,7 @@ cv2.imshow('Blurred', blurred)
 ```python
 # Passing a Folder 
 path = 'C:/Users/shakhansho.sabzaliev/Downloads/Data' # images are inside `Data` folder
-dst = 'D:/' 
+dst = 'D:/' # destination folder
 anonym = imAnonymizer(path, dst)
 
 anonym.blur(method = 'median', kernel = 11) 
