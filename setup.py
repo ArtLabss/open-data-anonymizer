@@ -20,7 +20,7 @@ setup(
   name="anonympy",
   version="0.2.3",
   
-  packages=find_packages(exclude=['test']),
+  packages=find_packages(exclude=['tests*']),
   package_data={'anonympy': extra_files},
   install_requires=['faker', 'scikit-learn', 'opencv_python', 'texttable', 'setuptools', 'numpy', 'pandas', 'validators', 'pycryptodome', 'requests', 'pyyaml', 'rfc3339'],
   python_requires='>=3.6*',
