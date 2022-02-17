@@ -56,7 +56,7 @@
 <ul>
   <li>Anonymization Techniques</li>
   <ul>
-    <li>Personal Images</li>
+    <li>Personal Images (faces)</li>
     <ul>
       <li>Blurring</li>
       <li>Pixaled Face Blurring</li>
