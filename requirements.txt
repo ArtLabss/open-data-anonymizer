@@ -24,3 +24,4 @@ pycryptodome~=3.9.8
 pyarrow==6.0.1
 numpy
 pandas
+test
