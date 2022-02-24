@@ -144,7 +144,7 @@ class dfAnonymizer(object):
 
         Parameters
         ----------
-        methods : Optional[Dict[str, str]], default None
+        methods : Optional[Dict[str, str]], default None 
             {column_name: anonympy_method}. Call ``available_methods`` for list of all methods.
         locale : str or List[str], default ['en_US']
             See https://faker.readthedocs.io/en/master/locales.html for all faker's locales.
@@ -294,7 +294,8 @@ class dfAnonymizer(object):
     def _fake_column(self,
                   column,
                   method,
-                  locale = ['en_US'],
+                  locale = ['en_US'], 
+                  seed = None,
                   inplace = True):
         '''
         Anonymize pandas Series object using synthetic data generator
@@ -308,6 +309,8 @@ class dfAnonymizer(object):
             Method name. List of all methods ``fake_methods``.
         locale : str or List[str], default ['en_US']
             See https://faker.readthedocs.io/en/master/locales.html for all faker's locales.
+        seed : Optional[int], default None
+            Pass an integer for reproducible output across multiple function calls.
         inplace : bool, default True
             If True the changes will be applied to `dfAnonymizer` obejct, else output is returned. 
 
@@ -319,6 +322,7 @@ class dfAnonymizer(object):
         ----------
         dfAnonymizer.categorical_fake : Replace values with synthetically generated ones by specifying which methods to apply
         '''
+        Faker.seed(seed)
         fake = Faker(locale=locale)
         method = getattr(fake, method)
         faked = self._df[column].apply(lambda x: method())
@@ -337,6 +341,7 @@ class dfAnonymizer(object):
     def categorical_fake(self,
                   columns,
                   locale = ['en_US'],
+                  seed = None,
                   inplace = True):
         '''
         Replace data with synthetic data using faker's generator. 
@@ -351,6 +356,8 @@ class dfAnonymizer(object):
             If a string or list of strings is passed, function will assume that method name is same as column name.
         locale : str or List[str], default ['en_US']
             See https://faker.readthedocs.io/en/master/locales.html for all faker's locales.
+        seed : Optional[int], default None
+            Pass an integer for reproducible output across multiple function calls.
         inplace : bool, default True
             If True the changes will be applied to `dfAnonymizer` obejct, else output is returned. 
 
@@ -394,19 +401,19 @@ class dfAnonymizer(object):
             if isinstance(columns, list):
                 columns = columns[0]
             if inplace:
-                self._fake_column(columns, columns, inplace = True, locale = locale)
+                self._fake_column(columns, columns, inplace = True, seed = seed, locale = locale)
             else:
-                return self._fake_column(columns, columns, inplace = False, locale = locale)
+                return self._fake_column(columns, columns, inplace = False, seed = seed, locale = locale)
         
         # if a list of columns is passed
         elif isinstance(columns, list):
             temp = pd.DataFrame()
             if inplace:
                 for column in columns:
-                    self._fake_column(column, column, inplace = True, locale = locale)
+                    self._fake_column(column, column, inplace = True, seed = seed, locale = locale)
             else:
                 for column in columns:
-                    faked = self._fake_column(column, column, inplace = False, locale = locale)
+                    faked = self._fake_column(column, column, inplace = False, seed = seed, locale = locale)
                     temp[column] = faked
                 return temp
             
@@ -415,16 +422,17 @@ class dfAnonymizer(object):
             temp = pd.DataFrame()
             if inplace:
                 for column, method in columns.items():
-                    self._fake_column(column, method, inplace = True, locale = locale)
+                    self._fake_column(column, method, inplace = True, seed = seed, locale = locale)
             else:
                 for column, method in columns.items():
-                    faked = self._fake_column(column, method, inplace = False, locale = locale)
+                    faked = self._fake_column(column, method, inplace = False, seed = seed, locale = locale)
                     temp[column] = faked
                 return temp
 
 
     def categorical_fake_auto(self,
                         locale = ['en_US'],
+                        seed = None,
                         inplace = True):
         '''
         Anonymize only those column which names are in ``fake_methods`` list.
@@ -433,6 +441,8 @@ class dfAnonymizer(object):
         ----------
         locale : str or List[str], default ['en_US']
             See https://faker.readthedocs.io/en/master/locales.html for all faker's locales.
+        seed : Optional[int], default None
+            Pass an integer for reproducible output across multiple function calls.
         inplace : bool, default True
             If True the changes will be applied to `dfAnonymizer` obejct, else output is returned. 
 
@@ -479,9 +489,9 @@ class dfAnonymizer(object):
                     if column in self.anonymized_columns:
                         print(f'`{column}` column already anonymized!')
                     else:
-                        self._fake_column(column, func, inplace = True, locale = locale)
+                        self._fake_column(column, func, inplace = True, seed = seed, locale = locale)
                 else:
-                    temp[column] = self._fake_column(column, func, inplace = False, locale = locale)
+                    temp[column] = self._fake_column(column, func, inplace = False, seed = seed, locale = locale)
         if not inplace:
             if len(temp.columns) > 1:
                 return temp
