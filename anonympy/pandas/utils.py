@@ -178,3 +178,5 @@ def load_dataset(size='small'):
     elif size == 'big':
         df = pd.read_csv('https://raw.githubusercontent.com/ArtLabss/open-data-anonimizer/main/examples/files/new.csv', parse_dates=['birthdate']) 
         return df
+    else:
+        raise ValueError("size takes only two values: 'small' / 'big' ")
