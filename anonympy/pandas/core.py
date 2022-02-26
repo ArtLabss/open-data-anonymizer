@@ -427,7 +427,10 @@ class dfAnonymizer(object):
                 for column, method in columns.items():
                     faked = self._fake_column(column, method, inplace = False, seed = seed, locale = locale)
                     temp[column] = faked
-                return temp
+                if len(columns) == 1:
+                    return temp[column]
+                else:
+                    return temp
 
 
     def categorical_fake_auto(self,
@@ -889,7 +892,7 @@ class dfAnonymizer(object):
         if isinstance(columns, str) or (len(columns) == 1 and isinstance(columns, list)):
             if isinstance(columns, list):
                 columns = columns[0]
-            tokenize = Tokenizer(max_token_len = max_token_len, key = None)
+            tokenize = Tokenizer(max_token_len = max_token_len, key = key)
             ser = tokenize(self._df[columns])
 
             if inplace:
@@ -907,7 +910,7 @@ class dfAnonymizer(object):
             temp = pd.DataFrame()
             
             for column in columns:
-                tokenize = Tokenizer(max_token_len = max_token_len, key = b"my secret")
+                tokenize = Tokenizer(max_token_len = max_token_len, key = key)
                 ser = tokenize(self._df[column])
 
                 if inplace:
@@ -1260,6 +1263,7 @@ class dfAnonymizer(object):
     
     def categorical_resampling(self,
                                columns,
+                               seed = None,
                                inplace = True):
         '''
         Sampling from the same distribution
@@ -1296,13 +1300,13 @@ class dfAnonymizer(object):
         1    Bruce
         dtype: object
         '''
-        # if a single column is passed 
+        # if a single column is passed
+        np.random.seed(seed)
         if isinstance(columns, str) or (len(columns) == 1 and isinstance(columns, list)):
             if isinstance(columns, list):
                 columns = columns[0]
 
             counts = self._df[columns].value_counts(normalize = True)
-
             if inplace:
                 if columns in self.anonymized_columns:
                     print(f'`{columns}` column already anonymized!')
