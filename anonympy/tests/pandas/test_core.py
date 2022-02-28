@@ -134,12 +134,69 @@ def test_categorical_email_masking(anonym_small):
     pdt.assert_frame_equal(expected, output)
 
 
+def test_datetime_noise(anonym_small):
+    output = anonym_small.datetime_noise('birthdate', seed = 42, inplace = False)
+    expected = pd.Series([pd.Timestamp('1914-07-22 00:00:00'), pd.Timestamp('1970-10-25 00:00:00')] )
+    pdt.assert_series_equal(expected, output, check_names = False)
+
+    output = anonym_small.datetime_noise(['birthdate', 'birthdate'], seed = 42, inplace = False)
+    expected = pd.DataFrame({'birthdate': {0: pd.Timestamp('1914-07-22 00:00:00'), 1: pd.Timestamp('1970-10-25 00:00:00')}})
+    pdt.assert_frame_equal(expected, output)
+
+
+@pytest.mark.skipif(__version__ == '0.2.4', reason="Requires anonympy >= 0.2.5 ")
+def test_datetime_fake(anonym_small):
+    output = anonym_small.datetime_fake('birthdate', seed = 42, inplace = False)
+    expected = pd.Series([pd.Timestamp('2013-07-07 00:00:00'), pd.Timestamp('1977-07-30 00:00:00')])
+    pdt.assert_series_equal(expected, output, check_names = False)
+
+    output = anonym_small.datetime_fake(['birthdate', 'birthdate'], seed = 42, inplace = False)
+    expected = pd.DataFrame({'birthdate': {0: pd.Timestamp('1971-09-14 00:00:00'), 1: pd.Timestamp('2020-06-18 00:00:00')}})
+    pdt.assert_frame_equal(expected, output)
+
+
+def test_column_suppression(anonym_small):
+    output = anonym_small.column_suppression('name', inplace = False)
+    expected = pd.DataFrame({'age': {0: 33, 1: 48},
+                             'birthdate': {0: pd.Timestamp('1915-04-17 00:00:00'), 1: pd.Timestamp('1970-05-29 00:00:00')},
+                             'salary': {0: 59234.32, 1: 49324.53},
+                             'web': {0: 'http://www.alandrosenburgcpapc.co.uk', 1: 'http://www.capgeminiamerica.co.uk'},
+                             'email': {0: 'josefrazier@owen.com', 1: 'eryan@lewis.com'},
+                             'ssn': {0: '343554334', 1: '656564664'}})
+    pdt.assert_frame_equal(expected, output)
+
+    output = anonym_small.column_suppression(['name', 'ssn', 'birthdate'], inplace = False)
+    expected = pd.DataFrame({'age': {0: 33, 1: 48},
+                             'salary': {0: 59234.32, 1: 49324.53},
+                             'web': {0: 'http://www.alandrosenburgcpapc.co.uk', 1: 'http://www.capgeminiamerica.co.uk'},
+                             'email': {0: 'josefrazier@owen.com', 1: 'eryan@lewis.com'}})
+    pdt.assert_frame_equal(expected, output)
+
     
+@pytest.mark.skipif(__version__ == '0.2.4', reason="Requires anonympy >= 0.2.5 ")
+def test_anonymize(anonym_small):
+    output = anonym_small.anonymize(inplace = False, seed = 42)
+    expected = pd.DataFrame({'name': {0: 'Allison Hill', 1: 'Noah Rhodes'},
+                             'email': {0: 'johnsonjoshua@example.org', 1: 'jillrhodes@example.net'},
+                             'ssn': {0: '655-15-0410', 1: '760-36-4013'},
+                             'age': {0: 30, 1: 50},
+                             'birthdate': {0: pd.Timestamp('1914-07-22 00:00:00'), 1: pd.Timestamp('1970-10-25 00:00:00')},
+                             'salary': {0: 60000.0, 1: 50000.0},
+                             'web': {0: '0e6e42d7d0', 1: '2aa40c1d15'}})
+    pdt.assert_frame_equal(expected, output)
 
-
-
+    output = anonym_small.anonymize({'name': 'categorical_fake', 
+                  'age': 'numeric_noise',
+                  'birthdate': 'datetime_noise',
+                  'salary': 'numeric_rounding',
+                  'web': 'categorical_tokenization', 
+                  'email':'categorical_email_masking', 
+                  'ssn': 'column_suppression'}, inplace = False, seed = 42)
+    expected = pd.DataFrame({'name': {0: 'Allison Hill', 1: 'Noah Rhodes'},
+                'age': {0: 38, 1: 47},
+                'birthdate': {0: pd.Timestamp('1914-07-22 00:00:00'), 1: pd.Timestamp('1970-10-25 00:00:00')},
+                'salary': {0: 60000.0, 1: 50000.0},
+                'web': {0: '0e6e42d7d0', 1: '2aa40c1d15'},
+                'email': {0: 'j*****r@owen.com', 1: 'e*****n@lewis.com'}})
+    pdt.assert_frame_equal(expected, output)
     
-    
-
-
-
