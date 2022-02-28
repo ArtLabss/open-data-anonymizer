@@ -134,6 +134,7 @@ class dfAnonymizer(object):
     def anonymize(self,
                   methods = None,
                   locale = ['en_US'],
+                  seed = None,
                   inplace = True):
         '''
         Anonymize all columns using different methods for each dtype.
@@ -188,7 +189,7 @@ class dfAnonymizer(object):
         if not methods:
             if inplace:
                 # try synthetic data 
-                self.categorical_fake_auto(locale = locale)
+                self.categorical_fake_auto(locale = locale, seed = seed)
                 # if there are still columns left unanonymized 
                 if self.unanonymized_columns:
                     for column in self.unanonymized_columns.copy():
@@ -197,13 +198,13 @@ class dfAnonymizer(object):
                             self.numeric_rounding(column)
                             
                         elif column in self.categorical_columns:
-                            self.categorical_tokenization(column)
+                            self.categorical_tokenization(column, key = str(seed))
                         
                         elif column in self.datetime_columns:
-                            self.datetime_noise(column)
+                            self.datetime_noise(column, seed = seed)
             else:
                 # try synthetic data
-                temp = self.categorical_fake_auto(locale = locale, inplace = False)
+                temp = self.categorical_fake_auto(locale = locale, inplace = False, seed = seed)
                 unanonymized = self.unanonymized_columns.copy()
                 
                 if isinstance(temp, pd.DataFrame):
@@ -220,10 +221,10 @@ class dfAnonymizer(object):
                             temp[column] = self.numeric_rounding(column, inplace = False)
                             
                         elif column in self.categorical_columns:
-                            temp[column] = self.categorical_tokenization(column, inplace = False)
+                            temp[column] = self.categorical_tokenization(column, inplace = False, key = str(seed))
                         
                         elif column in self.datetime_columns:
-                            temp[column] = self.datetime_noise(column, inplace = False)
+                            temp[column] = self.datetime_noise(column, inplace = False, seed = seed)
                 return temp 
         # if dictionary with methods was passed
         else:
@@ -231,7 +232,7 @@ class dfAnonymizer(object):
                 for key, value in methods.items():
                     # numeric
                     if value == "numeric_noise":
-                        self.numeric_noise(key)
+                        self.numeric_noise(key, seed = seed)
                     elif value == "numeric_binning":
                         self.numeric_binning(key)
                     elif value == "numeric_masking":
@@ -240,18 +241,18 @@ class dfAnonymizer(object):
                         self.numeric_rounding(key)
                     # categorical
                     elif value == "categorical_fake":
-                        self.categorical_fake(key)
+                        self.categorical_fake(key, seed = seed)
                     elif value == "categorical_resampling":
-                        self.categorical_resampling(key)
+                        self.categorical_resampling(key, seed = seed)
                     elif value == "categorical_tokenization":
-                        self.categorical_tokenization(key)
+                        self.categorical_tokenization(key, key = str(seed))
                     elif value == "categorical_email_masking":
                         self.categorical_email_masking(key)
                     # datetime
                     elif value == "datetime_fake":
-                        self.datetime_fake(key)
+                        self.datetime_fake(key, seed = seed)
                     elif value == "datetime_noise":
-                        self.datetime_noise(key)
+                        self.datetime_noise(key, seed = seed)
                     # drop 
                     elif value == "column_suppression":
                         self.column_suppression(key)           
@@ -260,7 +261,7 @@ class dfAnonymizer(object):
                 for key, value in methods.items():
                     # numeric
                     if value == "numeric_noise":
-                        temp[key] = self.numeric_noise(key, inplace = False)
+                        temp[key] = self.numeric_noise(key, inplace = False, seed = seed)
                     elif value == "numeric_binning":
                         temp[key] = self.numeric_binning(key, inplace = False)
                     elif value == "numeric_masking":
@@ -269,21 +270,21 @@ class dfAnonymizer(object):
                         temp[key] = self.numeric_rounding(key, inplace = False)
                     # categorical
                     elif value == "categorical_fake":
-                        temp[key] = self.categorical_fake(key, inplace = False)
+                        temp[key] = self.categorical_fake(key, inplace = False, seed = seed)
                     elif value == "categorical_resampling":
-                        temp[key] = self.categorical_resampling(key, inplace = False)
+                        temp[key] = self.categorical_resampling(key, inplace = False, seed = seed)
                     elif value == "categorical_tokenization":
-                        temp[key] = self.categorical_tokenization(key, inplace = False)
+                        temp[key] = self.categorical_tokenization(key, inplace = False, key = str(seed))
                     elif value == 'categorical_email_masking':
                         temp[key] = self.categorical_email_masking(key, inplace = False)
                     # datetime
                     elif value == "datetime_fake":
-                        temp[key] = self.datetime_fake(key, inplace = False)
+                        temp[key] = self.datetime_fake(key, inplace = False, seed = seed)
                     elif value == "datetime_noise":
-                        temp[key] = self.datetime_noise(key, inplace = False)
+                        temp[key] = self.datetime_noise(key, inplace = False, seed = seed)
                     # drop 
                     elif value == "column_suppression":
-                        temp[key] = self.column_suppression(key, inplace = False)
+                        pass
 
                 if len(temp.columns) > 1:
                     return temp
@@ -1036,6 +1037,7 @@ class dfAnonymizer(object):
                   columns,
                   pattern = '%Y-%m-%d',
                   end_datetime = None,
+                  seed = None,
                   locale = ['en_US'],
                   inplace = True):
         '''
@@ -1075,6 +1077,7 @@ class dfAnonymizer(object):
         1   2005-05-28
         Name: birthdate, dtype: datetime64[ns]
         '''
+        Faker.seed(seed)
         fake = Faker(locale=locale)
 
         # if a single column is passed 
