@@ -6,6 +6,12 @@ import numpy as np
 from anonympy import __version__
 from anonympy.images.utils import * 
 
+def fetch_image(url):
+    req = urllib.request.urlopen(url)
+    arr = np.asarray(bytearray(req.read()), dtype=np.uint8)
+    img = cv2.imdecode(arr, cv2.IMREAD_COLOR)
+    return img
+    
 
 @pytest.fixture(scope = 'module')
 def rectangle():
@@ -15,8 +21,8 @@ def rectangle():
 
 @pytest.fixture(scope = 'module')
 def load_image():
-    image = cv2.imread('sad_boy.jpg')
-    return image
+    img = fetch_image('https://raw.githubusercontent.com/ArtLabss/open-data-anonymizer/main/anonympy/tests/images/expected/sad_boy.jpg')
+    return img
 
 
 def test_find_middle(rectangle):
@@ -40,20 +46,11 @@ def test_find_radius(rectangle):
 @pytest.mark.skipif(__version__ == '0.2.4', reason="Requires anonympy >= 0.2.5 ")
 def test_sap_noise(load_image):
     output = sap_noise(load_image, seed = 42)
-    expected = cv2.imread('expected/sap_noise.png')
-    assert np.equal(output, expected), "Image returned by `sap_noise` is different from expected/sap_noise.png"
+    expected = fetch_image('https://raw.githubusercontent.com/ArtLabss/open-data-anonymizer/main/anonympy/tests/images/expected/sap_noise.png')
+    assert np.array_equal(output, expected), "Image returned by `sap_noise` is different from expected/sap_noise.png"
     
 
 def test_pixelated(load_image):
-    output = pixelated(os.getcwd())
-
-    expected = cv2.imread('/expected/pixelated.png')
-    assert np.equal(output, expected), "Image returned by `pixelated` is different from expected/pixelated.png"
-
-
-
-
-
-
-
-    
+    output = pixelated(load_image)
+    expected = fetch_image('https://raw.githubusercontent.com/ArtLabss/open-data-anonymizer/main/anonympy/tests/images/expected/pixelated.png')
+    assert np.array_equal(output, expected), "Image returned by `pixelated` is different from expected/pixelated.png"
