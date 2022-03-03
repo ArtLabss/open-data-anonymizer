@@ -20,10 +20,9 @@ def anonym_big():
     try:
         df = load_dataset('big')
         anonym = dfAnonymizer(df)
-        return anonym
     except urllib.error.HTTPError as error:
         anonym = None
-        return anonym 
+    return anonym 
 
 
 def test_anonym_obj(anonym_small, anonym_big):
