@@ -37,7 +37,7 @@ def sap_noise(frame, seed = None):
         # Randomly pick some pixels in the
         # image for coloring them white
         # Pick a random number between 300 and 10000
-        number_of_pixels = random.randint(5000, 10000)
+        number_of_pixels = random.randint(8000, 15000)
         for i in range(number_of_pixels):
                 # Pick a random y coordinate
                 y_coord=random.randint(0, row - 1)
@@ -48,7 +48,7 @@ def sap_noise(frame, seed = None):
         # Randomly pick some pixels in
         # the image for coloring them black
         # Pick a random number between 300 and 10000
-        number_of_pixels = random.randint(5000 , 10000)
+        number_of_pixels = random.randint(8000 , 15000)
         for i in range(number_of_pixels):
                 # Pick a random y coordinate
                 y_coord=random.randint(0, row - 1)
