@@ -7,7 +7,8 @@ import numpy as np
 from typing import Union
 
 from anonympy.images.utils import pixelated
-from anonympy.images.utils import sap_noise
+##from anonympy.images.utils import sap_noise
+from utils import sap_noise
 from anonympy.images.utils import find_middle, find_radius
 
 
@@ -62,7 +63,7 @@ class imAnonymizer(object):
           Function to apply Gaussian blur to an image
           '''
           self.detections = self._FACE.detectMultiScale(img,scaleFactor = self.scaleFactor, minNeighbors = self.minNeighbors)
-          if self.detections == tuple():
+          if  len(self.detections) == 0:
                if self._img:
                     print(f'No Faces were Detected in the Image')
                elif self.path:
@@ -182,12 +183,12 @@ class imAnonymizer(object):
                     shutil.rmtree(data_from)
 
 
-     def _face_SaP(self, img, shape = 'c', box = None, fname = None): 
+     def _face_SaP(self, img, shape = 'c', box = None, fname = None, seed = None): 
           '''
           Function to apply Salt and Pepper Noise to an Image 
           '''
           self.detections = self._FACE.detectMultiScale(img, scaleFactor = self.scaleFactor, minNeighbors = self.minNeighbors)
-          if self.detections == tuple():
+          if len(self.detections) == 0:
                if self._img:
                     print(f'No Faces were Detected in the Image')
                elif self.path:
@@ -197,7 +198,7 @@ class imAnonymizer(object):
                for face in self.detections:
                     x,y,w,h = face
 
-                    noise = sap_noise(img[y:y+h,x:x+w])
+                    noise = sap_noise(img[y:y+h,x:x+w], seed = seed)
                     copy = img.copy()
 
                     if shape == 'c':
@@ -231,7 +232,7 @@ class imAnonymizer(object):
                return copy
 
 
-     def face_SaP(self, shape = 'c', box = None):
+     def face_SaP(self, shape = 'c', box = None, seed = None):
           '''
           Add Salt and Pepper Noise.
           
@@ -276,7 +277,7 @@ class imAnonymizer(object):
           >>> anonym.face_SaP(shape = 'c', box = None)
           '''
           if self._img:
-               return self._face_SaP(self.frame, shape = shape, box = box)
+               return self._face_SaP(self.frame, shape = shape, box = box, seed = seed)
                     
           elif self._path:
                for filepath in glob.iglob(self.path + "/**/*.*", recursive=True):
@@ -285,7 +286,7 @@ class imAnonymizer(object):
                          continue
                     # Process Image
                     img = cv2.imread(filepath)
-                    img = self._face_SaP(img, shape = shape, box = box, fname = filepath)
+                    img = self._face_SaP(img, shape = shape, box = box, fname = filepath, seed = seed)
 
                     output_filepath = filepath.replace(os.path.split(self.path)[1], 'Output')
                     output_dir = os.path.dirname(output_filepath)
@@ -303,11 +304,11 @@ class imAnonymizer(object):
                     shutil.rmtree(data_from)
 
 
-     def _face_pixel(self, img, blocks = 20, shape = 'c', box = None, fname = None):
+     def _face_pixel(self, img, blocks = 20, box = None, fname = None):
           '''
           '''
           self.detections = self._FACE.detectMultiScale(img, scaleFactor = self.scaleFactor, minNeighbors = self.minNeighbors)
-          if self.detections == tuple():
+          if len(self.detections) == 0:
                if self._img:
                     print(f'No Faces were Detected in the Image')
                elif self.path:
@@ -320,39 +321,20 @@ class imAnonymizer(object):
                     noise = pixelated(img[y:y+h,x:x+w], blocks = blocks)
                     copy = img.copy()
 
-                    if shape == 'c':
-                         # circular
-                         new = img.copy()
-                         new[y:y+h,x:x+w] = noise
-
-                         #mask
-                         mask = np.zeros(new.shape[:2], dtype='uint8')
-                         # cirlce parameters 
-                         cv2.circle(mask, find_middle(x,y,w,h), find_radius(x,y,w,h), 255, -1)
-
-                         #apply
-                         copy[mask > 0] = new[mask > 0]
-                         
-                    elif shape == 'r':
-                         # rectangular
-                         copy[y:y+h,x:x+w] = noise
-                         
-                    else:
-                         raise Exception('Possible values: `r` (rectangular) and `c` (circular)')
+                    # rectangular
+                    copy[y:y+h,x:x+w] = noise
                     
                     if box == 'r':
                          cv2.rectangle(copy, (x,y), (x+w,y+h), (255,0,0), 2)
-                    elif box == 'c':
-                         cv2.circle(copy, find_middle(x,y,w,h), find_radius(x,y,w,h), (255,0,0), 2)
                     elif box is None:
                          pass
                     else:
-                         raise Exception('Possible values: `r` (rectangular) and `c` (circular), default `None`')
+                         raise Exception('Possible values: `r` (rectangular), default `None`')
 
                return copy
 
 
-     def face_pixel(self, blocks = 20, shape = 'c', box = None):
+     def face_pixel(self, blocks = 20, box = None):
           '''
           Add Pixelated Bluring to a Face
 
@@ -360,10 +342,8 @@ class imAnonymizer(object):
           ----------
           blocks : int, default 20
                face image dimensions are divided into MxN blocks.
-          shape : str, default 'c'
-               Blurring shape. Possible values: `r` (rectangular blurring) and `c` (circular blurring).
           box : str, default None 
-               Bounding box. Possible values: `r` (rectangular) and `c` (circular), default `None`.
+               Bounding box. Possible values: `r` (rectangular), default `None`.
 
           Returns:
           ----------
@@ -373,8 +353,7 @@ class imAnonymizer(object):
           Raises:
           ----------
           Exception:
-               * if argument for `shape` is something other than `r` or `c` 
-               * if argument for `box` is something other that `r`, `c` or None.
+               * if argument for `box` is something other than `r` or None.
 
           Notes
           ----------
@@ -390,13 +369,13 @@ class imAnonymizer(object):
 
           >>> img = cv2.imread('C://Users/shakhansho/Downloads/image.jpg')
           >>> anonym = imAnonymizer(img)
-          >>> noised = anonym.face_pixel(shape = 'c')
+          >>> noised = anonym.face_pixel(blocks=20)
 
           Blur all images in a folder 
 
           >>> path = 'C://Users/shakhansho/Downloads/Images'
           >>> anonym = imAnonymizer(path, dst = 'D;//Output')
-          >>> anonym.face_pixel(shape = 'r', box = 'r')
+          >>> anonym.face_pixel(box = 'r')
           '''
           if self._img:
                return self._face_pixel(self.frame, blocks = blocks, shape = shape, box = box)
@@ -408,7 +387,7 @@ class imAnonymizer(object):
                          continue
                     # Process Image
                     img = cv2.imread(filepath)
-                    img = self._face_pixel(img, blocks = blocks, shape = shape, box = box, fname = filepath)
+                    img = self._face_pixel(img, blocks = blocks, shape = 'r', box = box, fname = filepath)
 
                     output_filepath = filepath.replace(os.path.split(self.path)[1], 'Output')
                     output_dir = os.path.dirname(output_filepath)
