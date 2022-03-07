@@ -329,7 +329,7 @@ class imAnonymizer(object):
                     elif box is None:
                          pass
                     else:
-                         raise Exception('Possible values: `r` (rectangular), default `None`')
+                         raise Exception('Bounding box. Possible values for `box` argument: `r` (rectangular), default `None`')
 
                return copy
 
@@ -343,7 +343,7 @@ class imAnonymizer(object):
           blocks : int, default 20
                face image dimensions are divided into MxN blocks.
           box : str, default None 
-               Bounding box. Possible values: `r` (rectangular), default `None`.
+               Bounding box. Possible values for `box` argument: `r` (rectangular), default `None`.
 
           Returns:
           ----------
@@ -378,7 +378,7 @@ class imAnonymizer(object):
           >>> anonym.face_pixel(box = 'r')
           '''
           if self._img:
-               return self._face_pixel(self.frame, blocks = blocks, shape = shape, box = box)
+               return self._face_pixel(self.frame.copy(), blocks = blocks, box = box)
                     
           elif self._path:
                for filepath in glob.iglob(self.path + "/**/*.*", recursive=True):
@@ -387,7 +387,7 @@ class imAnonymizer(object):
                          continue
                     # Process Image
                     img = cv2.imread(filepath)
-                    img = self._face_pixel(img, blocks = blocks, shape = 'r', box = box, fname = filepath)
+                    img = self._face_pixel(img, blocks = blocks, box = box, fname = filepath)
 
                     output_filepath = filepath.replace(os.path.split(self.path)[1], 'Output')
                     output_dir = os.path.dirname(output_filepath)
