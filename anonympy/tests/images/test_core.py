@@ -8,32 +8,10 @@ from anonympy import __version__
 from anonympy.images import imAnonymizer
 
 
-##def fetch_image(url):
-##    req = urllib.request.urlopen(url)
-##    arr = np.asarray(bytearray(req.read()), dtype=np.uint8)
-##    img = cv2.imdecode(arr, cv2.IMREAD_COLOR)
-##    return img
-##
-##
-##@pytest.fixture(scope = 'module')
-##def load_image():
-##    try: 
-##        image = fetch_image('https://raw.githubusercontent.com/ArtLabss/open-data-anonymizer/main/anonympy/tests/images/expected/sad_boy.jpg')
-##    except urllib.error.HTTPError as eror:
-##        image = None
-##    return image
-
-##def test_load_image(load_image):
-##    if load_image is None:
-##        assert False, "Failed to fetch the sample image from `anonympy/tests/images/expected/sad_boy.jpg`"
-##    assert True 
-
-
 def is_similar(image1, image2):
     return image1.shape == image2.shape and not(np.bitwise_xor(image1,image2).any())
 
 
-##@pytest.fixture(scope = 'module')
 def load_image(fname):
     '''
     Load a sample image
