@@ -7,8 +7,7 @@ import numpy as np
 from typing import Union
 
 from anonympy.images.utils import pixelated
-##from anonympy.images.utils import sap_noise
-from utils import sap_noise
+from anonympy.images.utils import sap_noise
 from anonympy.images.utils import find_middle, find_radius
 
 
