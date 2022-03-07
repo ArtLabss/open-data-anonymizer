@@ -3,7 +3,6 @@ import cv2
 import urllib
 import pytest
 import numpy as np
-
 from anonympy import __version__
 from anonympy.images import imAnonymizer
 
