@@ -1,6 +1,6 @@
 <p align='center'>
   <a href="https://artlabs.tech/">
-    <img src='https://raw.githubusercontent.com/ArtLabss/tennis-tracking/main/VideoOutput/artlabs%20logo.jpg' width="200" height="220">
+    <img src='https://raw.githubusercontent.com/ArtLabss/tennis-tracking/main/VideoOutput/artlabs%20logo.jpg' width="150" height="170">
   </a>
 </p>
 <h1 align='center'>anonympy 🕶️</h1>
