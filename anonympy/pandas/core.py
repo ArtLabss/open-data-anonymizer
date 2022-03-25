@@ -151,6 +151,9 @@ class dfAnonymizer(object):
             See https://faker.readthedocs.io/en/master/locales.html for all faker's locales.
         inplace : bool, default True
             If True the changes will be applied to `dfAnonymizer` obejct, else output is returned. 
+        seed : Optional[int], default None
+            Pass an integer for reproducible output across multiple function calls.
+
 
         Returns
         ----------
