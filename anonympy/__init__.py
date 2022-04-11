@@ -3,7 +3,7 @@ Package for data anonymization of different data types
 such as tabular, text, images and sound. 
 '''
 
-__version__ =  "0.2.7"
+__version__ =  "0.3.0"
 
 # Check if all dependencies have been installed
 
