@@ -18,7 +18,7 @@ flake8~=3.8.3
 flake8-black~=0.2.0
 isort~=5.1.4
 coverage~=5.1
-validators~=0.15.0
+validators
 pyspark[sql]~=3.0.0
 pycryptodome~=3.9.8
 pyarrow==6.0.1
