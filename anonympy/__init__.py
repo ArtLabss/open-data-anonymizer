@@ -3,7 +3,7 @@ Package for data anonymization of different data types
 such as tabular, text, images and sound. 
 '''
 
-__version__ =  "0.2.6"
+__version__ =  "0.3.0"
 
 # Check if all dependencies have been installed
 
@@ -26,5 +26,6 @@ from anonympy import pandas
 from anonympy import images
 from anonympy import sound 
 from anonympy import text
+from anonympy import pdf
 
-__all__ = ["pandas", "images", "sound", "text"]
+__all__ = ["pandas", "images", "sound", "text", "pdf"]
