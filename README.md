@@ -69,7 +69,7 @@
   </ul>
 </ul>
 
-<p><strong>Text, Sound</strong></p>
+<p><strong>PDF, Text, Sound</strong></p>
 <ul>
   <li>In Development</li>
 </ul>
