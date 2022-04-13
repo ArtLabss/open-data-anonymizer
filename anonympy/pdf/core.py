@@ -3,7 +3,7 @@ import os
 import cv2
 import numpy as np
 import pytesseract
-from typing import List, Union, Tuple
+from typing import List, Union, Tuple, Dict
 from pdf2image import convert_from_path
 
 from utils import * # from anonympy.pdf.utils import *
@@ -40,8 +40,8 @@ class pdfAnonymizer(object):
         # path_to_folder: str = None,
         pytesseract_path: str = None,
         poppler_path: str = None,
-        model = "dbmdz/bert-large-cased-finetuned-conll03-english",
-        tokenizer = "dbmdz/bert-large-cased-finetuned-conll03-english"):
+        model: str = "dbmdz/bert-large-cased-finetuned-conll03-english",
+        tokenizer: str = "dbmdz/bert-large-cased-finetuned-conll03-english"):
 
         if path_to_pdf is not None:
             if not os.path.exists(path_to_pdf):
@@ -65,7 +65,7 @@ class pdfAnonymizer(object):
 
         self.nlp = pipeline("ner", aggregation_strategy="simple", model=model, tokenizer=tokenizer)
         self.path_to_pdf = path_to_pdf
-        self.path_to_folder = path_to_folder 
+#         self.path_to_folder = path_to_folder 
         self.number_of_pages  = None # changes in `pdfAnonymizer.pdf2images`
         self.images = [] # anonymized images that will be converted to PDF
         self.bbox = [] # bounding boxes of PII_objects 
@@ -110,8 +110,7 @@ class pdfAnonymizer(object):
 
             find_coordinates_pytesseract(matches=self.PII_objects, data=self.pages_data[page_number - 1], bbox=self.bbox)
 
-            self.cover_box(self.bbox, self.images[0], fill=fill, outline=outline)
-
+            self.cover_box(image=self.images[0], bbox=self.bbox, fill=fill, outline=outline)        
         else: # more than 1 page 
             text = self.images2text(self.images)
 
@@ -128,8 +127,8 @@ class pdfAnonymizer(object):
                 find_EOI(pipeline=ner, matches=temp_pii, EOI="ORG")
                 find_EOI(pipeline=ner, matches=temp_pii, EOI="LOC")
 
-                find_coordinates_pytesseract(matches=temp_pii, data=self.pages_data[self.page_number - 1], bbox=temp_bbox)
-                self.cover_box(self.bbox, image, fill=fill, outline=outline)
+                find_coordinates_pytesseract(matches=temp_pii, data=self.pages_data[page_number - 1], bbox=temp_bbox)
+                self.cover_box(self.images[page_number - 1], temp_bbox, fill=fill, outline=outline)
 
                 self.PII_objects.append({f'page_{page_number}': temp_pii})
                 self.bbox.append({f'page_{page_number}': temp_bbox})
@@ -465,7 +464,7 @@ class pdfAnonymizer(object):
         return self._find_EOI(text, EOI='LOC')
 
 
-    def cover_box(self, bbox: list, image: PIL.Image, fill="black", outline="black") -> None:
+    def cover_box(self, image: Image.Image, bbox: List[Tuple[int]],  fill="black", outline="black") -> None:
         """
         Draw boxes on ROI to hide sensetive information (default, black box).  
         Based on `draw_black_box_pytesseract` function `from anonympy.pdf.utils`
@@ -483,5 +482,4 @@ class pdfAnonymizer(object):
         ----------
 
         """
-        draw_black_box_pytesseract(bbox, image, fill=fill, outline=outline)
-
+        draw_black_box_pytesseract(bbox=bbox,image=image,fill=fill, outline=outline)
