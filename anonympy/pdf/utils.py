@@ -2,7 +2,8 @@ import os
 import re
 import PIL
 import cv2
-from PIL import ImageDraw
+from typing import List, Tuple, Union
+from PIL import ImageDraw, Image
 from PyPDF2 import PdfFileReader, PdfFileMerger
 
 
@@ -18,7 +19,7 @@ def find_EOI(pipeline, matches: list, EOI: str) -> None:
 					matches.append(w)
 
 
-def draw_boxes_easyOCR(image, bounds, color='yellow', width=2):
+def draw_boxes_easyOCR(image: Image.Image, bounds: list, color: str ='yellow', width: int = 2):
 	draw = ImageDraw.Draw(image)
 	for bound in bounds:
 		p0, p1, p2, p3 = bound[0]
@@ -26,28 +27,28 @@ def draw_boxes_easyOCR(image, bounds, color='yellow', width=2):
 	return image
 
 
-def draw_boxes_pytesseract(image, data, color=(0, 255, 0), width=2):
+def draw_boxes_pytesseract(image: Image.Image, data: Dict[str, int], color: Tuple[int, int, int] =(0, 255, 0), width:int = 2) -> None: 
     boxes = len(data['level'])
     for i in range(boxes):
         (x, y, w, h) = (data['left'][i], data['top'][i], data['width'][i], data['height'][i])
         cv2.rectangle(image, (x, y), (x + w, y + h), color, width)
 
 
-def draw_black_box_pytesseract(bbox: list, image: PIL.Image, fill='black', outline='black') -> None:
+def draw_black_box_pytesseract(bbox: List[Tuple[int, int, int, int]], image: Image.Image, fill: str ='black', outline:str = 'black') -> None:
 	draw = ImageDraw.Draw(image)
 	for box in bbox:
 		x, y, w, h = box
 		draw.rectangle([x, y, x + w, y + h], fill = fill, outline = outline)
 
 
-def draw_black_box_easyOCR(bbox: list, image) -> None:
+def draw_black_box_easyOCR(bbox: List[Tuple[int, int, int, int]], image: Image.Image) -> None:
 	draw = ImageDraw.Draw(image)
 	for box in bbox:
 		p0, p1, p2, p3 = box
 		draw.rectangle([*p0, *p2], fill ="black", outline ="black")
 
 
-def find_coordinates_pytesseract(matches: list, data: dict, bbox: list) -> None:
+def find_coordinates_pytesseract(matches: List[str], data: dict, bbox: list) -> None:
     for obj in matches:
         for idx in range(len(data['text'])):
             i = data['text'][idx]
@@ -57,7 +58,7 @@ def find_coordinates_pytesseract(matches: list, data: dict, bbox: list) -> None:
                     bbox.append((x,y,w,h))         
 
 
-def find_coordinates_easyOCR(pii_objects: list, bounds: list, bbox: list) -> None:
+def find_coordinates_easyOCR(pii_objects: List[str], bounds: list, bbox: list) -> None:
 	for obj in pii_objects:
 		for i in range(len(bounds)):
 			if (obj.strip() in bounds[i][1].strip()) and (len(obj.strip()) > 3 and len(bounds[i][1].strip()) > 3):
