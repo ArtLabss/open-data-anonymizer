@@ -1,15 +1,16 @@
 import re
 import os 
 import cv2
+import pathlib
 import numpy as np
 import pytesseract
-from typing import List, Union, Tuple, Dict
 from pdf2image import convert_from_path
-
-from utils import * # from anonympy.pdf.utils import *
+from typing import List, Union, Tuple, Dict
 
 import PIL
 from PIL import Image
+
+from anonympy.pdf.utils import * 
 
 from transformers import pipeline
 from transformers import AutoTokenizer
@@ -22,24 +23,55 @@ class pdfAnonymizer(object):
 
     Parameters:
     ----------
-         
+    path_to_pdf: str,
+        Any valid string path that points to PDF file.
+
+    pytesseract_path: Union[str, pathlib.Path], default None
+        `None` if Tesseract path is added to system environment. 
+        Otherwise, pass a valid string path to the binary.
+
+    poppler_path: Union[str, pathlib.Path], default None
+        `None` if Poppler path is specified in environment variable. 
+        Otherwise, pass poppler path. 
+
+    model: str, default "dbmdz/bert-large-cased-finetuned-conll03-english"
+        The model that will be used by `transformers.pipeline`. 
+        If not specified, deault model for NER will be used.
+
+    tokenizer: str, default "dbmdz/bert-large-cased-finetuned-conll03-english"
+        The tokenizer that will be used by `transformers.pipeline`. 
+        If not specified, deault one will be used.
+
     Returns:
     ----------
+    `pdfAnonymizer` object 
 
     Raises
     ----------
+    Exception:
 
-    See also
-    ----------
+        * If `path_to_pdf` doesn't exist 
+
+        * If file specified at `path_to_pdf` 
 
     Examples
     ----------
+    >>> from anonympy.pdf import pdfAnonymizer
+    
+    Pytesseract and poppler paths aren't specified in our environmental variables. Therefore, we'll have to specify them
+    
+    >>> anonym = pdfAnonymizer(path_to_pdf = 'Downloads\\test.pdf', 
+                               pytesseract_path = "C:\\Program Files\\Tesseract-OCR\\tesseract.exe",
+                               poppler_path = "C:\\Users\\shakhansho\\Downloads\\Release-22.01.0-0\\poppler-22.01.0\\Library\\bin", 
+                               model = "dslim/bert-base-NER", 
+                               tokenizer="dslim/bert-base-NER")
+
     """
     def __init__(self, 
         path_to_pdf: str,
         # path_to_folder: str = None,
-        pytesseract_path: str = None,
-        poppler_path: str = None,
+        pytesseract_path: Union[str, pathlib.Path] = None,
+        poppler_path: Union[str, pathlib.Path] = None,
         model: str = "dbmdz/bert-large-cased-finetuned-conll03-english",
         tokenizer: str = "dbmdz/bert-large-cased-finetuned-conll03-english"):
 
@@ -73,22 +105,57 @@ class pdfAnonymizer(object):
         self.PII_objects = [] # Personal Identifiable Information 
 
 
-    def anonymize(self, output_path: str, to_pdf: bool=True, remove_metadata: bool=True, fill: str='black', outline: str='black') -> None:
+    def anonymize(self, 
+        output_path: str, 
+        remove_metadata: bool=True, 
+        fill: str='black', 
+        outline: str='black') -> None:
         """
-        Master function for PDF anonymization. 
-        PDF to Image -> Image to Text -> NER on Text -> Black Box str if classified as PII
+        Function for automatic PDF anonymization. 
+
+        PDF to Image -> Image to Text -> NER on Text -> Black Box -> Image to PDF -> Remove MetaData
 
         Parameters:
         ----------
-             
+        output_path: str
+            String path together with the output file name that ends with .pdf
+
+        remove_metadata: bool, default True
+            If True PDF file's metadata will be replaced with {'Author': 'Someone', 'Title': 'Nothing Here'}.
+            
+        fill: str, default 'black'
+            The color to fill the boxes when covering sensetive information.
+
+        outline: str, default 'black'
+            Border color of the boxes. 
+
         Returns:
         ----------
+        None
+            A new PDF file will be created with the name and at locaiton 
+            that was passed to `output_path`
 
         Raises
         ----------
+        Exception
+            * If `output_path` doesn't end with `.pdf`
 
         Examples
         ----------
+        >>> from anonympy.pdf import pdfAnonymizer
+
+        Initializing `pdfAnonymizer` object with specifying paths to binaries
+
+        >>> anonym = pdfAnonymizer(path_to_pdf = "Downloads\\test.pdf", 
+                                   pytesseract_path = "C:\\Program Files\\Tesseract-OCR\\tesseract.exe",
+                                   poppler_path = "C:\\Users\\shakhansho\\Downloads\\Release-22.01.0-0\\poppler-22.01.0\\Library\\bin")      
+        
+        Calling `anonymize` function to create `output.pdf` in current directory and red covering boxes
+
+        >>> anonym.anonymize(output_path = 'output.pdf', 
+                             remove_metadata = True,
+                             fill = 'red',
+                             outline = 'red')
         """
         if not output_path.endswith('.pdf'):
                 raise Exception(f"`String path should end with `.pdf`. But {output_path[-4:]} was found.")
@@ -135,48 +202,60 @@ class pdfAnonymizer(object):
 
                 page_number += 1
 
-        if to_pdf: 
-            path = os.path.split(output_path)
-            temp = os.path.join(path[0], 'temp.pdf')           
-            
-            if self.number_of_pages == 1:
-                if remove_metadata:
-                    self.images[0].save(temp)
-                    alter_metadata(temp, output_path)
-                else:
-                    self.images[0].save(output_path)
-
+        path = os.path.split(output_path)
+        temp = os.path.join(path[0], 'temp.pdf')           
+        
+        if self.number_of_pages == 1:
+            if remove_metadata:
+                self.images[0].save(temp)
+                alter_metadata(temp, output_path)
             else:
-                img1 = self.images.pop(0)
-                if remove_metadata:
-                    img1.save(temp, save_all=True, append_images=self.images)
-                    alter_metadata(temp, output_path)                
-                else:
-                    img1.save(output_path, save_all=True, append_images=self.images)
+                self.images[0].save(output_path)
+
+        else:
+            img1 = self.images.pop(0)
+            if remove_metadata:
+                img1.save(temp, save_all=True, append_images=self.images)
+                alter_metadata(temp, output_path)                
+            else:
+                img1.save(output_path, save_all=True, append_images=self.images)
     
 
     def pdf2images(self) -> List[Image.Image]:
         """
         Convert PDF file to a list of images.
-        Based on `pdf2image` library
-
-        Parameters:
-        ----------
+        
+        Wrapper for `convert_from_path` function from `pdf2image` library. 
 
         Returns:
         ----------
-
-        Raises
+        List[Image.Image]
+            A list of PIL images
+   
+        Notes:
         ----------
+        Function uses PDF file that was passed to `path_to_pdf` when initializing the class. 
+        `poppler_path` will also be required here, unless it's already in system variables. 
+        
 
         Examples
         ----------
+        >>> from anonympy.pdf import pdfAnonymizer
+        >>> anonym = pdfAnonymizer(path_to_pdf = "Downloads\\test.pdf", 
+                                   pytesseract_path = "C:\\Program Files\\Tesseract-OCR\\tesseract.exe",
+                                   poppler_path = "C:\\Users\\shakhansho\\Downloads\\Release-22.01.0-0\\poppler-22.01.0\\Library\\bin")      
+
+        Storing resulting PIL images in a variable
+
+        >>> images = anonym.pdf2images()
+        >>> print(anonym.number_of_pages) 
+        ... 1 
         """
         if self.poppler_path is None:
             images = convert_from_path(self.path_to_pdf)
         else:
             images = convert_from_path(self.path_to_pdf, poppler_path = self.poppler_path)
-        
+
         self.number_of_pages = len(images)
         return images
 
@@ -184,25 +263,40 @@ class pdfAnonymizer(object):
     def images2text(self, images: List[Image.Image]) -> List[str]:
         """
         Extract text from an image.
-        Based on `pytesseract.image_to_data`
+
+        Wrapper for `image_to_data` function from `pytesseract` library. 
 
         Parameters:
         ----------
+        images: List[Image.Image]
+            A list of PIL Images
              
         Returns:
         ----------
+        List[str]
+            List of strings. Where, string is a text extracted from the image. Index of each string represents the page number.
 
-        Raises
+        Notes:
         ----------
+        After running the function, output returned by `pytesseract.image_to_data` 
+        will be stored in `pdfAnonymizer.pages_data` attribute
 
         Examples
         ----------
+        >>> from anonympy.pdf import pdfAnonymizer
+        >>> anonym = pdfAnonymizer(path_to_pdf = "Downloads\\test.pdf", 
+                                   pytesseract_path = "C:\\Program Files\\Tesseract-OCR\\tesseract.exe",
+                                   poppler_path = "C:\\Users\\shakhansho\\Downloads\\Release-22.01.0-0\\poppler-22.01.0\\Library\\bin")      
+        >>> images = anonym.pdf2images()
 
+        Passing a list of PIL images
+
+        >>> texts = anonym.images2text(images)
         """
+        excerpts = []
 
-        if len(images) == 1:
-
-            page = pytesseract.image_to_data(images[0], output_type = "dict")
+        for image in images:
+            page = pytesseract.image_to_data(image, output_type = "dict")
             self.pages_data.append(page)
             excerpt = ""
 
@@ -212,274 +306,338 @@ class pdfAnonymizer(object):
                 else:
                     excerpt += line.strip() + " "
 
-            return [excerpt]
-        
-        else:
-            excerpts = []
+            excerpts.append(excerpt)
 
-            for image in images:
-                page = pytesseract.image_to_data(image, output_type = "dict")
-                self.pages_data.append(page)
-                excerpt = ""
-
-                for line in page["text"]:
-                    if line == "":
-                        pass
-                    else:
-                        excerpt += line.strip() + " "
-
-                excerpts.append(excerpt)
-
-            return excerpts
+        return excerpts
 
 
-    def find_emails(self, text: Union[str, List[str]]) -> dict[str, List[Tuple[int, int, int, int]]]:
+    def find_emails(self, text: List[str]) -> Dict[str, List[Tuple[int, int, int, int]]]:
         """
         Find emails within the string and return the coordinates.
-        Based on `find_emails` function `from anonympy.pdf.utils`
+
+        Wrapper for `find_emails` function from `anonympy.pdf.utils` module.
 
         Parameters:
         ----------
+        text: List[str]
+            A list of strings to search for emails.
 
         Returns:
         ----------
+        Dict[str, List[Tuple[int, int, int, int]]]
+            A dictionary is returned with page numbers as a key and a tuple storing 4 integer coordinates as a value. 
 
-        Raises
+        Notes
         ----------
+        Underlying function uses RegEx to find emails.
 
         Examples
         ----------
+        >>> from anonympy.pdf import pdfAnonymizer
+        >>> anonym = pdfAnonymizer(path_to_pdf = "Downloads\\test.pdf", 
+                                   pytesseract_path = "C:\\Program Files\\Tesseract-OCR\\tesseract.exe",
+                                   poppler_path = "C:\\Users\\shakhansho\\Downloads\\Release-22.01.0-0\\poppler-22.01.0\\Library\\bin") 
+        >>> images = anonym.pdf2images()
+        >>> texts = anonym.images2text(images)
+        
+        Passing a list of strings to the function
 
+        >>> emails = anonym.find_emails(texts)
         """
         coords = {}
         page_number = 1
 
-        if type(text) is str:
+        for excerpt in text:
             emails = []
             bbox = []
 
-            find_emails(text, emails)
+            find_emails(excerpt, emails)
             find_coordinates_pytesseract(emails, self.pages_data[page_number-1], bbox)
             coords[f'page_{page_number}'] = bbox
-            return coords 
-
-        else:
-            for excerpt in text:
-                emails = []
-                bbox = []
-
-                find_emails(excerpt, emails)
-                find_coordinates_pytesseract(emails, self.pages_data[page_number-1], bbox)
-                coords[f'page_{page_number}'] = bbox
-                page_number += 1
-            return coords
+            page_number += 1
+        return coords
 
 
-    def find_numbers(self, text: Union[str, list]) -> dict[str, List[Tuple[int, int, int, int]]]:        
+    def find_numbers(self, text: List[str]) -> Dict[str, List[Tuple[int, int, int, int]]]:        
         """
         Find numbers within the string and return the coordinates.
-        Based on `find_numbers` function `from anonympy.pdf.utils`
+
+        Wrapper for `find_numbers` function from `anonympy.pdf.utils` module.
 
         Parameters:
         ----------
+        text: List[str]
+            A list of strings to search for numbers.
 
         Returns:
         ----------
+        Dict[str, List[Tuple[int, int, int, int]]]
+            A dictionary is returned with page numbers as a key and a tuple storing 4 integer coordinates as a value. 
 
-        Raises
+        Notes
         ----------
+        Underlying function uses RegEx to find numbers.
 
         Examples
         ----------
+        >>> from anonympy.pdf import pdfAnonymizer
+        >>> anonym = pdfAnonymizer(path_to_pdf = "Downloads\\test.pdf", 
+                                   pytesseract_path = "C:\\Program Files\\Tesseract-OCR\\tesseract.exe",
+                                   poppler_path = "C:\\Users\\shakhansho\\Downloads\\Release-22.01.0-0\\poppler-22.01.0\\Library\\bin") 
+        >>> images = anonym.pdf2images() 
+        >>> text = anonym.images2text(images)
+
+        Passing a list of strings to the function
+
+        >>> numbers = anonym.find_numbers(text)
         """
         coords = {}
         page_number = 1
 
-        if type(text) is str:
+        for excerpt in text:
             bbox = []
             numbers = []
 
-            find_numbers(text, numbers)
+            find_numbers(excerpt, numbers)
             find_coordinates_pytesseract(numbers, self.pages_data[page_number-1], bbox)
             coords[f'page_{page_number}'] = bbox
-            return coords 
-
-        else:
-            for excerpt in text:
-                bbox = []
-                numbers = []
-
-                find_numbers(excerpt, numbers)
-                find_coordinates_pytesseract(numbers, self.pages_data[page_number-1], bbox)
-                coords[f'page_{page_number}'] = bbox
-                page_number += 1
-            return coords
+            page_number += 1
+        return coords
 
 
-    def find_months(self, text: str) -> dict[str, List[Tuple[int, int, int, int]]]:
+    def find_months(self, text: List[str]) -> Dict[str, List[Tuple[int, int, int, int]]]:
         """
         Find months within the string and return the coordinates.
-        Based on `find_months` function `from anonympy.pdf.utils`
+
+        Wrapper for `find_months` function from `anonympy.pdf.utils` module.
 
         Parameters:
         ----------
+        text: List[str]
+            A list of strings to search for months.
 
         Returns:
         ----------
+        Dict[str, List[Tuple[int, int, int, int]]]
+            A dictionary is returned with page numbers as a key and a tuple storing 4 integer coordinates as a value. 
 
-        Raises
+        Notes
         ----------
+        Underlying function uses RegEx to find months.
 
         Examples
         ----------
+        >>> from anonympy.pdf import pdfAnonymizer
+        >>> anonym = pdfAnonymizer(path_to_pdf = "Downloads\\test.pdf", 
+                                   pytesseract_path = "C:\\Program Files\\Tesseract-OCR\\tesseract.exe",
+                                   poppler_path = "C:\\Users\\shakhansho\\Downloads\\Release-22.01.0-0\\poppler-22.01.0\\Library\\bin") 
+        >>> images = anonym.pdf2images() 
+        >>> text = anonym.images2text(images)
 
+        Passing a list of strings to the function
+
+        >>> numbers = anonym.find_months(text)
         """
-        months = []
-        bbox = []
         coords = {}
         page_number = 1
 
-        if type(text) is str:
-            find_months(text, months)
+        for excerpt in text:
+            months = []
+            bbox = []
+
+            find_months(excerpt, months)
             find_coordinates_pytesseract(months, self.pages_data[page_number-1], bbox)
             coords[f'page_{page_number}'] = bbox
-            return coords 
-
-        else:
-            for excerpt in text:
-                months = []
-                bbox = []
-
-                find_months(excerpt, months)
-                find_coordinates_pytesseract(months, self.pages_data[page_number-1], bbox)
-                coords[f'page_{page_number}'] = bbox
-                page_number += 1
-            return coords
+            page_number += 1
+        return coords
 
 
-    def _find_EOI(self, text: Union[str, list], EOI: str) -> dict[str, List[Tuple[int, int, int, int]]]:
+    def _find_EOI(self, text: List[str], EOI: str) -> Dict[str, List[Tuple[int, int, int, int]]]:
         """
-        Find EOI (Entity of Interest) within the string and return the coordinates.
-        Based on `find_EOI` function `from anonympy.pdf.utils`
+        Generic function to find Entity of Interest (EOI) within the string and return the coordinates.
+
+        Wrapper for `find_EOI` function from `anonympy.pdf.utils` module.
 
         Parameters:
-        ----------
+        ----------     
+        text: List[str]
+            A list of strings to search for EOI.
+        EOI: str
+            Accepted values are "PER" - people names, "ORG" - ogranization names/titles, "LOC" - locations.
 
         Returns:
         ----------
-
-        Raises
-        ----------
+        Dict[str, List[Tuple[int, int, int, int]]]
+            A dictionary is returned with page numbers as a key and a tuple storing 4 integer coordinates as a value. 
 
         Examples
         ----------
+        >>> from anonympy.pdf import pdfAnonymizer
+        >>> anonym = pdfAnonymizer(path_to_pdf = "Downloads\\test.pdf", 
+                                   pytesseract_path = "C:\\Program Files\\Tesseract-OCR\\tesseract.exe",
+                                   poppler_path = "C:\\Users\\shakhansho\\Downloads\\Release-22.01.0-0\\poppler-22.01.0\\Library\\bin") 
+        >>> images = anonym.pdf2images() 
+        >>> text = anonym.images2text(images)
 
+        Passing a list of strings to the function and specifying EOI
+
+        >>> names = anonym._find_EOI(text, "PER") 
         """
         coords = {}
         page_number = 1 
 
-        if type(text) is str:
-            ner = self.nlp(text)
-            bbox = []
+        for excerpt in text:
+            ner = self.nlp(excerpt)
             names = []
+            bbox = []
 
-            find_EOI(ner, names, EOI) 
-            find_coordinates_pytesseract(names, self.pages_data[page_number - 1], bbox)
+            find_EOI(ner, names, EOI)
+            find_coordinates_pytesseract(names, self.pages_data[page_number-1], bbox)
             coords[f'page_{page_number}'] = bbox
-            return coords
-
-        else:
-            for excerpt in text:
-                ner = self.nlp(excerpt)
-                names = []
-                bbox = []
-
-                find_EOI(ner, names, EOI)
-                find_coordinates_pytesseract(names, self.pages_data[page_number-1], bbox)
-                coords[f'page_{page_number}'] = bbox
-                page_number += 1
-            return coords
+            page_number += 1
+        return coords
 
 
-    def find_ORG(self, text: Union[str, list]) -> dict[str, List[Tuple[int, int, int, int]]]:
+    def find_ORG(self, text: List[str]) -> Dict[str, List[Tuple[int, int, int, int]]]:
         """
-        Find organization's names within the string and return the coordinates.
-        Based on `find_EOI` function `from anonympy.pdf.utils`
+        Find organizations' names within the string and return the coordinates.
+        
+        Wrapper for `_find_EOI` function with the argument of `EOI = "ORG"`.
 
         Parameters:
         ----------
+        text: List[str]
+            A list of strings to search for EOI.
 
         Returns:
         ----------
-
-        Raises
-        ----------
+        Dict[str, List[Tuple[int, int, int, int]]]
+            A dictionary is returned with page numbers as a key and a tuple storing 4 integer coordinates as a value. 
 
         Examples
         ----------
+        >>> from anonympy.pdf import pdfAnonymizer
+        >>> anonym = pdfAnonymizer(path_to_pdf = "Downloads\\test.pdf", 
+                                   pytesseract_path = "C:\\Program Files\\Tesseract-OCR\\tesseract.exe",
+                                   poppler_path = "C:\\Users\\shakhansho\\Downloads\\Release-22.01.0-0\\poppler-22.01.0\\Library\\bin") 
+        >>> images = anonym.pdf2images() 
+        >>> text = anonym.images2text(images)
 
+        Passing a list of strings to the function
+
+        >>> orgs = anonym.find_ORG(text) 
         """
         self._find_EOI(text, EOI='ORG')
 
 
-    def find_PER(self, text: Union[str, list]) -> dict[str, List[Tuple[int, int, int, int]]]:
+    def find_PER(self, text: List[str]) -> Dict[str, List[Tuple[int, int, int, int]]]:
         """
-        Find organization's names within the string and return the coordinates.
-        Based on `find_EOI` function `from anonympy.pdf.utils`
+        Find people's names within the string and return the coordinates.
+        
+        Wrapper for `_find_EOI` function with the argument `EOI = "PER"`.
 
         Parameters:
         ----------
+        text: List[str]
+            A list of strings to search for EOI.
 
         Returns:
         ----------
-
-        Raises
-        ----------
+        Dict[str, List[Tuple[int, int, int, int]]]
+            A dictionary is returned with page numbers as a key and a tuple storing 4 integer coordinates as a value. 
 
         Examples
         ----------
+        >>> from anonympy.pdf import pdfAnonymizer
+        >>> anonym = pdfAnonymizer(path_to_pdf = "Downloads\\test.pdf", 
+                                   pytesseract_path = "C:\\Program Files\\Tesseract-OCR\\tesseract.exe",
+                                   poppler_path = "C:\\Users\\shakhansho\\Downloads\\Release-22.01.0-0\\poppler-22.01.0\\Library\\bin") 
+        >>> images = anonym.pdf2images() 
+        >>> text = anonym.images2text(images)
 
+        Passing a list of strings to the function
+
+        >>> names = anonym.find_PER(text) 
         """
         return self._find_EOI(text, EOI='PER')
 
 
-    def find_LOC(self, text: Union[str, list]) -> dict[str, List[Tuple[int, int, int, int]]]:
+    def find_LOC(self, text: Union[str, list]) -> Dict[str, List[Tuple[int, int, int, int]]]:
         """
         Find organization's names within the string and return the coordinates.
-        Based on `find_EOI` function `from anonympy.pdf.utils`
+        
+        Wrapper for `_find_EOI` function with the argument `EOI = "LOC"`.
 
         Parameters:
         ----------
+        text: List[str]
+            A list of strings to search for EOI.
 
         Returns:
         ----------
-
-        Raises
-        ----------
+        Dict[str, List[Tuple[int, int, int, int]]]
+            A dictionary is returned with page numbers as a key and a tuple storing 4 integer coordinates as a value. 
 
         Examples
         ----------
+        >>> from anonympy.pdf import pdfAnonymizer
+        >>> anonym = pdfAnonymizer(path_to_pdf = "Downloads\\test.pdf", 
+                                   pytesseract_path = "C:\\Program Files\\Tesseract-OCR\\tesseract.exe",
+                                   poppler_path = "C:\\Users\\shakhansho\\Downloads\\Release-22.01.0-0\\poppler-22.01.0\\Library\\bin") 
+        >>> images = anonym.pdf2images() 
+        >>> text = anonym.images2text(images)
 
+        Passing a list of strings to the function
+
+        >>> locs = anonym.find_LOC(text) 
         """
         return self._find_EOI(text, EOI='LOC')
 
 
     def cover_box(self, image: Image.Image, bbox: List[Tuple[int]],  fill="black", outline="black") -> None:
         """
-        Draw boxes on ROI to hide sensetive information (default, black box).  
-        Based on `draw_black_box_pytesseract` function `from anonympy.pdf.utils`
+        Draw boxes on ROI to hide sensetive information. 
+
+        Wrapper `draw_black_box_pytesseract` function from `anonympy.pdf.utils` module.
 
         Parameters:
         ----------
+        image: Image.Image
+            PIL Image to draw the boxes on
+
+        bbox: List[Tuple[int]]
+            Coordinates where to draw
+
+        fill: str, default 'black'
+            The color to fill the boxes when covering sensetive information.
+
+        outline: str, default 'black'
+            Border color of the boxes. 
 
         Returns:
         ----------
-
-        Raises
-        ----------
+        None
+            Changes will be applied directly to the PIL.Image that was passed
 
         Examples
         ----------
+        >>> from anonympy.pdf import pdfAnonymizer
+        >>> anonym = pdfAnonymizer(path_to_pdf = "Downloads\\test.pdf", 
+                                   pytesseract_path = "C:\\Program Files\\Tesseract-OCR\\tesseract.exe",
+                                   poppler_path = "C:\\Users\\shakhansho\\Downloads\\Release-22.01.0-0\\poppler-22.01.0\\Library\\bin") 
+        >>> images = anonym.pdf2images() 
+        >>> text = anonym.images2text(images)
+        >>> numbers = anonym.find_LOC(text) 
 
+        Extract the coordinates
+
+        >>> coords = []
+        >>> for page, data in numbers.items():
+                coords += data
+
+        Passing the coordinates (`List[Tuple[int,int,int,int]]``) to the function
+
+        >>> for idx in range(anonym.page_number):
+                anonym.cover_box(images[idx], coords[idx])
         """
         draw_black_box_pytesseract(bbox=bbox,image=image,fill=fill, outline=outline)
