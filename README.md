@@ -242,7 +242,7 @@ anonym.blur(method = 'median', kernel = 11)
 
 <h2>License</h2>
 
-<p><a href="https://github.com/ArtLabss/open-data-anonimizer/blob/main/LICENSE">BSD 3</a></p>
+<p><a href="https://github.com/ArtLabss/open-data-anonimizer/blob/main/LICENSE">BSD-3</a></p>
 
 
 <h2>Code of Conduct</h2>
