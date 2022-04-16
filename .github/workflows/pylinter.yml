@@ -13,6 +13,7 @@ jobs:
       with:
         python-root: '.'
         flake8-flags: '--count --show-source --statistics'
-        mypy-flags: '--skip-mypy --ignore-missing-imports'
+        mypy-flags: '--ignore-missing-imports'
         fail-on-isort: false
         mypy-ignore-dirs-files: 'folder1 folder2/main.py'
+        skip-mypy: true
