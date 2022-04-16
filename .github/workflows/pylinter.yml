@@ -1,0 +1,17 @@
+on: [push, pull_request]
+
+jobs:
+  python-lint:
+    runs-on: ubuntu-latest
+    name: CI workflow
+    steps:
+    - name: checkout source repo
+      uses: actions/checkout@v2
+
+    - name: pylinter
+      uses: programmingwithalex/pylinter@v1.4.3
+      with:
+        python-root: '.'
+        flake8-flags: '--count --show-source --statistics'
+        skip-mypy: true
+        fail-on-isort: false
