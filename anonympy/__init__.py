@@ -1,12 +1,16 @@
-'''
-Package for data anonymization of different data types 
-such as tabular, text, images and sound. 
-'''
+from anonympy import pandas
+from anonympy import images
+from anonympy import sound
+from anonympy import text
+from anonympy import pdf
 
-__version__ =  "0.3.0"
 
+'''
+Package for data anonymization of different data types
+such as tabular, text, images and sound.
+'''
+__version__ = "0.3.0"
 # Check if all dependencies have been installed
-
 hard_dependencies = ("faker", "pandas", "numpy", "cv2")
 missing_dependencies = []
 
@@ -18,14 +22,9 @@ for dependency in hard_dependencies:
 
 if missing_dependencies:
     raise ImportError(
-        "Unable to import required dependencies:\n" + "\n".join(missing_dependencies)
+        "Unable to import required dependencies:\n" +
+        "\n".join(missing_dependencies)
     )
 del hard_dependencies, dependency, missing_dependencies
-
-from anonympy import pandas
-from anonympy import images
-from anonympy import sound 
-from anonympy import text
-from anonympy import pdf
 
 __all__ = ["pandas", "images", "sound", "text", "pdf"]
