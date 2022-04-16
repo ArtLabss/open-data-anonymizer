@@ -9,6 +9,7 @@ from anonympy import pdf
 Package for data anonymization of different data types
 such as tabular, text, images and sound.
 '''
+
 __version__ = "0.3.0"
 # Check if all dependencies have been installed
 hard_dependencies = ("faker", "pandas", "numpy", "cv2")
