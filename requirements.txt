@@ -28,5 +28,6 @@ Pillow==9.0.1
 PyPDF2==1.26.0
 pytesseract==0.3.9
 transformers==4.17.0
+poppler-utils
 numpy
 pandas
