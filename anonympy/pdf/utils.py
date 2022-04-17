@@ -102,8 +102,8 @@ def alter_metadata(file_name: str, output_name: str):
     pdf_merger = PdfFileMerger()
     pdf_merger.append(file_in)
     pdf_merger.addMetadata({
-        '/Author': 'Someone',
-        '/Title': 'Nothing Here'
+        '/Author': 'Unknown',
+        '/Title': 'Title'
     })
     file_out = open(output_name, 'wb')
     pdf_merger.write(file_out)

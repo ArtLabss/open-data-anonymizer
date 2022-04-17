@@ -6,9 +6,9 @@ from typing import List, Union, Tuple, Dict
 
 from PIL import Image
 
-from anonympy.pdf.utils import draw_black_box_pytesseract, find_EOI
-from anonympy.pdf.utils import find_emails, find_numbers, find_months
-from anonympy.pdf.utils import find_coordinates_pytesseract, alter_metadata
+from utils import draw_black_box_pytesseract, find_EOI  # anonympy.pdf.
+from utils import find_emails, find_numbers, find_months  # anonympy.pdf.
+from utils import find_coordinates_pytesseract, alter_metadata  # anonympy.pdf.
 
 from transformers import pipeline
 
@@ -72,17 +72,17 @@ class pdfAnonymizer(object):
                  # path_to_folder: str = None,
                  pytesseract_path: Union[str, pathlib.Path] = None,
                  poppler_path: Union[str, pathlib.Path] = None,
-                 model: str = "dbmdz/bert-large-cased-\
-                 finetuned-conll03-english",
-                 tokenizer: str = "dbmdz/bert-large-cased\
-                 -finetuned-conll03-english"):
+                 model: str = "dbmdz/bert-large-cased-"\
+                 "finetuned-conll03-english",
+                 tokenizer: str = "dbmdz/bert-large-cased"\
+                 "-finetuned-conll03-english"):
 
         if path_to_pdf is not None:
             if not os.path.exists(path_to_pdf):
                 raise Exception(f"Can't find PDF file at `{path_to_pdf}`")
             elif not path_to_pdf.endswith('.pdf'):
-                raise Exception(f"`String path should end with `.pdf`. \
-                    But {path_to_pdf[-4:]} was found.")
+                raise Exception(f"`String path should end with `.pdf`. "\
+                    "But {path_to_pdf[-4:]} was found.")
 
         # elif path_to_folder is not None:
         #     if not os.path.isdir(path_to_folder):
@@ -90,14 +90,16 @@ class pdfAnonymizer(object):
         #     else:
         #         for file in os.listdir(path_to_folder):
         #             if not file.endswith('.pdf'):
-        #                 raise Exception(f"`Folder should contain only `.pdf`\
-        #                     files. But {file[-4:]} was found.")
+        #                 raise Exception(f"`Folder should contain only `.pdf`"\
+        #                     " files. But {file[-4:]} was found.")
 
         if pytesseract_path is not None:
             pytesseract.pytesseract.tesseract_cmd = pytesseract_path
 
         if poppler_path is not None:
-            self.poppler_path = poppler_path
+            self._poppler_path = poppler_path
+        else:
+            self._poppler_path = None
 
         self.nlp = pipeline("ner",
                             aggregation_strategy="simple",
@@ -128,7 +130,7 @@ class pdfAnonymizer(object):
 
         remove_metadata: bool, default True
             If True PDF file's metadata will be replaced with
-            {'Author': 'Someone', 'Title': 'Nothing Here'}.
+            {'Author': 'Unknown', 'Title': 'Title'}.
 
         fill: str, default 'black'
             The color to fill the boxes when covering sensetive information.
@@ -169,10 +171,10 @@ class pdfAnonymizer(object):
                              outline = 'red')
         """
         if not output_path.endswith('.pdf'):
-            raise Exception(f"`String path should end with `.pdf`. \
-                But {output_path[-4:]} was found.")
+            raise Exception(f"`String path should end with `.pdf`."\
+                " But {output_path[-4:]} was found.")
 
-        self.images += self.pdf2images()
+        self.pdf2images()
         page_number = 1
 
         if self.number_of_pages == 1:
@@ -279,14 +281,13 @@ class pdfAnonymizer(object):
         >>> print(anonym.number_of_pages)
         ... 1
         """
-        if self.poppler_path is None:
-            images = convert_from_path(self.path_to_pdf)
+        if self._poppler_path is None:
+            self.images = convert_from_path(self.path_to_pdf)
         else:
-            images = convert_from_path(self.path_to_pdf,
-                                       poppler_path=self.poppler_path)
+            self.images = convert_from_path(self.path_to_pdf,
+                                       poppler_path=self._poppler_path)
 
-        self.number_of_pages = len(images)
-        return images
+        self.number_of_pages = len(self.images)
 
     def images2text(self, images: List[Image.Image]) -> List[str]:
         """
