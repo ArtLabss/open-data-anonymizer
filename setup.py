@@ -1,12 +1,14 @@
 import os
 from setuptools import setup, find_packages
 
+
 def package_files(directory):
     paths = []
     for (path, directories, filenames) in os.walk(directory):
         for filename in filenames:
             paths.append(os.path.join('..', path, filename))
     return paths
+
 
 with open('README.md', encoding='utf8') as readme_file:
     readme = readme_file.read()
@@ -19,10 +21,13 @@ setup(
   description="A Data Anonymization package for tabular, image and sound data",
   name="anonympy",
   version="0.3.0",
-  
+
   packages=find_packages(exclude=['tests*']),
   package_data={'anonympy': extra_files},
-  install_requires=['faker', 'scikit-learn', 'opencv_python', 'texttable', 'setuptools', 'numpy', 'pandas', 'validators', 'pycryptodome', 'requests', 'pyyaml', 'rfc3339'],
+  install_requires=['faker', 'scikit-learn',
+                    'opencv_python', 'texttable', 'setuptools', 'numpy',
+                    'pandas', 'validators', 'pycryptodome',
+                    'requests', 'pyyaml', 'rfc3339'],
   python_requires='>=3.6*',
   url='https://github.com/ArtLabss/open-data-anonimizer',
   classifiers=[
@@ -35,12 +40,12 @@ setup(
     'Programming Language :: Python :: 3.9',
     'Programming Language :: Python :: 3.10',
     'Operating System :: OS Independent',
-    'Topic :: Scientific/Engineering :: Artificial Intelligence',        
+    'Topic :: Scientific/Engineering :: Artificial Intelligence',
     'Topic :: Security :: Cryptography',
     ],
   license="BSD license",
   long_description=readme,
   long_description_content_type='text/markdown',
-  keywords='anonympy',    
+  keywords='anonympy',
   zip_safe=False,
 )
