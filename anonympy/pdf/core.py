@@ -81,8 +81,8 @@ class pdfAnonymizer(object):
             if not os.path.exists(path_to_pdf):
                 raise Exception(f"Can't find PDF file at `{path_to_pdf}`")
             elif not path_to_pdf.endswith('.pdf'):
-                raise Exception(f"`String path should end with `.pdf`. "\
-                    "But {path_to_pdf[-4:]} was found.")
+                raise Exception("`String path should end with `.pdf`. "
+                                f"But {path_to_pdf[-4:]} was found.")
 
         # elif path_to_folder is not None:
         #     if not os.path.isdir(path_to_folder):
@@ -90,7 +90,7 @@ class pdfAnonymizer(object):
         #     else:
         #         for file in os.listdir(path_to_folder):
         #             if not file.endswith('.pdf'):
-        #                 raise Exception(f"`Folder should contain only `.pdf`"\
+        #                 raise Exception(f"`Folder should contain only `.pdf`"
         #                     " files. But {file[-4:]} was found.")
 
         if pytesseract_path is not None:
@@ -171,8 +171,8 @@ class pdfAnonymizer(object):
                              outline = 'red')
         """
         if not output_path.endswith('.pdf'):
-            raise Exception(f"`String path should end with `.pdf`."\
-                " But {output_path[-4:]} was found.")
+            raise Exception("`String path should end with `.pdf`."
+                            f" But {output_path[-4:]} was found.")
 
         self.pdf2images()
         page_number = 1
@@ -285,7 +285,7 @@ class pdfAnonymizer(object):
             self.images = convert_from_path(self.path_to_pdf)
         else:
             self.images = convert_from_path(self.path_to_pdf,
-                                       poppler_path=self._poppler_path)
+                                            poppler_path=self._poppler_path)
 
         self.number_of_pages = len(self.images)
 
