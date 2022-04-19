@@ -22,7 +22,10 @@ setup(
   
   packages=find_packages(exclude=['tests*']),
   package_data={'anonympy': extra_files},
-  install_requires=['faker', 'scikit-learn', 'opencv_python', 'texttable', 'setuptools', 'numpy', 'pandas', 'validators', 'pycryptodome', 'requests', 'pyyaml', 'rfc3339', 'pytesseract', 'PyPDF2', 'poppler-utils'],
+  install_requires=['faker', 'scikit-learn', 'opencv_python', 
+                    'texttable', 'setuptools', 'numpy', 'pandas', 'validators', 
+                    'pycryptodome', 'requests', 'pyyaml', 'rfc3339', 
+                    'pytesseract', 'PyPDF2', 'poppler-utils', 'pdf2image'],
   python_requires='>=3.6*',
   url='https://github.com/ArtLabss/open-data-anonimizer',
   classifiers=[
