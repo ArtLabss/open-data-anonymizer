@@ -18,16 +18,17 @@ extra_files = package_files('anonympy')
 setup(
   author="ArtLabs",
   author_email="art@artlabs.tech",
-  description="A Data Anonymization package for tabular, image and sound data",
+  description="A Data Anonymization package for tabular, image and PDF data",
   name="anonympy",
   version="0.3.1",
-
+  
   packages=find_packages(exclude=['tests*']),
   package_data={'anonympy': extra_files},
-  install_requires=['faker', 'scikit-learn',
-                    'opencv_python', 'texttable', 'setuptools', 'numpy',
-                    'pandas', 'validators', 'pycryptodome',
-                    'requests', 'pyyaml', 'rfc3339'],
+  install_requires=['faker', 'scikit-learn', 'opencv_python', 
+                    'texttable', 'setuptools', 'numpy', 'pandas', 'validators', 
+                    'pycryptodome', 'requests', 'pyyaml', 'rfc3339', 
+                    'pytesseract', 'PyPDF2', 'poppler-utils', 'pdf2image'],
+
   python_requires='>=3.6*',
   url='https://github.com/ArtLabss/open-data-anonimizer',
   classifiers=[
