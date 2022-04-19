@@ -10,7 +10,7 @@ Package for data anonymization of different data types
 such as tabular, text, images and sound.
 '''
 
-__version__ = "0.3.2"
+__version__ = "0.3.3"
 # Check if all dependencies have been installed
 hard_dependencies = ("faker", "pandas", "numpy", "cv2", "PyPDF2",
                      "pytesseract", "pdf2image",
