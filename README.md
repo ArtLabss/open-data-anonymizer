@@ -234,6 +234,8 @@ anonym.blur(method = 'median', kernel = 11)
 
 <p><strong>PDF</strong></p>
 
+<p>In order to initialize <code>pdfAnonymizer</code> object we have to install <code>pytesseract</code> and <code>poppler</code>, and provide path to the binaries of both as arguments or add paths to system variables</p>
+
 ```python
 from anonympy.pdf import pdfAnonymizer
 
@@ -241,11 +243,7 @@ from anonympy.pdf import pdfAnonymizer
 anonym = pdfAnonymizer(path_to_pdf = "Downloads\\test.pdf",
                        pytesseract_path = r"C:\Program Files\Tesseract-OCR\tesseract.exe",
                        poppler_path = r"C:\Users\shakhansho\Downloads\Release-22.01.0-0\poppler-22.01.0\Library\bin")
-```  
 
-<p>In order to initialize <code>pdfAnonymizer</code> object we have to install `pytesseract` and `poppler`, and provide path to the binaries of both as arguments or add paths to system variables</p>
-
-```python
 # Calling the generic function
 anonym.anonymize(output_path = 'output.pdf',
                      remove_metadata = True,
