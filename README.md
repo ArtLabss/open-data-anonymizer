@@ -283,7 +283,7 @@ anonym.cover_box(anonym.images[0], locs_emails)
 
 <h2>License</h2>
 
-<p><a href="https://github.com/ArtLabss/open-data-anonimizer/blob/main/LICENSE">BSD 3</a></p>
+<p><a href="https://github.com/ArtLabss/open-data-anonimizer/blob/main/LICENSE">BSD-3</a></p>
 
 
 <h2>Code of Conduct</h2>

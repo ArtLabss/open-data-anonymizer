@@ -1,12 +1,14 @@
 import os
 from setuptools import setup, find_packages
 
+
 def package_files(directory):
     paths = []
     for (path, directories, filenames) in os.walk(directory):
         for filename in filenames:
             paths.append(os.path.join('..', path, filename))
     return paths
+
 
 with open('README.md', encoding='utf8') as readme_file:
     readme = readme_file.read()
@@ -26,6 +28,7 @@ setup(
                     'texttable', 'setuptools', 'numpy', 'pandas', 'validators', 
                     'pycryptodome', 'requests', 'pyyaml', 'rfc3339', 
                     'pytesseract', 'PyPDF2', 'poppler-utils', 'pdf2image'],
+
   python_requires='>=3.6*',
   url='https://github.com/ArtLabss/open-data-anonimizer',
   classifiers=[
@@ -38,12 +41,12 @@ setup(
     'Programming Language :: Python :: 3.9',
     'Programming Language :: Python :: 3.10',
     'Operating System :: OS Independent',
-    'Topic :: Scientific/Engineering :: Artificial Intelligence',        
+    'Topic :: Scientific/Engineering :: Artificial Intelligence',
     'Topic :: Security :: Cryptography',
     ],
   license="BSD license",
   long_description=readme,
   long_description_content_type='text/markdown',
-  keywords='anonympy',    
+  keywords='anonympy',
   zip_safe=False,
 )
