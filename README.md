@@ -69,7 +69,12 @@
   </ul>
 </ul>
 
-<p><strong>PDF, Text, Sound</strong></p>
+<p><strong>PDF</strong></p>
+<ul>
+  <li>Find sensitive information and cover it with black boxes</li>
+</ul>
+
+<p><strong>Text, Sound</strong></p>
 <ul>
   <li>In Development</li>
 </ul>
@@ -147,7 +152,7 @@ print(df)
 | 1 | Tony  | 48  | 1970-05-29 | 49324.53 | http://www.capgeminiamerica.co.uk    | eryan@lewis.com      | 656564664 |
   
 ```python
-# Calling the generic Function
+# Calling the generic function
 anonym = dfAnonymizer(df)
 anonym.anonymize(inplace = False) # changes will be returned, not applied
 ```
@@ -226,6 +231,32 @@ anonym.blur(method = 'median', kernel = 11)
 <p>The <i>Output</i> folder will have the same structure and file names but blurred images.</p>
 
 <br>
+
+<p><strong>PDF</strong></p>
+
+```python
+from anonympy.pdf import pdfAnonymizer
+
+# need to specify paths, since I don't have them in system variables
+anonym = pdfAnonymizer(path_to_pdf = "Downloads\\test.pdf",
+                       pytesseract_path = r"C:\Program Files\Tesseract-OCR\tesseract.exe",
+                       poppler_path = r"C:\Users\shakhansho\Downloads\Release-22.01.0-0\poppler-22.01.0\Library\bin")
+```  
+
+<p>In order to initialize <code>pdfAnonymizer</code> object we have to install `pytesseract` and `poppler`, and provide path to the binaries of both as arguments or add paths to system variables</p>
+
+```python
+# Calling the generic function
+>>> anonym.anonymize(output_path = 'output.pdf',
+                     remove_metadata = True,
+                     fill = 'black',
+                     outline = 'black')
+```
+
+`test.pdf`            |  `test_out.pdf`            | 
+:-------------------------:|:-------------------------:|
+![test_img](https://github.com/ArtLabss/open-data-anonymizer/blob/f09e98c05380ffda6cecdd5b332e3dc66a30e17c/examples/files/test-1.jpg)  |  ![output_img](https://github.com/ArtLabss/open-data-anonymizer/blob/be3f376e6d93e7a726f083bf28db3bcbd7f592a3/examples/files/test_output.jpg)    |
+
 
 <h2>Development</h2>
 
