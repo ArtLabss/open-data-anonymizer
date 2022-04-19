@@ -12,7 +12,7 @@ such as tabular, text, images and sound.
 
 __version__ = "0.3.1"
 # Check if all dependencies have been installed
-hard_dependencies = ("faker", "pandas", "numpy", "cv2", "PyPDF2", 
+hard_dependencies = ("faker", "pandas", "numpy", "cv2", "PyPDF2",
                      "pytesseract", "poppler-utils", "pdf2image")
 missing_dependencies = []
 
