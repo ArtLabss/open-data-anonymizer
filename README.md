@@ -243,7 +243,7 @@ anonym = pdfAnonymizer(path_to_pdf = "Downloads\\test.pdf",
                        poppler_path = r"C:\Users\shakhansho\Downloads\Release-22.01.0-0\poppler-22.01.0\Library\bin")
 ```  
 
-<p>In order to initialize <code>pdfAnonymizer</code> object we have to install `pytesseract` and `poppler`, and provide path to the binaries of both as arguments or add paths to system variables</p>
+<p>In order to initialize <code>pdfAnonymizer</code> object we have to install <code>pytesseract</code> and <code>poppler</code>, and provide path to the binaries of both as arguments or add paths to system variables</p>
 
 ```python
 # Calling the generic function
