@@ -4,9 +4,9 @@ import glob
 import shutil
 import numpy as np
 
-from anonympy.images.utils import pixelated
-from anonympy.images.utils import sap_noise
-from anonympy.images.utils import find_middle, find_radius
+from anonympy.images.utils_images import pixelated
+from anonympy.images.utils_images import sap_noise
+from anonympy.images.utils_images import find_middle, find_radius
 
 
 class imAnonymizer(object):

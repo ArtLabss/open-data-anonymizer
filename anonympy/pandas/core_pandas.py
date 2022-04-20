@@ -10,7 +10,7 @@ from cape_privacy.pandas.transformations import NumericRounding
 from cape_privacy.pandas.transformations import Tokenizer
 
 from faker import Faker
-from anonympy.pandas import utils as _utils
+from anonympy.pandas import utils_pandas as _utils
 
 from sklearn.decomposition import PCA
 
