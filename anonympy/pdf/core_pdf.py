@@ -6,9 +6,9 @@ from typing import List, Union, Tuple, Dict
 
 from PIL import Image
 
-from anonympy.pdf.utils import draw_black_box_pytesseract, find_EOI
-from anonympy.pdf.utils import find_emails, find_numbers, find_months
-from anonympy.pdf.utils import find_coordinates_pytesseract, alter_metadata
+from anonympy.pdf.utils_pdf import draw_black_box_pytesseract, find_EOI
+from anonympy.pdf.utils_pdf import find_emails, find_numbers, find_months
+from anonympy.pdf.utils_pdf import find_coordinates_pytesseract, alter_metadata
 
 from transformers import pipeline
 

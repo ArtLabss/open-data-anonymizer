@@ -3,8 +3,8 @@ import urllib
 import pytest
 import numpy as np
 from anonympy import __version__
-from anonympy.images.utils import find_middle, find_radius, sap_noise
-from anonympy.images.utils import pixelated
+from anonympy.images.utils_images import find_middle, find_radius, sap_noise
+from anonympy.images.utils_images import pixelated
 
 
 def fetch_image(url):

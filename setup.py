@@ -20,8 +20,8 @@ setup(
   author_email="art@artlabs.tech",
   description="A Data Anonymization package for tabular, image and PDF data",
   name="anonympy",
-  version="0.3.4",
-  
+  version="0.3.5",
+
   packages=find_packages(exclude=['tests*']),
   package_data={'anonympy': extra_files},
   install_requires=['faker', 'scikit-learn', 'opencv_python',
