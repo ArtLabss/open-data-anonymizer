@@ -1,3 +1,4 @@
+name: PEP8
 on: [push, pull_request]
 
 jobs:
