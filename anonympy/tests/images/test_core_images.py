@@ -1,5 +1,5 @@
-import os
 import cv2
+import urllib
 import pytest
 import numpy as np
 from anonympy import __version__
@@ -11,12 +11,17 @@ def is_similar(image1, image2):
             not(np.bitwise_xor(image1, image2).any())
 
 
+def fetch_image(url):
+    req = urllib.request.urlopen(url)
+    arr = np.asarray(bytearray(req.read()), dtype=np.uint8)
+    img = cv2.imdecode(arr, cv2.IMREAD_COLOR)
+    return img
+
+
 def load_image(fname):
-    '''
-    Load a sample image
-    '''
-    path = os.path.join(os.path.split(__file__)[0], 'expected', fname)
-    img = cv2.imread(path)
+    img = fetch_image(
+        'https://raw.githubusercontent.com/ArtLabss/' \
+        f'open-data-anonymizer/main/anonympy/tests/images/expected/{fname}')
     return img
 
 
@@ -25,8 +30,9 @@ def anonym_img():
     '''
     Initialize `imAnonymizer` object
     '''
-    path = os.path.join(os.path.split(__file__)[0], 'expected\\sad_boy.jpg')
-    img = cv2.imread(path)
+    img = fetch_image(
+        'https://raw.githubusercontent.com/ArtLabss/'
+        'open-data-anonymizer/main/anonympy/tests/images/expected/sad_boy.jpg')
     if img is None:
         anonym = None
     else:
@@ -36,8 +42,8 @@ def anonym_img():
 
 def test_anonym_img(anonym_img):
     if anonym_img is None:
-        assert False, "Failed to fetch the sample image from \
-        `anonympy/tests/images/expected/sad_boy.jpg`"
+        assert False, "Failed to fetch the sample image from"\
+        "`anonympy/tests/images/expected/sad_boy.jpg`"
     assert isinstance(anonym_img, imAnonymizer), "should have \
     returned `imAnonymizer` object"
 
