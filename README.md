@@ -16,6 +16,10 @@
   <img src="https://hits.sh/github.com/ArtLabss/open-data-anonimizer.svg">
   <a href="https://pepy.tech/project/anonympy"><img src="https://pepy.tech/badge/anonympy"></a>
   <br>
+  <a href="https://github.com/ArtLabss/open-data-anonymizer/actions/workflows/pylinter.yml"><img src="https://github.com/ArtLabss/open-data-anonymizer/actions/workflows/pylinter.yml/badge.svg"></a>
+  <a href="https://github.com/ArtLabss/open-data-anonymizer/actions/workflows/python-app.yml"><img src="https://github.com/ArtLabss/open-data-anonymizer/actions/workflows/python-app.yml/badge.svg"></a>
+  <a href="https://github.com/ArtLabss/open-data-anonymizer/actions/workflows/codeql-analysis.yml"><img src="https://github.com/ArtLabss/open-data-anonymizer/actions/workflows/codeql-analysis.yml/badge.svg"></a>
+  <br>
   <code>With ❤️ by ArtLabs</code>
   
 <h2>Overview</h2>
@@ -140,7 +144,7 @@ python setup.py install
 
 ```python
 from anonympy.pandas import dfAnonymizer
-from anonympy.pandas.utils import load_dataset
+from anonympy.pandas.utils_pandas import load_dataset
 
 df = load_dataset() 
 print(df)
@@ -164,7 +168,7 @@ anonym.anonymize(inplace = False) # changes will be returned, not applied
   
 ```python
 # Or applying a specific anonymization technique to a column
-from anonympy.pandas.utils import available_methods
+from anonympy.pandas.utils_pandas import available_methods
 
 anonym.categorical_columns
 ... ['name', 'web', 'email', 'ssn']
