@@ -5,7 +5,7 @@ from pandas import testing as pdt
 
 from anonympy import __version__
 from anonympy.pandas import dfAnonymizer
-from anonympy.pandas.utils import load_dataset
+from anonympy.pandas.utils_pandas import load_dataset
 
 
 @pytest.fixture(scope="module")

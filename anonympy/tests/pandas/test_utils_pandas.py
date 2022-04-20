@@ -1,7 +1,8 @@
 import urllib
 import pytest
 from anonympy.pandas import dfAnonymizer
-from anonympy.pandas.utils import load_dataset, fake_methods, available_methods
+from anonympy.pandas.utils_pandas import load_dataset, \
+     fake_methods, available_methods
 
 
 # testing utils.py - supplementary functions
