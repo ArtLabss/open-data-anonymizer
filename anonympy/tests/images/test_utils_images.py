@@ -22,7 +22,8 @@ def rectangle():
 
 @pytest.fixture(scope='module')
 def load_image():
-    img = fetch_image('https://raw.githubusercontent.com/ArtLabss/'\
+    img = fetch_image(
+        'https://raw.githubusercontent.com/ArtLabss/'
         'open-data-anonymizer/main/anonympy/tests/images/expected/sad_boy.jpg')
     return img
 
@@ -51,16 +52,18 @@ def test_find_radius(rectangle):
                     reason="Requires anonympy >= 0.2.5")
 def test_sap_noise(load_image):
     output = sap_noise(load_image, seed=42)
-    expected = fetch_image('https://raw.githubusercontent.com/ArtLabss/ \
-        open-data-anonymizer/main/anonympy/tests/images/expected/\
-        sap_noise.png')
+    expected = fetch_image(
+        'https://raw.githubusercontent.com/ArtLabss/'
+        'open-data-anonymizer/main/anonympy/tests/images/expected/'
+        'sap_noise.png')
     assert np.array_equal(output, expected), "Image returned by `sap_noise` is\
     different from expected/sap_noise.png"
 
 
 def test_pixelated(load_image):
     output = pixelated(load_image)
-    expected = fetch_image('https://raw.githubusercontent.com/ArtLabss/open-\
-        data-anonymizer/main/anonympy/tests/images/expected/pixelated.png')
+    expected = fetch_image(
+        'https://raw.githubusercontent.com/ArtLabss/open-'
+        'data-anonymizer/main/anonympy/tests/images/expected/pixelated.png')
     assert np.array_equal(output, expected), "Image returned by `pixelated` is\
     different from expected/pixelated.png"
