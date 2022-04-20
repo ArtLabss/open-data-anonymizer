@@ -20,7 +20,7 @@ def fetch_image(url):
 
 def load_image(fname):
     img = fetch_image(
-        'https://raw.githubusercontent.com/ArtLabss/' \
+        'https://raw.githubusercontent.com/ArtLabss/'
         f'open-data-anonymizer/main/anonympy/tests/images/expected/{fname}')
     return img
 
@@ -43,7 +43,7 @@ def anonym_img():
 def test_anonym_img(anonym_img):
     if anonym_img is None:
         assert False, "Failed to fetch the sample image from"\
-        "`anonympy/tests/images/expected/sad_boy.jpg`"
+                      "`anonympy/tests/images/expected/sad_boy.jpg`"
     assert isinstance(anonym_img, imAnonymizer), "should have \
     returned `imAnonymizer` object"
 
