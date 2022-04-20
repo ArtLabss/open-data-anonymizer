@@ -22,8 +22,8 @@ def rectangle():
 
 @pytest.fixture(scope='module')
 def load_image():
-    img = fetch_image('https://raw.githubusercontent.com/ArtLabss/ \
-        open-data-anonymizer/main/anonympy/tests/images/expected/sad_boy.jpg')
+    img = fetch_image('https://raw.githubusercontent.com/ArtLabss/'\
+        'open-data-anonymizer/main/anonympy/tests/images/expected/sad_boy.jpg')
     return img
 
 
