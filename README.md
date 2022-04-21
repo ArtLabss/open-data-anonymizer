@@ -257,7 +257,7 @@ anonym.anonymize(output_path = 'output.pdf',
 
 `test.pdf`            |  `test_out.pdf`            | 
 :-------------------------:|:-------------------------:|
-![test_img](https://github.com/ArtLabss/open-data-anonymizer/blob/f09e98c05380ffda6cecdd5b332e3dc66a30e17c/examples/files/test-1.jpg)  |  ![output_img](https://github.com/ArtLabss/open-data-anonymizer/blob/be3f376e6d93e7a726f083bf28db3bcbd7f592a3/examples/files/test_output.jpg)    |
+![test_img](https://raw.githubusercontent.com/ArtLabss/open-data-anonymizer/f09e98c05380ffda6cecdd5b332e3dc66a30e17c/examples/files/test-1.jpg)  |  ![output_img](https://raw.githubusercontent.com/ArtLabss/open-data-anonymizer/be3f376e6d93e7a726f083bf28db3bcbd7f592a3/examples/files/test_output.jpg)    |
 
 <p>In case you want to only hide specific information, instead of <code>anonymize</code> use other methods</p>
 
