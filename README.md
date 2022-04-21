@@ -270,6 +270,7 @@ text = anonym.images2text(anonym.images)
 locs_emails = anonym.find_LOC(text)['page_1'] + anonym.find_emails(text)['page_1']
 
 anonym.cover_box(anonym.images[0], locs_emails)
+display(anonym.images[0])
 ```
 
 <h2>Development</h2>
