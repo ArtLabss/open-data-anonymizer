@@ -100,7 +100,7 @@ class pdfAnonymizer(object):
         else:
             self._poppler_path = None
 
-        self.nlp = pipeline("ner",
+        self._nlp = pipeline("ner",
                             aggregation_strategy="simple",
                             model=model,
                             tokenizer=tokenizer)
@@ -179,7 +179,7 @@ class pdfAnonymizer(object):
         if self.number_of_pages == 1:
             # return str if 1 page PDF, else a list of str
             text = self.images2text(self.images)[0]
-            ner = self.nlp(text)
+            ner = self._nlp(text)
 
             find_emails(text=text, matches=self.PII_objects)
             find_numbers(text=text, matches=self.PII_objects)
@@ -203,7 +203,7 @@ class pdfAnonymizer(object):
             for excerpt in text:
                 temp_pii = []
                 temp_bbox = []
-                ner = self.nlp(excerpt)
+                ner = self._nlp(excerpt)
 
                 find_emails(text=excerpt, matches=temp_pii)
                 find_numbers(text=excerpt, matches=temp_pii)
@@ -542,7 +542,7 @@ class pdfAnonymizer(object):
         page_number = 1
 
         for excerpt in text:
-            ner = self.nlp(excerpt)
+            ner = self._nlp(excerpt)
             names = []
             bbox = []
 
