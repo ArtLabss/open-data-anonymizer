@@ -65,7 +65,6 @@ class pdfAnonymizer(object):
                                \\bin",
                                model = "dslim/bert-base-NER",
                                tokenizer="dslim/bert-base-NER")
-
     """
     def __init__(self,
                  path_to_pdf: str,
@@ -247,7 +246,7 @@ class pdfAnonymizer(object):
                           save_all=True,
                           append_images=self.images)
 
-    def pdf2images(self) -> List[Image.Image]:
+    def pdf2images(self) -> None:
         """
         Convert PDF file to a list of images.
 
@@ -255,8 +254,8 @@ class pdfAnonymizer(object):
 
         Returns:
         ----------
-        List[Image.Image]
-            A list of PIL images
+        None
+            A list of PIL images will be stored in `images` attribute
 
         Notes:
         ----------
