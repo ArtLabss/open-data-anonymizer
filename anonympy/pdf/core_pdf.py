@@ -1,7 +1,8 @@
 import os
 import pathlib
+import requests
 import pytesseract
-from pdf2image import convert_from_path
+from pdf2image import convert_from_path, convert_from_bytes
 from typing import List, Union, Tuple, Dict
 
 from PIL import Image
@@ -19,24 +20,27 @@ class pdfAnonymizer(object):
 
     Parameters:
     ----------
-    path_to_pdf: str,
+    path_to_pdf: Union[str, None], default None
         Any valid string path that points to PDF file.
 
-    pytesseract_path: Union[str, pathlib.Path], default None
+    url: Union[str, None], default None
+        Any valid URL, where the PDF will be fetched from.
+
+    pytesseract_path: Union[str, pathlib.Path, None], default None
         `None` if Tesseract path is added to system environment.
         Otherwise, pass a valid string path to the binary.
 
-    poppler_path: Union[str, pathlib.Path], default None
+    poppler_path: Union[str, pathlib.Path, None], default None
         `None` if Poppler path is specified in environment variable.
         Otherwise, pass poppler path.
 
     model: str, default "dbmdz/bert-large-cased-finetuned-conll03-english"
         The model that will be used by `transformers.pipeline`.
-        If not specified, deault model for NER will be used.
+        If not specified, default model for NER will be used.
 
     tokenizer: str, default "dbmdz/bert-large-cased-finetuned-conll03-english"
         The tokenizer that will be used by `transformers.pipeline`.
-        If not specified, deault one will be used.
+        If not specified, default one will be used.
 
     Returns:
     ----------
@@ -48,7 +52,13 @@ class pdfAnonymizer(object):
 
         * If `path_to_pdf` doesn't exist
 
-        * If file specified at `path_to_pdf`
+        * If file specified at `path_to_pdf` is not PDF
+
+        * If `url` can't be fetched
+
+        * If neither `path_to_pdf` nor `url` aren't specified
+
+        * If both `path_to_pdf` and `url` are specified
 
     Examples
     ----------
@@ -65,13 +75,13 @@ class pdfAnonymizer(object):
                                \\bin",
                                model = "dslim/bert-base-NER",
                                tokenizer="dslim/bert-base-NER")
-
     """
     def __init__(self,
-                 path_to_pdf: str,
+                 path_to_pdf: Union[str, None] = None,
+                 url: Union[str, None] = None,
                  # path_to_folder: str = None,
-                 pytesseract_path: Union[str, pathlib.Path] = None,
-                 poppler_path: Union[str, pathlib.Path] = None,
+                 pytesseract_path: Union[str, pathlib.Path, None] = None,
+                 poppler_path: Union[str, pathlib.Path, None] = None,
                  model: str = "dbmdz/bert-large-cased-"\
                  "finetuned-conll03-english",
                  tokenizer: str = "dbmdz/bert-large-cased"\
@@ -83,6 +93,12 @@ class pdfAnonymizer(object):
             elif not path_to_pdf.endswith('.pdf'):
                 raise Exception("`String path should end with `.pdf`. "
                                 f"But {path_to_pdf[-4:]} was found.")
+
+        if (path_to_pdf is None) and (url is None):
+            raise Exception('Neither `path_to_pdf` nor `url` are specified!'
+                            ' Please provide an input PDF file')
+        elif (path_to_pdf is not None) and (url is not None):
+            raise Exception('Please provide either `path_to_pdf` or `url`')
 
         # elif path_to_folder is not None:
         #     if not os.path.isdir(path_to_folder):
@@ -101,14 +117,16 @@ class pdfAnonymizer(object):
         else:
             self._poppler_path = None
 
-        self.nlp = pipeline("ner",
-                            aggregation_strategy="simple",
-                            model=model,
-                            tokenizer=tokenizer)
+        self._nlp = pipeline("ner",
+                             aggregation_strategy="simple",
+                             model=model,
+                             tokenizer=tokenizer)
         self.path_to_pdf = path_to_pdf
-#         self.path_to_folder = path_to_folder
+        self.url = url
+        # self.path_to_folder = path_to_folder
         self.number_of_pages = None  # changes in `pdfAnonymizer.pdf2images`
         self.images = []  # anonymized images that will be converted to PDF
+        self.texts = []  # extracted text from images
         self.bbox = []  # bounding boxes of PII_objects
         self.pages_data = []  # data that will be returned by `images2text`
         self.PII_objects = []  # Personal Identifiable Information
@@ -180,7 +198,7 @@ class pdfAnonymizer(object):
         if self.number_of_pages == 1:
             # return str if 1 page PDF, else a list of str
             text = self.images2text(self.images)[0]
-            ner = self.nlp(text)
+            ner = self._nlp(text)
 
             find_emails(text=text, matches=self.PII_objects)
             find_numbers(text=text, matches=self.PII_objects)
@@ -204,7 +222,7 @@ class pdfAnonymizer(object):
             for excerpt in text:
                 temp_pii = []
                 temp_bbox = []
-                ner = self.nlp(excerpt)
+                ner = self._nlp(excerpt)
 
                 find_emails(text=excerpt, matches=temp_pii)
                 find_numbers(text=excerpt, matches=temp_pii)
@@ -247,16 +265,17 @@ class pdfAnonymizer(object):
                           save_all=True,
                           append_images=self.images)
 
-    def pdf2images(self) -> List[Image.Image]:
+    def pdf2images(self) -> None:
         """
         Convert PDF file to a list of images.
 
-        Wrapper for `convert_from_path` function from `pdf2image` library.
+        Wrapper for `convert_from_path` and `convert_from_binary` functions
+        from `pdf2image` library.
 
         Returns:
         ----------
-        List[Image.Image]
-            A list of PIL images
+        None
+            A list of PIL images will be stored in `images` attribute
 
         Notes:
         ----------
@@ -277,19 +296,30 @@ class pdfAnonymizer(object):
 
         Storing resulting PIL images in a variable
 
-        >>> images = anonym.pdf2images()
+        >>> anonym.pdf2images()
         >>> print(anonym.number_of_pages)
         ... 1
+        >>> display(anonym.images[0])  # display first page
         """
         if self._poppler_path is None:
-            self.images = convert_from_path(self.path_to_pdf)
+            if self.url is None:
+                self.images = convert_from_path(self.path_to_pdf)
+            else:
+                pdf = requests.get(self.url)
+                self.images = convert_from_bytes(pdf.content)
         else:
-            self.images = convert_from_path(self.path_to_pdf,
-                                            poppler_path=self._poppler_path)
-
+            if self.url is None:
+                self.images = convert_from_path(
+                            self.path_to_pdf,
+                            poppler_path=self._poppler_path)
+            else:
+                pdf = requests.get(self.url)
+                self.images = convert_from_bytes(
+                            pdf.content,
+                            poppler_path=self._poppler_path)
         self.number_of_pages = len(self.images)
 
-    def images2text(self, images: List[Image.Image]) -> List[str]:
+    def images2text(self, images: List[Image.Image]) -> None:
         """
         Extract text from an image.
 
@@ -302,8 +332,9 @@ class pdfAnonymizer(object):
 
         Returns:
         ----------
-        List[str]
-            List of strings. Where, string is a text extracted from the image.
+        None
+            List of strings will be stored in `images` attribute. Where,
+            string is a text extracted from the image.
             Index of each string represents the page number.
 
         Notes:
@@ -321,14 +352,13 @@ class pdfAnonymizer(object):
                                    poppler_path = "C:\\Users\\shakhansho\\
                                    Downloads\\Release-22.01.0-0\\
                                    poppler-22.01.0\\Library\\bin")
-        >>> images = anonym.pdf2images()
+        >>> anonym.pdf2images()
 
         Passing a list of PIL images
 
-        >>> texts = anonym.images2text(images)
+        >>> anonym.images2text(anonym.images)
+        >>> print(anonym.texts[0])  # text extracted from first page
         """
-        excerpts = []
-
         for image in images:
             page = pytesseract.image_to_data(image, output_type="dict")
             self.pages_data.append(page)
@@ -340,9 +370,7 @@ class pdfAnonymizer(object):
                 else:
                     excerpt += line.strip() + " "
 
-            excerpts.append(excerpt)
-
-        return excerpts
+            self.texts.append(excerpt)
 
     def find_emails(self, text: List[str]) -> Dict[str, List[Tuple[int]]]:
         """
@@ -543,7 +571,7 @@ class pdfAnonymizer(object):
         page_number = 1
 
         for excerpt in text:
-            ner = self.nlp(excerpt)
+            ner = self._nlp(excerpt)
             names = []
             bbox = []
 
