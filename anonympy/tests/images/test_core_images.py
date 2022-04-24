@@ -44,8 +44,8 @@ def test_anonym_img(anonym_img):
     if anonym_img is None:
         assert False, "Failed to fetch the sample image from"\
                       "`anonympy/tests/images/expected/sad_boy.jpg`"
-    assert isinstance(anonym_img, imAnonymizer), "should have \
-    returned `imAnonymizer` object"
+    assert isinstance(anonym_img, imAnonymizer), "Didn't return " \
+                                                 "`imAnonymizer` object"
 
 
 def test_face_blur(anonym_img):
