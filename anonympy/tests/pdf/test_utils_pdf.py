@@ -1,6 +1,7 @@
 import pytest
 from anonympy.pdf import pdfAnonymizer
-from anonympy.pdf.utils_pdf import find_EOI
+from anonympy.pdf.utils_pdf import find_EOI  # noqa: F401
+
 
 @pytest.fixture(scope="module")
 def anonym_pdf():
@@ -25,4 +26,5 @@ def test_anonym_pdf(anonym_pdf):
                                                   "`pdfAnonymizer` object`"
 
 
-def test_find_EOI()
+# def test_find_EOI():
+#     pass
