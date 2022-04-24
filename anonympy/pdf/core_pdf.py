@@ -118,9 +118,9 @@ class pdfAnonymizer(object):
             self._poppler_path = None
 
         self._nlp = pipeline("ner",
-                            aggregation_strategy="simple",
-                            model=model,
-                            tokenizer=tokenizer)
+                             aggregation_strategy="simple",
+                             model=model,
+                             tokenizer=tokenizer)
         self.path_to_pdf = path_to_pdf
         self.url = url
         # self.path_to_folder = path_to_folder
@@ -316,7 +316,7 @@ class pdfAnonymizer(object):
                 pdf = requests.get(self.url)
                 self.images = convert_from_bytes(
                             pdf.content,
-                            poppler_path=self._poppler_path)    
+                            poppler_path=self._poppler_path)
         self.number_of_pages = len(self.images)
 
     def images2text(self, images: List[Image.Image]) -> None:
@@ -333,7 +333,7 @@ class pdfAnonymizer(object):
         Returns:
         ----------
         None
-            List of strings will be stored in `images` attribute. Where, 
+            List of strings will be stored in `images` attribute. Where,
             string is a text extracted from the image.
             Index of each string represents the page number.
 
