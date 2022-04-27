@@ -48,7 +48,7 @@
           <li>Tokenization</li>
           <li>Partial Email Masking</li>
         </ul>
-      <li>DateTime</li>
+      <li>Datetime</li>
         <ul>
           <li>Synthetic Date</li>
           <li>Perturbation</li>
