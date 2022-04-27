@@ -272,7 +272,7 @@ blurred            |  pixel           |    sap
 
 #  Entities of interest 
 >>> locs: dict = anonym.find_LOC(anonym.texts[0])  # index refers to page number
->>> emails: dict = anonym.find_emails(anonym.texts[0]) 
+>>> emails: dict = anonym.find_emails(anonym.texts[0])  # {page_number: [coords]}
 >>> coords: list = locs['page_1'] + emails['page_1'] 
 
 >>> anonym.cover_box(anonym.images[0], coords)
