@@ -27,28 +27,28 @@
 <br>
 <h2>Main Features</h2>
 
-<p><strong>Tabular</strong></p>
+<p>Ease of use - this package was written to be as intuitive as possible.</p>
 
+<p><strong>Tabular</strong></p>
 <ul>
-  <li>Ease of use</li>
   <li>Efficient - based on pd.DataFrame</li>
-  <li>Numerous anonymization techniques</li>
+  <li>Numerous anonymization methods</li>
     <ul>
-      <li>Numeric</li>
+      <li>Numeric data</li>
         <ul>
           <li>Generalization - Binning</li>
           <li>Perturbation</li>
           <li>PCA Masking</li>
           <li>Generalization - Rounding</li>
         </ul>
-      <li>Categorical</li>
+      <li>Categorical data</li>
         <ul>
           <li>Synthetic Data</li>
           <li>Resampling</li>
           <li>Tokenization</li>
           <li>Partial Email Masking</li>
         </ul>
-      <li>Datetime</li>
+      <li>Datetime data</li>
         <ul>
           <li>Synthetic Date</li>
           <li>Perturbation</li>
@@ -58,7 +58,7 @@
 
 <p><strong>Images</strong></p>
 <ul>
-  <li>Anonymization Techniques</li>
+  <li>Anonymization techniques</li>
   <ul>
     <li>Personal Images (faces)</li>
     <ul>
@@ -94,6 +94,8 @@
   <li>faker</li>
   <li>pandas</li>
   <li>OpenCV</li>
+  <li>pytesseract</li>
+  <li>transformers</li>
   <li><a href="https://github.com/ArtLabss/open-data-anonimizer/blob/main/requirements.txt">    . . .</a></li>
 </ol>
 
