@@ -96,7 +96,7 @@
   <li>OpenCV</li>
   <li>pytesseract</li>
   <li>transformers</li>
-  <li><a href="https://github.com/ArtLabss/open-data-anonimizer/blob/main/requirements.txt">    . . .</a></li>
+  <li><a href="https://github.com/ArtLabss/open-data-anonimizer/blob/main/requirements.txt">.         .  .  .  .  </a></li>
 </ol>
 
 <h3>Install with pip</h3>
@@ -140,16 +140,16 @@ python setup.py install
 
 [![Google Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1wg4g4xWTSLvThYHYLKDIKSJEC4ChQHaM?usp=sharing)
 
-<p>You can find more examples <a href="https://github.com/ArtLabss/open-data-anonimizer/blob/b5d5f2df94b80011a8a93fa08f0046d1390cec49/examples/examples.ipynb">here</a>
+<p>More examples <a href="https://github.com/ArtLabss/open-data-anonimizer/blob/b5d5f2df94b80011a8a93fa08f0046d1390cec49/examples/examples.ipynb">here</a>
   
 <p><strong>Tabular</strong></p>
 
 ```python
-from anonympy.pandas import dfAnonymizer
-from anonympy.pandas.utils_pandas import load_dataset
+>>> from anonympy.pandas import dfAnonymizer
+>>> from anonympy.pandas.utils_pandas import load_dataset
 
-df = load_dataset() 
-print(df)
+>>> df = load_dataset() 
+>>> print(df)
 ```
 
 |   |  name | age |  birthdate |   salary |                                  web |                email |       ssn |
@@ -159,8 +159,8 @@ print(df)
   
 ```python
 # Calling the generic function
-anonym = dfAnonymizer(df)
-anonym.anonymize(inplace = False) # changes will be returned, not applied
+>>> anonym = dfAnonymizer(df)
+>>> anonym.anonymize(inplace = False) # changes will be returned, not applied
 ```
 
 |      | name            | age    | birthdate  | age     | web        |         email       |     ssn     |
@@ -170,21 +170,21 @@ anonym.anonymize(inplace = False) # changes will be returned, not applied
   
 ```python
 # Or applying a specific anonymization technique to a column
-from anonympy.pandas.utils_pandas import available_methods
+>>> from anonympy.pandas.utils_pandas import available_methods
 
-anonym.categorical_columns
+>>> anonym.categorical_columns
 ... ['name', 'web', 'email', 'ssn']
-available_methods('categorical') 
+>>> available_methods('categorical') 
 ... categorical_fake	categorical_fake_auto	categorical_resampling	categorical_tokenization	categorical_email_masking
-  
-anonym.anonymize({'name': 'categorical_fake', 
+
+>>> anonym.anonymize({'name': 'categorical_fake',  # {'column_name': 'method_name'}
                   'age': 'numeric_noise',
                   'birthdate': 'datetime_noise',
                   'salary': 'numeric_rounding',
                   'web': 'categorical_tokenization', 
                   'email':'categorical_email_masking', 
                   'ssn': 'column_suppression'})
-print(anonym.to_df())
+>>> print(anonym.to_df())
 ```
 |   |  name | age |  birthdate |   salary |                                  web |                email |
 |--:|------:|----:|-----------:|---------:|-------------------------------------:|---------------------:|
