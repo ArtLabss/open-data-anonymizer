@@ -212,11 +212,11 @@ blurred            |  pixel           |    sap
 
 ```python
 # Passing a Folder 
-path = 'C:/Users/shakhansho.sabzaliev/Downloads/Data' # images are inside `Data` folder
-dst = 'D:/' # destination folder
-anonym = imAnonymizer(path, dst)
+>>> path = 'C:/Users/shakhansho.sabzaliev/Downloads/Data' # images are inside `Data` folder
+>>> dst = 'D:/' # destination folder
+>>> anonym = imAnonymizer(path, dst)
 
-anonym.blur(method = 'median', kernel = 11) 
+>>> anonym.blur(method = 'median', kernel = 11) 
 ```
 
 <p>This will create a folder <i>Output</i> in <code>dst</code> directory.</p>
@@ -245,36 +245,38 @@ anonym.blur(method = 'median', kernel = 11)
 <p>In order to initialize <code>pdfAnonymizer</code> object we have to install <code>pytesseract</code> and <code>poppler</code>, and provide path to the binaries of both as arguments or add paths to system variables</p>
 
 ```python
-from anonympy.pdf import pdfAnonymizer
+>>> from anonympy.pdf import pdfAnonymizer
 
 # need to specify paths, since I don't have them in system variables
-anonym = pdfAnonymizer(path_to_pdf = "Downloads\\test.pdf",
+>>> anonym = pdfAnonymizer(path_to_pdf = "Downloads\\test.pdf",
                        pytesseract_path = r"C:\Program Files\Tesseract-OCR\tesseract.exe",
                        poppler_path = r"C:\Users\shakhansho\Downloads\Release-22.01.0-0\poppler-22.01.0\Library\bin")
 
 # Calling the generic function
-anonym.anonymize(output_path = 'output.pdf',
+>>> anonym.anonymize(output_path = 'output.pdf',
                      remove_metadata = True,
                      fill = 'black',
                      outline = 'black')
 ```
 
-`test.pdf`            |  `test_out.pdf`            | 
+`test.pdf`            |  `output.pdf`            | 
 :-------------------------:|:-------------------------:|
 ![test_img](https://raw.githubusercontent.com/ArtLabss/open-data-anonymizer/f09e98c05380ffda6cecdd5b332e3dc66a30e17c/examples/files/test-1.jpg)  |  ![output_img](https://raw.githubusercontent.com/ArtLabss/open-data-anonymizer/be3f376e6d93e7a726f083bf28db3bcbd7f592a3/examples/files/test_output.jpg)    |
 
-<p>In case you want to only hide specific information, instead of <code>anonymize</code> use other methods</p>
+<p>In case you only want to hide specific information, instead of <code>anonymize</code> use other methods</p>
 
 ```python
-anonym = pdfAnonymizer(path_to_pdf = r"Downloads\test.pdf")
-anonym.pdf2images() #  images are stored in anonym.images variable 
-text = anonym.images2text(anonym.images)
+>>> anonym = pdfAnonymizer(path_to_pdf = r"Downloads\test.pdf")
+>>> anonym.pdf2images() #  images are stored in anonym.images variable 
+>>> anonym.images2text(anonym.images) # texts are stored in anonym.texts
 
 #  Entities of interest 
-locs_emails = anonym.find_LOC(text)['page_1'] + anonym.find_emails(text)['page_1']
+>>> locs: dict = anonym.find_LOC(anonym.texts[0])  # index refers to page number
+>>> emails: dict = anonym.find_emails(anonym.texts[0]) 
+>>> coords: list = locs['page_1'] + emails['page_1'] 
 
-anonym.cover_box(anonym.images[0], locs_emails)
-display(anonym.images[0])
+>>> anonym.cover_box(anonym.images[0], coords)
+>>> display(anonym.images[0])
 ```
 
 <h2>Development</h2>
