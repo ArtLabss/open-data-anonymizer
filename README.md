@@ -196,16 +196,17 @@ python setup.py install
 
 ```python
 # Passing an Image
-import cv2
-from anonympy.images import imAnonymizer
+>>> import cv2
+>>> from anonympy.images import imAnonymizer
 
-img = cv2.imread('sulking_boy.jpg')
-anonym = imAnonymizer(img)
+>>> img = cv2.imread('salty.jpg')
+>>> anonym = imAnonymizer(img)
 
-blurred = anonym.face_blur((31, 31), shape='r', box = 'r')  # blurring shape and bounding box ('r' / 'c')
-cv2.imshow('Blurred', blurred)
+>>> blurred = anonym.face_blur((31, 31), shape='r', box = 'r')  # blurring shape and bounding box ('r' / 'c')
+>>> pixel = anonym.face_pixel(blocks=20, box=None)
+>>> sap = anonym.face_SaP(shape = 'c', box=None)
 ```
-`anonym.face_blur()`            |  `anonym.face_pixel()`            |    `anonym.face_SaP()`
+blurred            |  pixel           |    sap
 :-------------------------:|:-------------------------:|:-------------------------:
 ![input_img1](https://raw.githubusercontent.com/ArtLabss/open-data-anonimizer/d61127f7a8fdff603af21dcab8edbf72f2aab292/examples/files/sad_boy_blurred.jpg)  |  ![output_img1](https://raw.githubusercontent.com/ArtLabss/open-data-anonimizer/d61127f7a8fdff603af21dcab8edbf72f2aab292/examples/files/sad_boy_pixel.jpg)    |   ![sap_image](https://raw.githubusercontent.com/ArtLabss/open-data-anonimizer/d61127f7a8fdff603af21dcab8edbf72f2aab292/examples/files/sad_boy_sap.jpg) 
 
@@ -219,9 +220,10 @@ anonym.blur(method = 'median', kernel = 11)
 ```
 
 <p>This will create a folder <i>Output</i> in <code>dst</code> directory.</p>
-<p>The <i>Data</i> folder had the following structure</p>
 
-```
+```python
+# The Data folder had the following structure
+
 |   1.jpg
 |   2.jpg
 |   3.jpeg
@@ -232,9 +234,9 @@ anonym.blur(method = 'median', kernel = 11)
     |   
     \---test2
             6.png
-```
 
-<p>The <i>Output</i> folder will have the same structure and file names but blurred images.</p>
+# The Output folder will have the same structure and file names but blurred images
+```
 
 <br>
 
