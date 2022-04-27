@@ -23,7 +23,7 @@
   <code>With ❤️ by ArtLabs</code>
   
 <h2>Overview</h2>
-<p>A general Python library for data anonymization of tabular, text, image and sound data. See <a href="https://artlabs.tech/projects/">ArtLabs/projects</a> for more or similar projects.</p>
+<p>General Data Anonymization library for images, PDFs and tabular data. See <a href="https://artlabs.tech/projects/">ArtLabs/projects</a> for more or similar projects.</p>
 <br>
 <h2>Main Features</h2>
 
@@ -31,7 +31,7 @@
 
 <ul>
   <li>Ease of use</li>
-  <li>Efficient anonymization (based on pandas DataFrame)</li>
+  <li>Efficient - based on pd.DataFrame</li>
   <li>Numerous anonymization techniques</li>
     <ul>
       <li>Numeric</li>
