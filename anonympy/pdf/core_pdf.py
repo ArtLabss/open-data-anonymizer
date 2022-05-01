@@ -197,12 +197,12 @@ class pdfAnonymizer(object):
 
         if self.number_of_pages == 1:
             # return str if 1 page PDF, else a list of str
-            text = self.images2text(self.images)[0]
-            ner = self._nlp(text)
+            self.images2text(self.images)
+            ner = self._nlp(self.texts[0])
 
-            find_emails(text=text, matches=self.PII_objects)
-            find_numbers(text=text, matches=self.PII_objects)
-            find_months(text=text, matches=self.PII_objects)
+            find_emails(text=self.texts[0], matches=self.PII_objects)
+            find_numbers(text=self.texts[0], matches=self.PII_objects)
+            find_months(text=self.texts[0], matches=self.PII_objects)
 
             find_EOI(pipeline=ner, matches=self.PII_objects, EOI="PER")
             find_EOI(pipeline=ner, matches=self.PII_objects, EOI="ORG")
@@ -217,9 +217,9 @@ class pdfAnonymizer(object):
                            fill=fill,
                            outline=outline)
         else:
-            text = self.images2text(self.images)
+            self.images2text(self.images)
 
-            for excerpt in text:
+            for excerpt in self.texts:
                 temp_pii = []
                 temp_bbox = []
                 ner = self._nlp(excerpt)
