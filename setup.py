@@ -20,7 +20,7 @@ setup(
   author_email="art@artlabs.tech",
   description="A Data Anonymization package for tabular, image and PDF data",
   name="anonympy",
-  version="0.3.6",
+  version="0.3.7",
 
   packages=find_packages(exclude=['tests*']),
   package_data={'anonympy': extra_files},
