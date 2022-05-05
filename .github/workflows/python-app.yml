@@ -18,8 +18,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - name: chexking cwd 
-	run: ls
+    - name: Checking CWD
+      run: |
+        ls
     - name: Set up Python 3.10
       uses: actions/setup-python@v3
       with:
