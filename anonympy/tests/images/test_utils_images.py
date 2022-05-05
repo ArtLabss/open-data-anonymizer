@@ -26,7 +26,7 @@ def load_image():
     # img = fetch_image(
     #     'https://raw.githubusercontent.com/ArtLabss/'
     #     'open-data-anonymizer/main/anonympy/tests/images/expected/sad_boy.jpg')
-    img2 = cv2.imread('/anonympy/tests/images/expected/sad_boy.jpg')
+    img2 = cv2.imread('anonympy/tests/images/expected/sad_boy.jpg')
     return img2
 
 
