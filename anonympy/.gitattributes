@@ -1,0 +1,2 @@
+tests/pdf/expected/Tesseract-OCR/ filter=lfs diff=lfs merge=lfs -text
+tests/pdf/expected/poppler-22.01.0/ filter=lfs diff=lfs merge=lfs -text
