@@ -75,55 +75,55 @@ def test_find_coordinates_pytesseract(anonym_obj):
                                 f', 28), but function returned {output[0]}')
 
 
-# def test_find_EOI(anonym_obj):
-#     pipeline = anonym_obj._nlp(anonym_obj.texts[0])
+def test_find_EOI(anonym_obj):
+    pipeline = anonym_obj._nlp(anonym_obj.texts[0])
 
-#     expected_PER = ['hansho', 'Sabzal', 'Elvira', 'Sagyntay', 'hansh']
-#     output_PER = []
+    expected_PER = ['hansho', 'Sabzal', 'Elvira', 'Sagyntay', 'hansh']
+    output_PER = []
 
-#     find_EOI(pipeline=pipeline, matches=output_PER, EOI='PER')
-#     assert expected_PER == output_PER, ("`find_EOI` returned unexpected "
-#                                         "values for `EOI='PER'`")
+    find_EOI(pipeline=pipeline, matches=output_PER, EOI='PER')
+    assert expected_PER == output_PER, ("`find_EOI` returned unexpected "
+                                        "values for `EOI='PER'`")
 
-#     expected_LOC = ['Parkovaya', 'Moscow', 'Russia', 'Bishkek', 'Kyrgystan']
-#     output_LOC = []
+    expected_LOC = ['Parkovaya', 'Moscow', 'Russia', 'Bishkek', 'Kyrgystan']
+    output_LOC = []
 
-#     find_EOI(pipeline=pipeline, matches=output_LOC, EOI='LOC')
-#     assert expected_LOC == output_LOC, ("`find_EOI` returned unexpected "
-#                                         "values for `EOI='LOC'`")
+    find_EOI(pipeline=pipeline, matches=output_LOC, EOI='LOC')
+    assert expected_LOC == output_LOC, ("`find_EOI` returned unexpected "
+                                        "values for `EOI='LOC'`")
 
-#     expected_ORG = ['Shak', 'ucent', 'CRM', 'Technologies', 'Panphilova',
-#                     'Inter', 'CRM', 'Technologies']
-#     output_ORG = []
+    expected_ORG = ['Shak', 'ucent', 'CRM', 'Technologies', 'Panphilova',
+                    'Inter', 'CRM', 'Technologies']
+    output_ORG = []
 
-#     find_EOI(pipeline=pipeline, matches=output_ORG, EOI='ORG')
-#     assert expected_ORG == output_ORG, ("`find_EOI` returned unexpected "
-#                                         "values for `EOI='ORG'`")
-
-
-# def test_find_emails(anonym_obj):
-#     expected = ['shakhansho.sabzaliev_2023@ucentralasia.org']
-#     output = []
-
-#     find_emails(anonym_obj.texts[0], output)
-#     assert expected == output, ("Method `find_emails`"
-#                                 "didn't return expected values")
+    find_EOI(pipeline=pipeline, matches=output_ORG, EOI='ORG')
+    assert expected_ORG == output_ORG, ("`find_EOI` returned unexpected "
+                                        "values for `EOI='ORG'`")
 
 
-# def test_find_months(anonym_obj):
-#     expected = ['November', 'November']
-#     output = []
+def test_find_emails(anonym_obj):
+    expected = ['shakhansho.sabzaliev_2023@ucentralasia.org']
+    output = []
 
-#     find_months(anonym_obj.texts[0], output)
-#     assert expected == output, ("Method `find_months`"
-#                                 "didn't return expected values")
+    find_emails(anonym_obj.texts[0], output)
+    assert expected == output, ("Method `find_emails`"
+                                "didn't return expected values")
 
 
-# def test_find_numbers(anonym_obj):
-#     expected = ['11', '39', '1', '105264', '2023',
-#                 '19', '2020', '1', '18', '2020']
-#     output = []
+def test_find_months(anonym_obj):
+    expected = ['November', 'November']
+    output = []
 
-#     find_numbers(anonym_obj.texts[0], output)
-#     assert expected == output, ("Method `find_numbers`"
-#                                 "didn't return expected values")
+    find_months(anonym_obj.texts[0], output)
+    assert expected == output, ("Method `find_months`"
+                                "didn't return expected values")
+
+
+def test_find_numbers(anonym_obj):
+    expected = ['11', '39', '1', '105264', '2023',
+                '19', '2020', '1', '18', '2020']
+    output = []
+
+    find_numbers(anonym_obj.texts[0], output)
+    assert expected == output, ("Method `find_numbers`"
+                                "didn't return expected values")
