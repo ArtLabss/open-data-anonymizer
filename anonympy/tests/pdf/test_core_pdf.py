@@ -34,7 +34,7 @@ def anonym_obj():
         tokenizer=("dbmdz/bert-large-cased"
                    "-finetuned-conll03-english"))
     # except:  # noqa: E722
-        # anonym = None
+    # anonym = None
 
     return anonym
 
