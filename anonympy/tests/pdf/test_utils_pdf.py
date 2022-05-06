@@ -33,8 +33,6 @@ def anonym_obj():
     '''
     anonym = pdfAnonymizer(
         path_to_pdf='anonympy/tests/pdf/expected/test.pdf',
-        # pytesseract_path=("anonympy/tests/pdf/expected/Tesseract-"
-        #                   "OCR/tesseract.exe"),
         model=("dbmdz/bert-large-cased-"
                "finetuned-conll03-english"),
         tokenizer=("dbmdz/bert-large-cased"
