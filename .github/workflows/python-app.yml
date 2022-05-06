@@ -21,6 +21,9 @@ jobs:
     - name: Installing poppler-utils
       run: |
         sudo apt-get install poppler-utils
+    - name: Installing tesseract
+      run: |
+        sudo apt install tesseract-ocr -y
     - name: Set up Python 3.10
       uses: actions/setup-python@v3
       with:
