@@ -25,10 +25,6 @@ def anonym_obj():
     # try:
     anonym = pdfAnonymizer(
         path_to_pdf=path,
-        pytesseract_path=("anonympy/tests/pdf/expected/Tesseract-"
-                          "OCR/tesseract.exe"),
-        poppler_path=("anonympy/tests/pdf/expected/"
-                      "poppler-22.01.0/Library/bin"),
         model=("dbmdz/bert-large-cased-"
                "finetuned-conll03-english"),
         tokenizer=("dbmdz/bert-large-cased"
