@@ -36,6 +36,7 @@ class imAnonymizer(object):
     >> img = cv2.imread('C://Users/shakhansho/Downloads/image.png')
     >> anonym = imAnonymizer(img)
     """
+
     def __init__(self, path, dst=None):
         if os.path.isdir(path):
             self.path = path
@@ -70,12 +71,13 @@ class imAnonymizer(object):
             raise Exception(f"Bad shape or box: {shape=}, {box=}")
 
         self.detections = self._FACE.detectMultiScale(
-                            img,
-                            scaleFactor=self.scaleFactor,
-                            minNeighbors=self.minNeighbors)
+            img,
+            scaleFactor=self.scaleFactor,
+            minNeighbors=self.minNeighbors)
 
         if len(self.detections) == 0:
-            print(f'No Faces were Detected in the {fname if self._img else "Image"}')
+            print(f'No Faces were Detected in the '
+                  f'{fname if self._img else "Image"}')
             return
 
         image_copy = None
@@ -83,7 +85,7 @@ class imAnonymizer(object):
         for face in self.detections:
             x, y, w, h = face
 
-            noise = cv2.GaussianBlur(img[y:y+h, x:x+w],
+            noise = cv2.GaussianBlur(img[y:y + h, x:x + w],
                                      kernel,
                                      cv2.BORDER_DEFAULT)
             image_copy = img.copy()
@@ -91,7 +93,7 @@ class imAnonymizer(object):
             if shape == 'c':
                 # circular
                 new = img.copy()
-                new[y:y+h, x:x+w] = noise
+                new[y:y + h, x:x + w] = noise
 
                 # mask
                 mask = np.zeros(new.shape[:2], dtype='uint8')
@@ -106,10 +108,10 @@ class imAnonymizer(object):
 
             elif shape == 'r':
                 # rectangular
-                image_copy[y:y+h, x:x+w] = noise
+                image_copy[y:y + h, x:x + w] = noise
 
             if box == 'r':
-                cv2.rectangle(image_copy, (x, y), (x+w, y+h), (255, 0, 0), 2)
+                cv2.rectangle(image_copy, (x, y), (x + w, y + h), (255, 0, 0), 2)
 
             elif box == 'c':
                 cv2.circle(image_copy,
@@ -206,9 +208,9 @@ class imAnonymizer(object):
         Function to apply Salt and Pepper Noise to an Image
         """
         self.detections = self._FACE.detectMultiScale(
-                                        img,
-                                        scaleFactor=self.scaleFactor,
-                                        minNeighbors=self.minNeighbors)
+            img,
+            scaleFactor=self.scaleFactor,
+            minNeighbors=self.minNeighbors)
         if len(self.detections) == 0:
             if self._img:
                 print('No Faces were Detected in the Image')
@@ -219,13 +221,13 @@ class imAnonymizer(object):
             for face in self.detections:
                 x, y, w, h = face
 
-                noise = sap_noise(img[y:y+h, x:x+w], seed=seed)
+                noise = sap_noise(img[y:y + h, x:x + w], seed=seed)
                 copy = img.copy()
 
                 if shape == 'c':
                     # circular
                     new = img.copy()
-                    new[y:y+h, x:x+w] = noise
+                    new[y:y + h, x:x + w] = noise
 
                     # mask
                     mask = np.zeros(new.shape[:2], dtype='uint8')
@@ -239,14 +241,14 @@ class imAnonymizer(object):
 
                 elif shape == 'r':
                     # rectangular
-                    copy[y:y+h, x:x+w] = noise
+                    copy[y:y + h, x:x + w] = noise
 
                 else:
                     raise Exception('Possible values: `r` (rectangular) \
                         and `c` (circular)')
 
                 if box == 'r':
-                    cv2.rectangle(copy, (x, y), (x+w, y+h), (255, 0, 0), 2)
+                    cv2.rectangle(copy, (x, y), (x + w, y + h), (255, 0, 0), 2)
                 elif box == 'c':
                     cv2.circle(copy,
                                find_middle(x, y, w, h),
@@ -336,9 +338,9 @@ class imAnonymizer(object):
 
     def _face_pixel(self, img, blocks=20, box=None, fname=None):
         self.detections = self._FACE.detectMultiScale(
-                                        img,
-                                        scaleFactor=self.scaleFactor,
-                                        minNeighbors=self.minNeighbors)
+            img,
+            scaleFactor=self.scaleFactor,
+            minNeighbors=self.minNeighbors)
         if len(self.detections) == 0:
             if self._img:
                 print('No Faces were Detected in the Image')
@@ -349,14 +351,14 @@ class imAnonymizer(object):
             for face in self.detections:
                 x, y, w, h = face
 
-                noise = pixelated(img[y:y+h, x:x+w], blocks=blocks)
+                noise = pixelated(img[y:y + h, x:x + w], blocks=blocks)
                 copy = img.copy()
 
                 # rectangular
-                copy[y:y+h, x:x+w] = noise
+                copy[y:y + h, x:x + w] = noise
 
                 if box == 'r':
-                    cv2.rectangle(copy, (x, y), (x+w, y+h), (255, 0, 0), 2)
+                    cv2.rectangle(copy, (x, y), (x + w, y + h), (255, 0, 0), 2)
                 elif box is None:
                     pass
                 else:
