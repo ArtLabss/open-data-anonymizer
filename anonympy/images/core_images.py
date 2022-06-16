@@ -20,12 +20,12 @@ class imAnonymizer(object):
     dst : str, default None
          destination to save the output folder if a string was passed
          to `path`. If `dst = None` a new
-         foulder will be created in the same directory, else in the directory
+         folder will be created in the same directory, else in the directory
          specified.
 
     Returns:
     ----------
-    imAnonymizer object
+    ImAnonymizer object
 
     Examples
     ----------
@@ -36,6 +36,7 @@ class imAnonymizer(object):
     >> img = cv2.imread('C://Users/shakhansho/Downloads/image.png')
     >> anonym = imAnonymizer(img)
     """
+
     def __init__(self, path, dst=None):
         if os.path.isdir(path):
             self.path = path
@@ -46,11 +47,11 @@ class imAnonymizer(object):
             self._path = False
             self._img = True
 
-        if dst is not None:
+        if dst is None:
+            self._dst = False
+        else:
             self.dst = dst
             self._dst = True
-        else:
-            self._dst = False
 
         self._FACE = cv2.CascadeClassifier(data_file('cascade.xml'))
         self.scaleFactor = 1.1
@@ -62,73 +63,70 @@ class imAnonymizer(object):
                    shape='c',
                    box=None,
                    fname=None):
-        '''
+        """
         Function to apply Gaussian blur to an image
-        '''
+        """
+        # make guard statements at the start
+        if shape not in ("c", "r") or box not in ("c", "r", None):
+            raise Exception(f"Bad shape or box: {shape=}, {box=}")
+
         self.detections = self._FACE.detectMultiScale(
-                            img,
-                            scaleFactor=self.scaleFactor,
-                            minNeighbors=self.minNeighbors)
+            img,
+            scaleFactor=self.scaleFactor,
+            minNeighbors=self.minNeighbors)
 
         if len(self.detections) == 0:
-            if self._img:
-                print('No Faces were Detected in the Image')
-            elif self.path:
-                print(f'No Faces were Detected in the {fname}')
+            print(f'No Faces were Detected in the '
+                  f'{fname if self._img else "Image"}')
+            return
 
-            return None
+        image_copy = None
+        # No need to indent
+        for face in self.detections:
+            x, y, w, h = face
 
-        else:
-            for face in self.detections:
-                x, y, w, h = face
+            noise = cv2.GaussianBlur(img[y:y + h, x:x + w],
+                                     kernel,
+                                     cv2.BORDER_DEFAULT)
+            image_copy = img.copy()
 
-                noise = cv2.GaussianBlur(img[y:y+h, x:x+w],
-                                         kernel,
-                                         cv2.BORDER_DEFAULT)
-                copy = img.copy()
+            if shape == 'c':
+                # circular
+                new = img.copy()
+                new[y:y + h, x:x + w] = noise
 
-                if shape == 'c':
-                    # circular
-                    new = img.copy()
-                    new[y:y+h, x:x+w] = noise
+                # mask
+                mask = np.zeros(new.shape[:2], dtype='uint8')
 
-                    # mask
-                    mask = np.zeros(new.shape[:2], dtype='uint8')
+                # cirlce parameters
+                cv2.circle(mask,
+                           find_middle(x, y, w, h),
+                           find_radius(x, y, w, h), 255, -1)
 
-                    # cirlce parameters
-                    cv2.circle(mask,
-                               find_middle(x, y, w, h),
-                               find_radius(x, y, w, h), 255, -1)
+                # apply
+                image_copy[mask > 0] = new[mask > 0]
 
-                    # apply
-                    copy[mask > 0] = new[mask > 0]
+            elif shape == 'r':
+                # rectangular
+                image_copy[y:y + h, x:x + w] = noise
 
-                elif shape == 'r':
-                    # rectangular
-                    copy[y:y+h, x:x+w] = noise
+            if box == 'r':
+                cv2.rectangle(image_copy,
+                              (x, y),
+                              (x + w, y + h),
+                              (255, 0, 0),
+                              2)
 
-                else:
-                    raise Exception('Possible values: `r` \
-                        (rectangular) and `c` (circular)')
+            elif box == 'c':
+                cv2.circle(image_copy,
+                           find_middle(x, y, w, h),
+                           find_radius(x, y, w, h),
+                           (255, 0, 0), 2)
 
-                if box == 'r':
-                    cv2.rectangle(copy, (x, y), (x+w, y+h), (255, 0, 0), 2)
-
-                elif box == 'c':
-                    cv2.circle(copy,
-                               find_middle(x, y, w, h),
-                               find_radius(x, y, w, h),
-                               (255, 0, 0), 2)
-                elif box is None:
-                    pass
-                else:
-                    raise Exception('Possible values: `r` \
-                        (rectangular) and `c` (circular), default `None`')
-
-            return copy
+        return image_copy
 
     def face_blur(self, kernel=(15, 15), shape='c', box=None):
-        '''
+        """
         Apply Gaussian Blur to the Face
         Based on cv2.GaussianBlur.
 
@@ -173,7 +171,7 @@ class imAnonymizer(object):
         >>> path = 'C://Users/shakhansho/Downloads/Images'
         >>> anonym = imAnonymizer(path, dst = 'D;//Output')
         >>> anonym.face_blur(shape = 'r', box = 'r')
-        '''
+        """
         if self._img:
             return self._face_blur(self.frame,
                                    kernel=kernel,
@@ -210,13 +208,13 @@ class imAnonymizer(object):
                 shutil.rmtree(data_from)
 
     def _face_SaP(self, img, shape='c', box=None, fname=None, seed=None):
-        '''
+        """
         Function to apply Salt and Pepper Noise to an Image
-        '''
+        """
         self.detections = self._FACE.detectMultiScale(
-                                        img,
-                                        scaleFactor=self.scaleFactor,
-                                        minNeighbors=self.minNeighbors)
+            img,
+            scaleFactor=self.scaleFactor,
+            minNeighbors=self.minNeighbors)
         if len(self.detections) == 0:
             if self._img:
                 print('No Faces were Detected in the Image')
@@ -227,13 +225,13 @@ class imAnonymizer(object):
             for face in self.detections:
                 x, y, w, h = face
 
-                noise = sap_noise(img[y:y+h, x:x+w], seed=seed)
+                noise = sap_noise(img[y:y + h, x:x + w], seed=seed)
                 copy = img.copy()
 
                 if shape == 'c':
                     # circular
                     new = img.copy()
-                    new[y:y+h, x:x+w] = noise
+                    new[y:y + h, x:x + w] = noise
 
                     # mask
                     mask = np.zeros(new.shape[:2], dtype='uint8')
@@ -247,14 +245,14 @@ class imAnonymizer(object):
 
                 elif shape == 'r':
                     # rectangular
-                    copy[y:y+h, x:x+w] = noise
+                    copy[y:y + h, x:x + w] = noise
 
                 else:
                     raise Exception('Possible values: `r` (rectangular) \
                         and `c` (circular)')
 
                 if box == 'r':
-                    cv2.rectangle(copy, (x, y), (x+w, y+h), (255, 0, 0), 2)
+                    cv2.rectangle(copy, (x, y), (x + w, y + h), (255, 0, 0), 2)
                 elif box == 'c':
                     cv2.circle(copy,
                                find_middle(x, y, w, h),
@@ -267,7 +265,7 @@ class imAnonymizer(object):
             return copy
 
     def face_SaP(self, shape='c', box=None, seed=None):
-        '''
+        """
         Add Salt and Pepper Noise.
 
         Parameters:
@@ -308,7 +306,7 @@ class imAnonymizer(object):
         >>> path = 'C://Users/shakhansho/Downloads/Images'
         >>> anonym = imAnonymizer(path, dst = 'D;//Output')
         >>> anonym.face_SaP(shape = 'c', box = None)
-        '''
+        """
         if self._img:
             return self._face_SaP(self.frame, shape=shape, box=box, seed=seed)
 
@@ -344,9 +342,9 @@ class imAnonymizer(object):
 
     def _face_pixel(self, img, blocks=20, box=None, fname=None):
         self.detections = self._FACE.detectMultiScale(
-                                        img,
-                                        scaleFactor=self.scaleFactor,
-                                        minNeighbors=self.minNeighbors)
+            img,
+            scaleFactor=self.scaleFactor,
+            minNeighbors=self.minNeighbors)
         if len(self.detections) == 0:
             if self._img:
                 print('No Faces were Detected in the Image')
@@ -357,14 +355,14 @@ class imAnonymizer(object):
             for face in self.detections:
                 x, y, w, h = face
 
-                noise = pixelated(img[y:y+h, x:x+w], blocks=blocks)
+                noise = pixelated(img[y:y + h, x:x + w], blocks=blocks)
                 copy = img.copy()
 
                 # rectangular
-                copy[y:y+h, x:x+w] = noise
+                copy[y:y + h, x:x + w] = noise
 
                 if box == 'r':
-                    cv2.rectangle(copy, (x, y), (x+w, y+h), (255, 0, 0), 2)
+                    cv2.rectangle(copy, (x, y), (x + w, y + h), (255, 0, 0), 2)
                 elif box is None:
                     pass
                 else:
@@ -374,7 +372,7 @@ class imAnonymizer(object):
             return copy
 
     def face_pixel(self, blocks=20, box=None):
-        '''
+        """
         Add Pixelated Bluring to a Face
 
         Parameters:
@@ -419,7 +417,7 @@ class imAnonymizer(object):
         >>> path = 'C://Users/shakhansho/Downloads/Images'
         >>> anonym = imAnonymizer(path, dst = 'D;//Output')
         >>> anonym.face_pixel(box = 'r')
-        '''
+        """
         if self._img:
             return self._face_pixel(self.frame.copy(), blocks=blocks, box=box)
 
@@ -468,7 +466,7 @@ class imAnonymizer(object):
             return cv2.blur(img, kernel)
 
     def blur(self, method='Gaussian', kernel=(15, 15)):
-        '''
+        """
         Apply blurring to image
         Based on OpenCV functions.
 
@@ -508,7 +506,7 @@ class imAnonymizer(object):
         >>> path = 'C://Users/shakhansho/Downloads/Images'
         >>> anonym = imAnonymizer(path, dst = 'D;//Output')
         >>> anonym.blur(method = 'averaging', kernel = (15, 15))
-        '''
+        """
         if self._img:
             return self._blur(self.frame, method=method, kernel=kernel)
 
