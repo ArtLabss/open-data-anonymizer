@@ -46,11 +46,11 @@ class imAnonymizer(object):
             self._path = False
             self._img = True
 
-        if dst is not None:
+        if dst is None:
+            self._dst = False
+        else:
             self.dst = dst
             self._dst = True
-        else:
-            self._dst = False
 
         self._FACE = cv2.CascadeClassifier(data_file('cascade.xml'))
         self.scaleFactor = 1.1
@@ -65,67 +65,59 @@ class imAnonymizer(object):
         """
         Function to apply Gaussian blur to an image
         """
+        # make guard statements at the start
+        if shape not in ("c", "r") or box not in ("c", "r", None):
+            raise Exception(f"Bad shape or box: {shape=}, {box=}")
+
         self.detections = self._FACE.detectMultiScale(
                             img,
                             scaleFactor=self.scaleFactor,
                             minNeighbors=self.minNeighbors)
 
         if len(self.detections) == 0:
-            if self._img:
-                print('No Faces were Detected in the Image')
-            elif self.path:
-                print(f'No Faces were Detected in the {fname}')
+            print(f'No Faces were Detected in the {fname if self._img else "Image"}')
+            return
 
-            return None
+        image_copy = None
+        # No need to indent
+        for face in self.detections:
+            x, y, w, h = face
 
-        else:
-            for face in self.detections:
-                x, y, w, h = face
+            noise = cv2.GaussianBlur(img[y:y+h, x:x+w],
+                                     kernel,
+                                     cv2.BORDER_DEFAULT)
+            image_copy = img.copy()
 
-                noise = cv2.GaussianBlur(img[y:y+h, x:x+w],
-                                         kernel,
-                                         cv2.BORDER_DEFAULT)
-                copy = img.copy()
+            if shape == 'c':
+                # circular
+                new = img.copy()
+                new[y:y+h, x:x+w] = noise
 
-                if shape == 'c':
-                    # circular
-                    new = img.copy()
-                    new[y:y+h, x:x+w] = noise
+                # mask
+                mask = np.zeros(new.shape[:2], dtype='uint8')
 
-                    # mask
-                    mask = np.zeros(new.shape[:2], dtype='uint8')
+                # cirlce parameters
+                cv2.circle(mask,
+                           find_middle(x, y, w, h),
+                           find_radius(x, y, w, h), 255, -1)
 
-                    # cirlce parameters
-                    cv2.circle(mask,
-                               find_middle(x, y, w, h),
-                               find_radius(x, y, w, h), 255, -1)
+                # apply
+                image_copy[mask > 0] = new[mask > 0]
 
-                    # apply
-                    copy[mask > 0] = new[mask > 0]
+            elif shape == 'r':
+                # rectangular
+                image_copy[y:y+h, x:x+w] = noise
 
-                elif shape == 'r':
-                    # rectangular
-                    copy[y:y+h, x:x+w] = noise
+            if box == 'r':
+                cv2.rectangle(image_copy, (x, y), (x+w, y+h), (255, 0, 0), 2)
 
-                else:
-                    raise Exception('Possible values: `r` \
-                        (rectangular) and `c` (circular)')
+            elif box == 'c':
+                cv2.circle(image_copy,
+                           find_middle(x, y, w, h),
+                           find_radius(x, y, w, h),
+                           (255, 0, 0), 2)
 
-                if box == 'r':
-                    cv2.rectangle(copy, (x, y), (x+w, y+h), (255, 0, 0), 2)
-
-                elif box == 'c':
-                    cv2.circle(copy,
-                               find_middle(x, y, w, h),
-                               find_radius(x, y, w, h),
-                               (255, 0, 0), 2)
-                elif box is None:
-                    pass
-                else:
-                    raise Exception('Possible values: `r` \
-                        (rectangular) and `c` (circular), default `None`')
-
-            return copy
+        return image_copy
 
     def face_blur(self, kernel=(15, 15), shape='c', box=None):
         """
