@@ -20,12 +20,12 @@ class imAnonymizer(object):
     dst : str, default None
          destination to save the output folder if a string was passed
          to `path`. If `dst = None` a new
-         foulder will be created in the same directory, else in the directory
+         folder will be created in the same directory, else in the directory
          specified.
 
     Returns:
     ----------
-    imAnonymizer object
+    ImAnonymizer object
 
     Examples
     ----------
@@ -62,9 +62,9 @@ class imAnonymizer(object):
                    shape='c',
                    box=None,
                    fname=None):
-        '''
+        """
         Function to apply Gaussian blur to an image
-        '''
+        """
         self.detections = self._FACE.detectMultiScale(
                             img,
                             scaleFactor=self.scaleFactor,
@@ -128,7 +128,7 @@ class imAnonymizer(object):
             return copy
 
     def face_blur(self, kernel=(15, 15), shape='c', box=None):
-        '''
+        """
         Apply Gaussian Blur to the Face
         Based on cv2.GaussianBlur.
 
@@ -173,7 +173,7 @@ class imAnonymizer(object):
         >>> path = 'C://Users/shakhansho/Downloads/Images'
         >>> anonym = imAnonymizer(path, dst = 'D;//Output')
         >>> anonym.face_blur(shape = 'r', box = 'r')
-        '''
+        """
         if self._img:
             return self._face_blur(self.frame,
                                    kernel=kernel,
@@ -210,9 +210,9 @@ class imAnonymizer(object):
                 shutil.rmtree(data_from)
 
     def _face_SaP(self, img, shape='c', box=None, fname=None, seed=None):
-        '''
+        """
         Function to apply Salt and Pepper Noise to an Image
-        '''
+        """
         self.detections = self._FACE.detectMultiScale(
                                         img,
                                         scaleFactor=self.scaleFactor,
@@ -267,7 +267,7 @@ class imAnonymizer(object):
             return copy
 
     def face_SaP(self, shape='c', box=None, seed=None):
-        '''
+        """
         Add Salt and Pepper Noise.
 
         Parameters:
@@ -308,7 +308,7 @@ class imAnonymizer(object):
         >>> path = 'C://Users/shakhansho/Downloads/Images'
         >>> anonym = imAnonymizer(path, dst = 'D;//Output')
         >>> anonym.face_SaP(shape = 'c', box = None)
-        '''
+        """
         if self._img:
             return self._face_SaP(self.frame, shape=shape, box=box, seed=seed)
 
@@ -374,7 +374,7 @@ class imAnonymizer(object):
             return copy
 
     def face_pixel(self, blocks=20, box=None):
-        '''
+        """
         Add Pixelated Bluring to a Face
 
         Parameters:
@@ -419,7 +419,7 @@ class imAnonymizer(object):
         >>> path = 'C://Users/shakhansho/Downloads/Images'
         >>> anonym = imAnonymizer(path, dst = 'D;//Output')
         >>> anonym.face_pixel(box = 'r')
-        '''
+        """
         if self._img:
             return self._face_pixel(self.frame.copy(), blocks=blocks, box=box)
 
@@ -468,7 +468,7 @@ class imAnonymizer(object):
             return cv2.blur(img, kernel)
 
     def blur(self, method='Gaussian', kernel=(15, 15)):
-        '''
+        """
         Apply blurring to image
         Based on OpenCV functions.
 
@@ -508,7 +508,7 @@ class imAnonymizer(object):
         >>> path = 'C://Users/shakhansho/Downloads/Images'
         >>> anonym = imAnonymizer(path, dst = 'D;//Output')
         >>> anonym.blur(method = 'averaging', kernel = (15, 15))
-        '''
+        """
         if self._img:
             return self._blur(self.frame, method=method, kernel=kernel)
 
