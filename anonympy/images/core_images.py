@@ -177,35 +177,34 @@ class imAnonymizer(object):
                                    kernel=kernel,
                                    shape=shape,
                                    box=box)
+        # one more guard statement to avoid unnecessary indentation
+        if not self._path:
+            return
+        for filepath in glob.iglob(self.path + "/**/*.*", recursive=True):
+            # Ignore non images
+            if not filepath.endswith((".png", ".jpg", ".jpeg")):
+                continue
+            # Process Image
+            img = cv2.imread(filepath)
+            img = self._face_blur(img,
+                                  shape=shape,
+                                  box=box,
+                                  fname=filepath)
 
-        elif self._path:
-            for filepath in glob.iglob(self.path + "/**/*.*", recursive=True):
-                # Ignore non images
-                if not filepath.endswith((".png", ".jpg", ".jpeg")):
-                    continue
-                # Process Image
-                img = cv2.imread(filepath)
-                img = self._face_blur(img,
-                                      shape=shape,
-                                      box=box,
-                                      fname=filepath)
+            output_filepath = filepath.replace(os.path.split(self.path)[1],
+                                               'Output')
+            output_dir = os.path.dirname(output_filepath)
+            # Ensure the folder exists
+            os.makedirs(output_dir, exist_ok=True)
 
-                output_filepath = filepath.replace(os.path.split(self.path)[1],
-                                                   'Output')
-                output_dir = os.path.dirname(output_filepath)
-                # Ensure the folder exists
-                os.makedirs(output_dir, exist_ok=True)
-
-                if img is None:
-                    pass
-                else:
-                    cv2.imwrite(output_filepath, img)
-            if self._dst:
-                data_from = self.path.replace(os.path.split(self.path)[1],
-                                              'Output')
-                data_to = os.path.join(self.dst, 'Output')
-                shutil.copytree(data_from, data_to, dirs_exist_ok=True)
-                shutil.rmtree(data_from)
+            if img is not None:
+                cv2.imwrite(output_filepath, img)
+        if self._dst:
+            data_from = self.path.replace(os.path.split(self.path)[1],
+                                          'Output')
+            data_to = os.path.join(self.dst, 'Output')
+            shutil.copytree(data_from, data_to, dirs_exist_ok=True)
+            shutil.rmtree(data_from)
 
     def _face_SaP(self, img, shape='c', box=None, fname=None, seed=None):
         """
