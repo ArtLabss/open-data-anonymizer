@@ -5,25 +5,21 @@ import cv2
 
 
 def find_middle(x, y, w, h) -> tuple:
-    '''
+    """
     Function for finding the center of a rectangle
     The center of rectangle is the midpoint of the diagonal end points of
      rectangle.
-    '''
-    x1, y1 = x, y
-    x2, y2 = x + w, y + h
-    m1, m2 = int((x1 + x2)/2), int((y1 + y2)/2)
-    return m1, m2
+    """
+    return int(x + w / 2), int(y + h / 2)
 
 
 def find_radius(x, y, w, h) -> tuple:
-    '''
+    """
     Function finds the distance between the center and side edge
-    '''
+    """
     side_middle = x + w, (y + y + h) / 2
     center = find_middle(x, y, w, h)
-    dis = side_middle[0] - center[0]
-    return dis
+    return side_middle[0] - center[0]
 
 
 def sap_noise(frame, seed=None):
@@ -56,7 +52,7 @@ def sap_noise(frame, seed=None):
     return img
 
 
-def pixelated(image,  blocks=20):
+def pixelated(image, blocks=20):
     (h, w) = image.shape[:2]
     xSteps = np.linspace(0, w, blocks + 1, dtype="int")
     ySteps = np.linspace(0, h, blocks + 1, dtype="int")
