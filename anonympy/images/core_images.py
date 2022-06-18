@@ -210,58 +210,55 @@ class imAnonymizer(object):
         """
         Function to apply Salt and Pepper Noise to an Image
         """
+        if shape not in ("c", "r") or box not in ("c", "r", None):
+            raise Exception(f"Bad shape or box: {shape=}, {box=}")
+
         self.detections = self._FACE.detectMultiScale(
             img,
             scaleFactor=self.scaleFactor,
             minNeighbors=self.minNeighbors)
         if len(self.detections) == 0:
-            if self._img:
-                print('No Faces were Detected in the Image')
-            elif self.path:
-                print(f'No Faces were Detected in the {fname}')
-            return None
-        else:
-            for face in self.detections:
-                x, y, w, h = face
+            print(f'No Faces were Detected in the '
+                  f'{fname if self._img else "Image"}')
+            return
+        image_copy = img.copy()
+        for face in self.detections:
+            x, y, w, h = face
 
-                noise = sap_noise(img[y:y + h, x:x + w], seed=seed)
-                copy = img.copy()
+            noise = sap_noise(img[y:y + h, x:x + w], seed=seed)
+            image_copy = img.copy()
 
-                if shape == 'c':
-                    # circular
-                    new = img.copy()
-                    new[y:y + h, x:x + w] = noise
+            if shape == 'c':
+                # circular
+                new = img.copy()
+                new[y:y + h, x:x + w] = noise
 
-                    # mask
-                    mask = np.zeros(new.shape[:2], dtype='uint8')
-                    # cirlce parameters
-                    cv2.circle(mask,
-                               find_middle(x, y, w, h),
-                               find_radius(x, y, w, h), 255, -1)
+                # mask
+                mask = np.zeros(new.shape[:2], dtype='uint8')
+                # cirlce parameters
+                cv2.circle(mask,
+                           find_middle(x, y, w, h),
+                           find_radius(x, y, w, h), 255, -1)
 
-                    # apply
-                    copy[mask > 0] = new[mask > 0]
+                # apply
+                image_copy[mask > 0] = new[mask > 0]
 
-                elif shape == 'r':
-                    # rectangular
-                    copy[y:y + h, x:x + w] = noise
+            elif shape == 'r':
+                # rectangular
+                image_copy[y:y + h, x:x + w] = noise
 
-                else:
-                    raise Exception('Possible values: `r` (rectangular) \
-                        and `c` (circular)')
+            if box == 'r':
+                cv2.rectangle(image_copy,
+                              (x, y),
+                              (x + w, y + h),
+                              (255, 0, 0),
+                              2)
+            elif box == 'c':
+                cv2.circle(image_copy,
+                           find_middle(x, y, w, h),
+                           find_radius(x, y, w, h), (255, 0, 0), 2)
 
-                if box == 'r':
-                    cv2.rectangle(copy, (x, y), (x + w, y + h), (255, 0, 0), 2)
-                elif box == 'c':
-                    cv2.circle(copy,
-                               find_middle(x, y, w, h),
-                               find_radius(x, y, w, h), (255, 0, 0), 2)
-                elif box is None:
-                    pass
-                else:
-                    raise Exception('Possible values: `r` (rectangular) and \
-                        `c` (circular), default `None`')
-            return copy
+        return image_copy
 
     def face_SaP(self, shape='c', box=None, seed=None):
         """
@@ -309,66 +306,67 @@ class imAnonymizer(object):
         if self._img:
             return self._face_SaP(self.frame, shape=shape, box=box, seed=seed)
 
-        elif self._path:
-            for filepath in glob.iglob(self.path + "/**/*.*", recursive=True):
-                # Ignore non images
-                if not filepath.endswith((".png", ".jpg", ".jpeg")):
-                    continue
-                # Process Image
-                img = cv2.imread(filepath)
-                img = self._face_SaP(img,
-                                     shape=shape,
-                                     box=box,
-                                     fname=filepath,
-                                     seed=seed)
+        if not self._path:
+            return
 
-                output_filepath = filepath.replace(os.path.split(self.path)[1],
-                                                   'Output')
-                output_dir = os.path.dirname(output_filepath)
-                # Ensure the folder exists
-                os.makedirs(output_dir, exist_ok=True)
+        for filepath in glob.iglob(self.path + "/**/*.*", recursive=True):
+            # Ignore non images
+            if not filepath.endswith((".png", ".jpg", ".jpeg")):
+                continue
+            # Process Image
+            img = cv2.imread(filepath)
+            img = self._face_SaP(img,
+                                 shape=shape,
+                                 box=box,
+                                 fname=filepath,
+                                 seed=seed)
 
-                if img is None:
-                    pass
-                else:
-                    cv2.imwrite(output_filepath, img)
-            if self._dst:
-                data_from = self.path.replace(os.path.split(self.path)[1],
-                                              'Output')
-                data_to = os.path.join(self.dst, 'Output')
-                shutil.copytree(data_from, data_to, dirs_exist_ok=True)
-                shutil.rmtree(data_from)
+            output_filepath = filepath.replace(os.path.split(self.path)[1],
+                                               'Output')
+            output_dir = os.path.dirname(output_filepath)
+            # Ensure the folder exists
+            os.makedirs(output_dir, exist_ok=True)
+
+            if img is not None:
+                cv2.imwrite(output_filepath, img)
+        if self._dst:
+            data_from = self.path.replace(os.path.split(self.path)[1],
+                                          'Output')
+            data_to = os.path.join(self.dst, 'Output')
+            shutil.copytree(data_from, data_to, dirs_exist_ok=True)
+            shutil.rmtree(data_from)
 
     def _face_pixel(self, img, blocks=20, box=None, fname=None):
+        if box not in ("r", None):
+            raise Exception(f"Bad box: {box=}")
+
         self.detections = self._FACE.detectMultiScale(
             img,
             scaleFactor=self.scaleFactor,
             minNeighbors=self.minNeighbors)
         if len(self.detections) == 0:
-            if self._img:
-                print('No Faces were Detected in the Image')
-            elif self.path:
-                print(f'No Faces were Detected in the {fname}')
-            return None
-        else:
-            for face in self.detections:
-                x, y, w, h = face
+            print(f'No Faces were Detected in the '
+                  f'{fname if self._img else "Image"}')
+            return
 
-                noise = pixelated(img[y:y + h, x:x + w], blocks=blocks)
-                copy = img.copy()
+        image_copy = img.copy()
+        for face in self.detections:
+            x, y, w, h = face
 
-                # rectangular
-                copy[y:y + h, x:x + w] = noise
+            noise = pixelated(img[y:y + h, x:x + w], blocks=blocks)
+            image_copy = img.copy()
 
-                if box == 'r':
-                    cv2.rectangle(copy, (x, y), (x + w, y + h), (255, 0, 0), 2)
-                elif box is None:
-                    pass
-                else:
-                    raise Exception('Bounding box. Possible values for `box` \
-                        argument: `r` (rectangular), default `None`')
+            # rectangular
+            image_copy[y:y + h, x:x + w] = noise
 
-            return copy
+            if box == 'r':
+                cv2.rectangle(image_copy,
+                              (x, y),
+                              (x + w, y + h),
+                              (255, 0, 0),
+                              2)
+
+        return image_copy
 
     def face_pixel(self, blocks=20, box=None):
         """
@@ -420,48 +418,45 @@ class imAnonymizer(object):
         if self._img:
             return self._face_pixel(self.frame.copy(), blocks=blocks, box=box)
 
-        elif self._path:
-            for filepath in glob.iglob(self.path + "/**/*.*", recursive=True):
-                # Ignore non images
-                if not filepath.endswith((".png", ".jpg", ".jpeg")):
-                    continue
-                # Process Image
-                img = cv2.imread(filepath)
-                img = self._face_pixel(img,
-                                       blocks=blocks,
-                                       box=box,
-                                       fname=filepath)
+        if not self._path:
+            return
 
-                output_filepath = filepath.replace(os.path.split(self.path)[1],
-                                                   'Output')
-                output_dir = os.path.dirname(output_filepath)
-                # Ensure the folder exists
-                os.makedirs(output_dir, exist_ok=True)
+        for filepath in glob.iglob(self.path + "/**/*.*", recursive=True):
+            # Ignore non images
+            if not filepath.endswith((".png", ".jpg", ".jpeg")):
+                continue
+            # Process Image
+            img = cv2.imread(filepath)
+            img = self._face_pixel(img,
+                                   blocks=blocks,
+                                   box=box,
+                                   fname=filepath)
 
-                if img is None:
-                    pass
-                else:
-                    cv2.imwrite(output_filepath, img)
+            output_filepath = filepath.replace(os.path.split(self.path)[1],
+                                               'Output')
+            output_dir = os.path.dirname(output_filepath)
+            # Ensure the folder exists
+            os.makedirs(output_dir, exist_ok=True)
 
-            if self._dst:
-                data_from = self.path.replace(os.path.split(self.path)[1],
-                                              'Output')
-                data_to = os.path.join(self.dst, 'Output')
-                shutil.copytree(data_from, data_to, dirs_exist_ok=True)
-                shutil.rmtree(data_from)
+            if img is not None:
+                cv2.imwrite(output_filepath, img)
+
+        if self._dst:
+            data_from = self.path.replace(os.path.split(self.path)[1],
+                                          'Output')
+            data_to = os.path.join(self.dst, 'Output')
+            shutil.copytree(data_from, data_to, dirs_exist_ok=True)
+            shutil.rmtree(data_from)
 
     def _blur(self, img, method='Gaussian', kernel=(15, 15)):
         if method.lower() == 'gaussian':
             return cv2.GaussianBlur(img, kernel, cv2.BORDER_DEFAULT)
-        elif method.lower() == 'median':
-            if type(kernel) == tuple:
-                ksize = kernel[0]
-            else:
-                ksize = kernel
-            return cv2.medianBlur(img, ksize)
-        elif method.lower() == 'bilateral':
+        if method.lower() == 'median':
+            k_size = kernel[0] if isinstance(kernel, tuple) else kernel
+            return cv2.medianBlur(img, k_size)
+        if method.lower() == 'bilateral':
             return cv2.bilateralFilter(img, *kernel)
-        elif method.lower() == 'averaging':
+        if method.lower() == 'averaging':
             return cv2.blur(img, kernel)
 
     def blur(self, method='Gaussian', kernel=(15, 15)):
@@ -509,32 +504,34 @@ class imAnonymizer(object):
         if self._img:
             return self._blur(self.frame, method=method, kernel=kernel)
 
-        elif self._path:
-            for filepath in glob.iglob(self.path + "/**/*.*", recursive=True):
-                # Ignore non images
-                if not filepath.endswith((".png", ".jpg", ".jpeg")):
-                    continue
-                # Process Image
-                img = cv2.imread(filepath)
-                img = self._blur(img, method=method, kernel=kernel)
+        if not self._path:
+            return
 
-                output_filepath = filepath.replace(os.path.split(self.path)[1],
-                                                   'Output')
-                output_dir = os.path.dirname(output_filepath)
-                # Ensure the folder exists
-                os.makedirs(output_dir, exist_ok=True)
+        for filepath in glob.iglob(self.path + "/**/*.*", recursive=True):
+            # Ignore non images
+            if not filepath.endswith((".png", ".jpg", ".jpeg")):
+                continue
+            # Process Image
+            img = cv2.imread(filepath)
+            img = self._blur(img, method=method, kernel=kernel)
 
-                cv2.imwrite(output_filepath, img)
-            if self._dst:
-                data_from = self.path.replace(os.path.split(self.path)[1],
-                                              'Output')
-                data_to = os.path.join(self.dst, 'Output')
-                shutil.copytree(data_from, data_to, dirs_exist_ok=True)
-                shutil.rmtree(data_from)
+            output_filepath = filepath.replace(os.path.split(self.path)[1],
+                                               'Output')
+            output_dir = os.path.dirname(output_filepath)
+            # Ensure the folder exists
+            os.makedirs(output_dir, exist_ok=True)
+
+            cv2.imwrite(output_filepath, img)
+        if self._dst:
+            data_from = self.path.replace(os.path.split(self.path)[1],
+                                          'Output')
+            data_to = os.path.join(self.dst, 'Output')
+            shutil.copytree(data_from, data_to, dirs_exist_ok=True)
+            shutil.rmtree(data_from)
 
 
-def data_file(fname):
+def data_file(f_name: str):
     """
     Return the path to a data file of ours.
     """
-    return os.path.join(os.path.split(__file__)[0], fname)
+    return os.path.join(os.path.dirname(__file__), f_name)
