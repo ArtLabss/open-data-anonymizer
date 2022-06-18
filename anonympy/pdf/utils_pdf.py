@@ -1,8 +1,9 @@
 import os
 import re
+from typing import Dict, List, Tuple
+
 import cv2
-from typing import List, Tuple, Dict
-from PIL import ImageDraw, Image
+from PIL import Image, ImageDraw
 from PyPDF2 import PdfFileMerger
 
 

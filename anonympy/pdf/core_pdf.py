@@ -1,17 +1,15 @@
 import os
 import pathlib
-import requests
+from typing import Dict, List, Tuple, Union
+
 import pytesseract
-from pdf2image import convert_from_path, convert_from_bytes
-from typing import List, Union, Tuple, Dict
-
+import requests
 from PIL import Image
-
-from anonympy.pdf.utils_pdf import draw_black_box_pytesseract, find_EOI
-from anonympy.pdf.utils_pdf import find_emails, find_numbers, find_months
-from anonympy.pdf.utils_pdf import find_coordinates_pytesseract, alter_metadata
-
+from pdf2image import convert_from_bytes, convert_from_path
 from transformers import pipeline
+
+from anonympy.pdf.utils_pdf import alter_metadata, draw_black_box_pytesseract, find_EOI, find_coordinates_pytesseract, \
+    find_emails, find_months, find_numbers
 
 
 class pdfAnonymizer(object):
