@@ -248,7 +248,11 @@ class imAnonymizer(object):
                 image_copy[y:y + h, x:x + w] = noise
 
             if box == 'r':
-                cv2.rectangle(image_copy, (x, y), (x + w, y + h), (255, 0, 0), 2)
+                cv2.rectangle(image_copy,
+                              (x, y),
+                              (x + w, y + h),
+                              (255, 0, 0),
+                              2)
             elif box == 'c':
                 cv2.circle(image_copy,
                            find_middle(x, y, w, h),
@@ -356,7 +360,11 @@ class imAnonymizer(object):
             image_copy[y:y + h, x:x + w] = noise
 
             if box == 'r':
-                cv2.rectangle(image_copy, (x, y), (x + w, y + h), (255, 0, 0), 2)
+                cv2.rectangle(image_copy,
+                              (x, y),
+                              (x + w, y + h),
+                              (255, 0, 0),
+                              2)
 
         return image_copy
 
