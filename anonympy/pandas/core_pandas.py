@@ -115,8 +115,6 @@ class dfAnonymizer(object):
             return dtypes.Integer
         elif dtype == np.int64:
             return dtypes.Long
-        else:
-            return None
 
     def anonymize(self,
                   methods=None,
@@ -354,16 +352,17 @@ class dfAnonymizer(object):
         fake = Faker(locale=locale)
         method = getattr(fake, method)
         faked = self._df[column].apply(lambda x: method())
-        if inplace:
-            if column in self.anonymized_columns:
-                print(f'`{column}` column already anonymized!')
-            else:
-                self._df[column] = faked
-                self.unanonymized_columns.remove(column)
-                self.anonymized_columns.append(column)
-                self._methods_applied[column] = self._synthetic_data
-        else:
+        if not inplace:
             return faked
+
+        if column in self.anonymized_columns:
+            print(f'`{column}` column already anonymized!')
+            return
+
+        self._df[column] = faked
+        self.unanonymized_columns.remove(column)
+        self.anonymized_columns.append(column)
+        self._methods_applied[column] = self._synthetic_data
 
     def categorical_fake(self,
                          columns,
@@ -573,13 +572,13 @@ class dfAnonymizer(object):
                                                      inplace=False,
                                                      seed=seed,
                                                      locale=locale)
-        if not inplace:
-            if len(temp.columns) > 1:
-                return temp
-            elif len(temp.columns) == 1:
-                return pd.Series(temp[temp.columns[0]])
-            else:
-                return None
+        if inplace:
+            return
+
+        if len(temp.columns) > 1:
+            return temp
+        if len(temp.columns) == 1:
+            return pd.Series(temp[temp.columns[0]])
 
     def numeric_noise(self,
                       columns,
@@ -645,16 +644,17 @@ class dfAnonymizer(object):
                                         seed=seed)
             ser = noise(self._df[columns].copy()).astype(dtype)
 
-            if inplace:
-                if columns in self.anonymized_columns:
-                    print(f'`{columns}` column already anonymized!')
-                else:
-                    self._df[columns] = ser
-                    self.anonymized_columns.append(columns)
-                    self.unanonymized_columns.remove(columns)
-                    self._methods_applied[columns] = self._numeric_perturbation
-            else:
+            if not inplace:
                 return ser.astype(dtype)
+            if columns in self.anonymized_columns:
+                print(f'`{columns}` column already anonymized!')
+            # return may be added here to get rid of the next `else` and indentations
+            else:
+                self._df[columns] = ser
+                self.anonymized_columns.append(columns)
+                self.unanonymized_columns.remove(columns)
+                self._methods_applied[columns] = self._numeric_perturbation
+
         # if a list of columns is passed
         else:
             temp = pd.DataFrame()
@@ -1030,7 +1030,7 @@ class dfAnonymizer(object):
             if not inplace:
                 return temp
 
-    def _mask(self, s):
+    def _mask(self, s:str):
         '''
         Mask a single email
 
@@ -1047,13 +1047,11 @@ class dfAnonymizer(object):
         ----------
         dfAnonymizer.categorical_email_masking : Apply partial masking to email
         '''
-        lo = s.find('@')
+        lo = s.count('@')
 
-        if lo > 0:
-            masked = s[0] + '*****' + s[lo-1:]
-            return masked
-        else:
-            raise Exception('Invalid Email')
+        if lo != 1:
+            raise Exception(f'Invalid Email: {s}')
+        return s[0] + '*****' + s[s.index('@') - 1:]
 
     def categorical_email_masking(self,
                                   columns,
