@@ -8,8 +8,8 @@ from PIL import Image
 from pdf2image import convert_from_bytes, convert_from_path
 from transformers import pipeline
 
-from anonympy.pdf.utils_pdf import alter_metadata, draw_black_box_pytesseract, find_EOI, find_coordinates_pytesseract, \
-    find_emails, find_months, find_numbers
+from anonympy.pdf.utils_pdf import alter_metadata, draw_black_box_pytesseract, find_EOI,
+    find_coordinates_pytesseract, find_emails, find_months, find_numbers
 
 
 class pdfAnonymizer(object):
