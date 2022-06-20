@@ -1,17 +1,17 @@
 import os
 import pathlib
-import requests
+from typing import Dict, List, Tuple, Union
+
 import pytesseract
-from pdf2image import convert_from_path, convert_from_bytes
-from typing import List, Union, Tuple, Dict
-
+import requests
 from PIL import Image
-
-from anonympy.pdf.utils_pdf import draw_black_box_pytesseract, find_EOI
-from anonympy.pdf.utils_pdf import find_emails, find_numbers, find_months
-from anonympy.pdf.utils_pdf import find_coordinates_pytesseract, alter_metadata
-
+from pdf2image import convert_from_bytes, convert_from_path
 from transformers import pipeline
+
+from anonympy.pdf.utils_pdf import alter_metadata, \
+     draw_black_box_pytesseract, find_EOI, \
+     find_coordinates_pytesseract, find_emails, \
+     find_months, find_numbers
 
 
 class pdfAnonymizer(object):
@@ -76,16 +76,17 @@ class pdfAnonymizer(object):
                                model = "dslim/bert-base-NER",
                                tokenizer="dslim/bert-base-NER")
     """
+
     def __init__(self,
                  path_to_pdf: Union[str, None] = None,
                  url: Union[str, None] = None,
                  # path_to_folder: str = None,
                  pytesseract_path: Union[str, pathlib.Path, None] = None,
                  poppler_path: Union[str, pathlib.Path, None] = None,
-                 model: str = "dbmdz/bert-large-cased-"\
-                 "finetuned-conll03-english",
-                 tokenizer: str = "dbmdz/bert-large-cased"\
-                 "-finetuned-conll03-english"):
+                 model: str = "dbmdz/bert-large-cased-"
+                              "finetuned-conll03-english",
+                 tokenizer: str = "dbmdz/bert-large-cased"
+                                  "-finetuned-conll03-english"):
 
         if path_to_pdf is not None:
             if not os.path.exists(path_to_pdf):
@@ -233,9 +234,9 @@ class pdfAnonymizer(object):
                 find_EOI(pipeline=ner, matches=temp_pii, EOI="LOC")
 
                 find_coordinates_pytesseract(  # noqa: F405
-                                    matches=temp_pii,
-                                    data=self.pages_data[page_number-1],
-                                    bbox=temp_bbox)
+                    matches=temp_pii,
+                    data=self.pages_data[page_number - 1],
+                    bbox=temp_bbox)
                 self.cover_box(self.images[page_number - 1],
                                temp_bbox, fill=fill,
                                outline=outline)
@@ -307,16 +308,18 @@ class pdfAnonymizer(object):
             else:
                 pdf = requests.get(self.url)
                 self.images = convert_from_bytes(pdf.content)
+
+        elif self.url is None:
+            self.images = convert_from_path(
+                self.path_to_pdf,
+                poppler_path=self._poppler_path)
+
         else:
-            if self.url is None:
-                self.images = convert_from_path(
-                            self.path_to_pdf,
-                            poppler_path=self._poppler_path)
-            else:
-                pdf = requests.get(self.url)
-                self.images = convert_from_bytes(
-                            pdf.content,
-                            poppler_path=self._poppler_path)
+            pdf = requests.get(self.url)
+            self.images = convert_from_bytes(
+                pdf.content,
+                poppler_path=self._poppler_path)
+
         self.number_of_pages = len(self.images)
 
     def images2text(self, images: List[Image.Image]) -> None:
@@ -362,14 +365,7 @@ class pdfAnonymizer(object):
         for image in images:
             page = pytesseract.image_to_data(image, output_type="dict")
             self.pages_data.append(page)
-            excerpt = ""
-
-            for line in page["text"]:
-                if line == "":
-                    pass
-                else:
-                    excerpt += line.strip() + " "
-
+            excerpt = " ".join((line.strip() for line in page["text"] if line))
             self.texts.append(excerpt)
 
     def find_emails(self, text: List[str]) -> Dict[str, List[Tuple[int]]]:
@@ -410,18 +406,15 @@ class pdfAnonymizer(object):
         >>> emails = anonym.find_emails(texts)
         """
         coords = {}
-        page_number = 1
-
-        for excerpt in text:
+        for page_number, excerpt in enumerate(text, 1):
             emails = []
             bbox = []
 
             find_emails(excerpt, emails)
             find_coordinates_pytesseract(emails,
-                                         self.pages_data[page_number-1],
+                                         self.pages_data[page_number - 1],
                                          bbox)
             coords[f'page_{page_number}'] = bbox
-            page_number += 1
         return coords
 
     def find_numbers(self, text: List[str]) -> Dict[str, List[Tuple[int]]]:
@@ -462,18 +455,15 @@ class pdfAnonymizer(object):
         >>> numbers = anonym.find_numbers(text)
         """
         coords = {}
-        page_number = 1
-
-        for excerpt in text:
+        for page_number, excerpt in enumerate(text, 1):
             bbox = []
             numbers = []
 
             find_numbers(excerpt, numbers)
             find_coordinates_pytesseract(numbers,
-                                         self.pages_data[page_number-1],
+                                         self.pages_data[page_number - 1],
                                          bbox)
             coords[f'page_{page_number}'] = bbox
-            page_number += 1
         return coords
 
     def find_months(self, text: List[str]) -> Dict[str, List[Tuple[int]]]:
@@ -514,18 +504,15 @@ class pdfAnonymizer(object):
         >>> numbers = anonym.find_months(text)
         """
         coords = {}
-        page_number = 1
-
-        for excerpt in text:
+        for page_number, excerpt in enumerate(text, 1):
             months = []
             bbox = []
 
             find_months(excerpt, months)
             find_coordinates_pytesseract(months,
-                                         self.pages_data[page_number-1],
+                                         self.pages_data[page_number - 1],
                                          bbox)
             coords[f'page_{page_number}'] = bbox
-            page_number += 1
         return coords
 
     def _find_EOI(self,
@@ -568,19 +555,16 @@ class pdfAnonymizer(object):
         >>> names = anonym._find_EOI(text, "PER")
         """
         coords = {}
-        page_number = 1
-
-        for excerpt in text:
+        for page_number, excerpt in enumerate(text, 1):
             ner = self._nlp(excerpt)
             names = []
             bbox = []
 
             find_EOI(ner, names, EOI)
             find_coordinates_pytesseract(names,
-                                         self.pages_data[page_number-1],
+                                         self.pages_data[page_number - 1],
                                          bbox)
             coords[f'page_{page_number}'] = bbox
-            page_number += 1
         return coords
 
     def find_ORG(self, text: List[str]) -> Dict[str, List[Tuple[int]]]:
