@@ -648,7 +648,8 @@ class dfAnonymizer(object):
                 return ser.astype(dtype)
             if columns in self.anonymized_columns:
                 print(f'`{columns}` column already anonymized!')
-            # return may be added here to get rid of the next `else` and indentations
+            # return may be added here to get rid of the 
+            # next `else` and indentations
             else:
                 self._df[columns] = ser
                 self.anonymized_columns.append(columns)
