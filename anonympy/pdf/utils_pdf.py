@@ -64,7 +64,9 @@ def draw_black_box_easyOCR(
         draw.rectangle([*p0, *p2], fill="black", outline="black")
 
 
-def find_coordinates_pytesseract(matches: List[str], data: dict, bbox: list) -> None:
+def find_coordinates_pytesseract(matches: List[str],
+                                 data: dict,
+                                 bbox: list) -> None:
     for obj in matches:
         for idx in range(len(data["text"])):
             i = data["text"][idx].strip()
@@ -78,7 +80,9 @@ def find_coordinates_pytesseract(matches: List[str], data: dict, bbox: list) -> 
                 bbox.append((x, y, w, h))
 
 
-def find_coordinates_easyOCR(pii_objects: List[str], bounds: list, bbox: list) -> None:
+def find_coordinates_easyOCR(pii_objects: List[str],
+                             bounds: list,
+                             bbox: list) -> None:
     for obj in pii_objects:
         for i in range(len(bounds)):
             if (obj.strip() in bounds[i][1].strip()) and (
