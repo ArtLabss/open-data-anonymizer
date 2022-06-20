@@ -1030,7 +1030,7 @@ class dfAnonymizer(object):
             if not inplace:
                 return temp
 
-    def _mask(self, s:str):
+    def _mask(self, s: str):
         '''
         Mask a single email
 
