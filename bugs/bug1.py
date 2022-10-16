@@ -1,5 +1,5 @@
 import csv
-import pandas 
+import pandas
 from anonympy.pandas import dfAnonymizer
 
 
