@@ -8,7 +8,7 @@ from anonympy.images import imAnonymizer
 
 def is_similar(image1, image2):
     return (image1.shape == image2.shape) and \
-            not(np.bitwise_xor(image1, image2).any())
+            not (np.bitwise_xor(image1, image2).any())
 
 
 def fetch_image(url):
