@@ -73,7 +73,8 @@ class dfAnonymizer(object):
 
         # Public Attributes
         self.anonymized_columns = []
-        self.columns = self._df.columns.tolist()
+        self.columns = list(map(str, self._df.columns.tolist()))
+        # self.columns = self._df.columns.tolist()
         self.unanonymized_columns = self.columns.copy()
 
         self.numeric_columns = _utils.get_numeric_columns(self._df)
