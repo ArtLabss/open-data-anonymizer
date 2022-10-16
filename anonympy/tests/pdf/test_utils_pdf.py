@@ -23,7 +23,7 @@ def fetch_image(url):
 
 def is_similar(image1, image2):
     return (image1.size == image2.size) and \
-            not(np.bitwise_xor(image1, image2).any())
+            not (np.bitwise_xor(image1, image2).any())
 
 
 @pytest.fixture(scope="session")
