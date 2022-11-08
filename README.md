@@ -106,7 +106,7 @@
 ```
 pip install anonympy
 ```
-<p>Due to conflicting pandas/numpy versions with <a href="https://github.com/capeprivacy/cape-python/issues/112">cape-privacy</a>, it's recommend to install them seperately</p>
+<p>Due to conflicting pandas/numpy versions with <a href="https://github.com/capeprivacy/cape-python/issues/112">cape-privacy</a>, it's recommended to install them seperately</p>
 
 ```
 pip install cape-privacy==0.3.0 --no-deps 
