@@ -27,10 +27,10 @@ setup(
   install_requires=['faker', 'scikit-learn', 'opencv_python',
                     'texttable', 'setuptools', 'numpy', 'pandas', 'validators',
                     'pycryptodome', 'requests', 'pyyaml', 'rfc3339',
-                    'pytesseract', 'PyPDF2', 'poppler-utils', 'pdf2image',
+                    'pytesseract', 'pypdf', 'poppler-utils', 'pdf2image',
                     'transformers'],
 
-  python_requires='>=3.6*',
+  python_requires='>=3.6',
   url='https://github.com/ArtLabss/open-data-anonimizer',
   classifiers=[
     'Development Status :: 3 - Alpha',
