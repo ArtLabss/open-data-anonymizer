@@ -4,7 +4,7 @@ from typing import Dict, List, Tuple
 
 import cv2
 from PIL import Image, ImageDraw
-from PyPDF2 import PdfFileMerger
+from pypdf import PdfMerger
 
 
 def find_EOI(pipeline, matches: list, EOI: str) -> None:
@@ -112,9 +112,9 @@ def find_months(text: str, matches: list) -> None:
 
 def alter_metadata(file_name: str, output_name: str):
     with open(file_name, "rb") as file_in, open(output_name, "wb") as file_out:
-        pdf_merger = PdfFileMerger()
+        pdf_merger = PdfMerger()
         pdf_merger.append(file_in)
-        pdf_merger.addMetadata({"/Author": "Unknown", "/Title": "Title"})
+        pdf_merger.add_metadata({"/Author": "Unknown", "/Title": "Title"})
         pdf_merger.write(file_out)
 
     os.remove(file_name)
