@@ -90,7 +90,7 @@
 <h3>Dependencies</h3>
 <ol>
   <li> Python (>= 3.7)</li>
-  <li>cape-privacy</li>
+  <li>cape-dataframes</li>
   <li>faker</li>
   <li>pandas</li>
   <li>OpenCV</li>
@@ -106,11 +106,6 @@
 ```
 pip install anonympy
 ```
-<p>Due to conflicting pandas/numpy versions with <a href="https://github.com/capeprivacy/cape-python/issues/112">cape-privacy</a>, it's recommended to install them seperately</p>
-
-```
-pip install cape-privacy==0.3.0 --no-deps 
-```
 
 <h3>Install from source</h3>
 
@@ -121,7 +116,6 @@ git clone https://github.com/ArtLabss/open-data-anonimizer.git
 cd open-data-anonimizer
 pip install -r requirements.txt
 make bootstrap
-pip install cape-privacy==0.3.0 --no-deps 
 ```
 
 <h3>Downloading Repository</h3>
