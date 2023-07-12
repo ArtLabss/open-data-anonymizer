@@ -3,11 +3,11 @@ import numpy as np
 
 from texttable import Texttable
 
-from cape_privacy.pandas import dtypes
-from cape_privacy.pandas.transformations import NumericPerturbation
-from cape_privacy.pandas.transformations import DatePerturbation
-from cape_privacy.pandas.transformations import NumericRounding
-from cape_privacy.pandas.transformations import Tokenizer
+from cape_dataframes.pandas import dtypes
+from cape_dataframes.pandas.transformations import NumericPerturbation
+from cape_dataframes.pandas.transformations import DatePerturbation
+from cape_dataframes.pandas.transformations import NumericRounding
+from cape_dataframes.pandas.transformations import Tokenizer
 
 from faker import Faker
 from anonympy.pandas import utils_pandas as _utils
@@ -589,7 +589,7 @@ class dfAnonymizer(object):
                       inplace=True):
         '''
         Add uniform random noise
-        Based on cape-privacy's NumericPerturbation function.
+        Based on cape-dataframes's NumericPerturbation function.
 
         Mask a numeric pandas Series/DataFrame by adding uniform random
         noise to each value. The amount of noise is drawn from
@@ -690,7 +690,7 @@ class dfAnonymizer(object):
                        inplace=True):
         '''
         Add uniform random noise to a Pandas series of timestamps
-        Based on cape-privacy's DatePerturbation function
+        Based on cape-dataframes's DatePerturbation function
 
         Parameters
         ----------
@@ -784,7 +784,7 @@ class dfAnonymizer(object):
                          inplace=True):
         '''
         Round each value in the Pandas Series to the given number
-        Based on cape-privacy's NumericRounding.
+        Based on cape-dataframes's NumericRounding.
 
         Parameters
         ----------

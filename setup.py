@@ -28,7 +28,7 @@ setup(
                     'texttable', 'setuptools', 'numpy', 'pandas', 'validators',
                     'pycryptodome', 'requests', 'pyyaml', 'rfc3339',
                     'pytesseract', 'pypdf', 'poppler-utils', 'pdf2image',
-                    'transformers'],
+                    'transformers', 'cape-dataframes>=0.3.1'],
 
   python_requires='>=3.6',
   url='https://github.com/ArtLabss/open-data-anonimizer',
